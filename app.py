@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 import pandas as pd
+from flask_navigation import Navigation
 
 app = Flask("__name__")
 
@@ -14,6 +15,7 @@ def data():
     if request.method == 'POST':
         dataset = pd.read_excel("data/Gemeente Almere bruggen paspoort gegevens.xlsx")
         return render_template('assets-overview.html', data=dataset.to_html())
+        #return render_template('assets-overview.html', data=dataset.to_dict())
 
 
 if __name__ == '__main__':
