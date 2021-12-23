@@ -14,7 +14,7 @@ nav.Bar('top', [
 
 @app.route('/')
 def navpage():
-    return render_template("navpage.html")
+    return render_template("navpage.html", title = "Home Page")
 
 
 @app.route('/assets_overview', methods=['GET', 'POST'])

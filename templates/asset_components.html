@@ -1,10 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Asset Components</title>
-</head>
-<body>
+
+{% extends "layout.html" %}
+{% block title %}Asset Components{% endblock %}
+{% block head %}
+  {{ super() }}
+  <style type="text/css">
+    .important { color: #336699; }
+  </style>
+{% endblock %}
+{% block content %}
 <b>Components</b>
-</body>
-</html>
+{% endblock %}
+
+
+
