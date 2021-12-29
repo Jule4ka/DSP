@@ -22,13 +22,23 @@ def navpage():
 @app.route('/assets_overview', methods=['GET', 'POST'])
 def assets_overview():
     dataset = pd.read_excel("data/Gemeente Almere bruggen paspoort gegevens.xlsx")
-    return render_template('assets_overview.html', data=dataset.to_html())
+    return render_template('assets_overview.html', data=dataset.to_html(), title="Assets Overview")
     # return render_template('assets_overview.html', data=dataset.to_dict()) #transform to dictionary
 
 
 @app.route('/asset-components', methods=['GET', 'POST'])
 def asset_components():
-    return render_template("asset_components.html")
+    return render_template("asset_components.html", title="Asset Components")
+
+
+@app.route('/register')
+def register():
+    return render_template('register.html', title="Register")
+
+
+@app.route('/login')
+def login():
+    return render_template('login.html', title="Login")
 
 @app.route('/scheduling-overview', methods=['GET', 'POST'])
 def scheduling_overview():

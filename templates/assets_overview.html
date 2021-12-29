@@ -1,10 +1,6 @@
 {% extends "layout.html" %}
-{% block title %}Assets Overview{% endblock %}
 {% block head %}
   {{ super() }}
-  <style type="text/css">
-    .important { color: #336699; }
-  </style>
 {% endblock %}
 {% block content %}
 {{data | safe }}

@@ -1,12 +1,9 @@
 {% extends "layout.html" %}
-{% block title %}Navigation bar{% endblock %}
 {% block head %}
   {{ super() }}
-  <style type="text/css">
-    .important { color: #336699; }
-  </style>
 {% endblock %}
 {% block content %}
+<h1> What to put into the home page?</h1>
 <ul>
     {% for item in nav.top %}
     <li class="{{ 'active' if item.is_active else '' }}">

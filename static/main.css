@@ -1,0 +1,8 @@
+.test{
+display:block;
+width:300 px;
+height:300 px;
+background:purple;
+}
+
+.test p {color: white;}
