@@ -4,4 +4,28 @@
 {% endblock %}
 {% block content %}
 {{data | safe }}
+<table>
+    <tr>
+        {% for col in column_names %}
+        <th>{{col}}</th>
+        {% endfor %}
+    </tr>
+    {% for row in row_data %}
+    <tr>
+        {% for col, row_ in zip(column_names, row) %}
+        {% if col == link_column %}
+        <td>
+            <button type="submit" value={{ row_ }} name="Open_Asset" form="open_asset_form" class="open_asset_button">
+                {{ row_ }}
+            </button>
+        </td>
+        {% else %}
+        <td>{{row_}}</td>
+        {% endif %}
+        {% endfor %}
+    </tr>
+    {% endfor %}
+
+</table>
+
 {% endblock %}
