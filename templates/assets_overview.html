@@ -3,7 +3,6 @@
   {{ super() }}
 {% endblock %}
 {% block content %}
-{{data | safe }}
 <table>
     <tr>
         {% for col in column_names %}
@@ -15,9 +14,11 @@
         {% for col, row_ in zip(column_names, row) %}
         {% if col == link_column %}
         <td>
-            <button type="submit" value={{ row_ }} name="Open_Asset" form="open_asset_form" class="open_asset_button">
-                {{ row_ }}
-            </button>
+            <a  href= "{{ url_for('asset_components', record_id=2) }}">
+            <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+            <i class="material-icons"></i></input></a>
+
+            <!--<a href="{{url_for('asset_components')}}">Show Details</a>-->
         </td>
         {% else %}
         <td>{{row_}}</td>
