@@ -1,6 +1,19 @@
 {% extends 'layout.html' %}
 {% block content %}
     <h1>{% block title %} Planned projects {% endblock %}</h1>
+    {{ projects }}
+    {% for p_name, p_info in projects.items() %} 
+       {{ p_name }}
+       {% for key in p_info %}
+              {{ p_info }}
+    {% endfor %}   
+    <!-- <table>
+        <tr>
+            
+              <td class="col-md-2">{{ value }}</td>
+            {% endfor %}
+        </tr>
+    </table> -->
     <h2>Add a new project</h2>
     <form method="post">
         <label for="title">Asset Name</label>
@@ -54,7 +67,7 @@
         <button type="submit">Submit</button>
     </form>
 
-{{projects}} 
+    
 
 {% endblock %}
 <!-- <H1>Component Scheduling</H1>

@@ -4,8 +4,7 @@ from flask_navigation import Navigation
 
 app = Flask("__name__")
 nav = Navigation(app)
-projects = [{}
-            ]
+projects = {}
 
 # initializing navigation
 nav.Bar('top', [
@@ -55,17 +54,24 @@ def scheduling_overview():
     if request.method == 'POST':
         AssetName = request.form['AssetName']
         StartDate = request.form['start_date']
+        Maintainer = request.form['Maintainer']
+        Owner = request.form['Owner']
+        Width = request.form['Width']
+        Length = request.form['Length']
+        Area = request.form['Area']
+        Location = request.form['Location']
 
         if not AssetName:
             flash('Asset name is required!')
         elif not StartDate:
             flash('Start date is required!')
         else:
-            projects.append({'AssetName': AssetName, 'StartDate': StartDate})
+            projects[AssetName] = {'StartDate': StartDate, 'Maintainer': Maintainer,
+                                    'Owner': Owner, 'Width': Width, 'Length': Length, 'Area': Area, 'Location': Location}
             return redirect(url_for('scheduling_overview'))
 
-    return render_template("scheduling_overview.html")
-    projects = projects
+    return render_template("scheduling_overview.html",
+    projects = projects)
 
 
 # run the application
