@@ -22,7 +22,17 @@ def navpage():
 @app.route('/assets_overview', methods=['GET', 'POST'])
 def assets_overview():
     dataset = pd.read_excel("data/Gemeente Almere bruggen paspoort gegevens.xlsx")
-    return render_template('assets_overview.html', data=dataset.to_html(), title="Assets Overview")
+    dataset = dataset.reindex(columns=dataset.columns.tolist() + ['Open_Asset'])
+    # rename column titles
+    dataset.columns = [c.replace(' ', '_') for c in dataset.columns]
+    dataset_to_display = dataset[["Assetnumber", "AssetName", "AssetType", "Maintainance_State", "Buildyear", "Maintainer",
+                                  "Owner", "Status", "Location", "City", "Open_Asset"]]
+    # link_column is the column that I want to add a button to
+    return render_template("assets_overview.html", column_names=dataset_to_display.columns.values,
+                           row_data=list(dataset_to_display.values.tolist()),
+                           link_column="Open_Asset", zip=zip)
+
+    #return render_template('assets_overview.html', data=dataset_to_display.to_html(), title="Assets Overview")
     # return render_template('assets_overview.html', data=dataset.to_dict()) #transform to dictionary
 
 
@@ -56,6 +66,7 @@ def scheduling_overview():
 
     return render_template("scheduling_overview.html")
     projects = projects
+
 
 # run the application
 if __name__ == '__main__':
