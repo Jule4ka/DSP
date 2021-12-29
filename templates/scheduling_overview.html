@@ -1,0 +1,62 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <h1>{% block title %} Planned projects {% endblock %}</h1>
+    <h2>Add a new project</h2>
+    <form method="post">
+        <label for="title">Asset Name</label>
+        <br>
+        <input type="text" name="AssetName"
+               placeholder="Project name"
+               value="{{ request.form['project_name'] }}"></input>
+        <br>
+        <label for="title">Start date</label>
+        <br>
+        <input type="datetime" name="start_date"
+               placeholder="mm/YYYY"
+               value="{{ request.form['start_date'] }}"></input>
+        <br>
+        <label for="title">Maintainer</label>
+        <br>
+        <input type="text" name="Maintainer"
+               placeholder="Maintainer"
+               value="{{ request.form['maintainer'] }}"></input>
+        <br>
+        <label for="title">Owner</label>
+        <br>
+        <input type="text" name="Owner"
+               placeholder="Owner"
+               value="{{ request.form['owner'] }}"></input>
+        <br>
+        <label for="title">Width</label>
+        <br>
+        <input type="text" name="Width"
+               placeholder="Width in meters"
+               value="{{ request.form['Width'] }}"></input>
+        <br>
+        <label for="title">Length</label>
+        <br>
+        <input type="text" name="Length"
+               placeholder="Length in meters"
+               value="{{ request.form['Length'] }}"></input>
+        <br>
+        <label for="title">Area</label>
+        <br>
+        <input type="text" name="Area"
+               placeholder="Area in m2"
+               value="{{ request.form['Area'] }}"></input>
+        <br>
+        <label for="title">Location</label>
+        <br>
+        <input type="text" name="Location"
+               placeholder="Location"
+               value="{{ request.form['Location'] }}"></input>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+
+{{projects}} 
+
+{% endblock %}
+<!-- <H1>Component Scheduling</H1>
+<H2>Planned projects</H2>
+<H2>Available components</H2> -->

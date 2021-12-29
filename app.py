@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for, flash, redirect
 import pandas as pd
 from flask_navigation import Navigation
 
 app = Flask("__name__")
 nav = Navigation(app)
+projects = [{}
+            ]
 
 # initializing navigation
 nav.Bar('top', [
@@ -28,6 +30,22 @@ def assets_overview():
 def asset_components():
     return render_template("asset_components.html")
 
+@app.route('/scheduling-overview', methods=['GET', 'POST'])
+def scheduling_overview():
+    if request.method == 'POST':
+        AssetName = request.form['AssetName']
+        StartDate = request.form['start_date']
+
+        if not AssetName:
+            flash('Asset name is required!')
+        elif not StartDate:
+            flash('Start date is required!')
+        else:
+            projects.append({'AssetName': AssetName, 'StartDate': StartDate})
+            return redirect(url_for('scheduling_overview'))
+
+    return render_template("scheduling_overview.html")
+    projects = projects
 
 # run the application
 if __name__ == '__main__':
