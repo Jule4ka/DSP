@@ -1,9 +1,13 @@
 from flask import Flask, render_template, request, url_for, flash, redirect
 import pandas as pd
 from flask_navigation import Navigation
+from flask import Flask, render_template, request
+from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask("__name__")
 nav = Navigation(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/pre-registration'
+db = SQLAlchemy(app)
 projects = [{}
             ]
 
@@ -56,6 +60,13 @@ def scheduling_overview():
 
     return render_template("scheduling_overview.html")
     projects = projects
+
+# Create our database model
+class User(db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True)
+
 
 # run the application
 if __name__ == '__main__':

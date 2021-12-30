@@ -2,3 +2,5 @@ pandas~=1.3.5
 Flask~=2.0.2
 Flask-Navigation
 openpyxl
+psycopg2
+Flask-SQLAlchemy
