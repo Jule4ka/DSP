@@ -4,7 +4,10 @@ from flask_navigation import Navigation
 
 app = Flask("__name__")
 nav = Navigation(app)
-projects = {}
+# Define dict for new projects
+projects = {'AssetName': [], 'StartDate':[], 'Maintainer': [],
+            'Owner': [], 'Width': [], 'Length': [],
+            'Area': [], 'Location': []}
 
 # initializing navigation
 nav.Bar('top', [
@@ -50,8 +53,8 @@ def login():
     return render_template('login.html', title="Login")
 
 @app.route('/scheduling-overview', methods=['GET', 'POST'])
-def scheduling_overview():
-    if request.method == 'POST':
+def scheduling_overview():                              # Provide forms for input
+    if request.method == 'POST':        
         AssetName = request.form['AssetName']
         StartDate = request.form['start_date']
         Maintainer = request.form['Maintainer']
@@ -61,17 +64,32 @@ def scheduling_overview():
         Area = request.form['Area']
         Location = request.form['Location']
 
-        if not AssetName:
+        if not AssetName:                               # Error message if fields are not filled out
             flash('Asset name is required!')
         elif not StartDate:
             flash('Start date is required!')
-        else:
-            projects[AssetName] = {'StartDate': StartDate, 'Maintainer': Maintainer,
-                                    'Owner': Owner, 'Width': Width, 'Length': Length, 'Area': Area, 'Location': Location}
+        else:                                           # Add input to project dict
+            projects['AssetName'].append(AssetName)
+            projects['StartDate'].append(StartDate)
+            projects['Maintainer'].append(Maintainer)
+            projects['Owner'].append(Owner)
+            projects['Width'].append(Width)
+            projects['Length'].append(Length)
+            projects['Area'].append(Area)
+            projects['Location'].append(Location)
+            with open('planned_projects.txt', 'a') as f: # Add input to txt file. This is supposed to be used in the app
+                print(projects, file=f)
+
             return redirect(url_for('scheduling_overview'))
 
+    projects_df = pd.DataFrame.from_dict(projects)      # Transfrom project dict to DataFrame (this is now used in the App)
+
+    with open('planned_projects.txt', 'r')
+        
     return render_template("scheduling_overview.html",
-    projects = projects)
+    projects = projects,
+    projects_df = projects_df,
+    tables=[projects_df.to_html(classes='data', header="true")])
 
 
 # run the application

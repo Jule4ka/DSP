@@ -1,6 +1,9 @@
 {% extends 'layout.html' %}
 {% block content %}
     <h1>{% block title %} Planned projects {% endblock %}</h1>
+    {% for table in tables %}
+            {{ table|safe }}
+       {% endfor %}
     <h2>Add a new project</h2>
     <form method="post">
         <label for="title">Asset Name</label>
@@ -54,7 +57,6 @@
         <button type="submit">Submit</button>
     </form>
 
-    
 
 {% endblock %}
 <!-- <H1>Component Scheduling</H1>
