@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, url_for, flash, redirect, ses
 import pandas as pd
 from flask_navigation import Navigation
 
-app = Flask("__name__")
+app = Flask(__name__, static_url_path='')
 nav = Navigation(app)
 # Define dict for new projects
 projects = {'AssetName': [], 'StartDate':[], 'Maintainer': [],
