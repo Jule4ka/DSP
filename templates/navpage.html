@@ -1,14 +1,15 @@
 {% extends "layout.html" %}
 {% block head %}
-  {{ super() }}
+    {{ super() }}
 {% endblock %}
+
 {% block content %}
-<h1> What to put into the home page?</h1>
-<ul>
-    {% for item in nav.top %}
-    <li class="{{ 'active' if item.is_active else '' }}">
-        <a href="{{ item.url }}">{{ item.label }}</a>
-    </li>
-    {% endfor %}
-</ul>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='navpage.css') }}">
+    <div class="main-content">
+        <h1> What to put into the home page?</h1>
+    </div>
+{% endblock %}
+
+{% block footer %}
+  {{ super() }}
 {% endblock %}
