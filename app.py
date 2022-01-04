@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, flash, redirect
+from flask import Flask, render_template, request, url_for, flash, redirect, session
 import pandas as pd
 from flask_navigation import Navigation
 
@@ -12,7 +12,7 @@ projects = {'AssetName': [], 'StartDate':[], 'Maintainer': [],
 # initializing navigation
 nav.Bar('top', [
     nav.Item('Assets Overview', 'assets_overview'),
-    nav.Item('Asset Components', 'asset_components')
+    nav.Item('Components Overview', 'components_overview')
 ])
 
 
@@ -27,20 +27,33 @@ def assets_overview():
     dataset = dataset.reindex(columns=dataset.columns.tolist() + ['Open_Asset'])
     # rename column titles
     dataset.columns = [c.replace(' ', '_') for c in dataset.columns]
-    dataset_to_display = dataset[["Assetnumber", "AssetName", "AssetType", "Maintainance_State", "Buildyear", "Maintainer",
-                                  "Owner", "Status", "Location", "City", "Open_Asset"]]
+    dataset_to_display = dataset[
+        ["Assetnumber", "AssetName", "AssetType", "Maintainance_State", "Buildyear", "Maintainer",
+         "Owner", "Status", "Location", "City", "Open_Asset"]]
     # link_column is the column that I want to add a button to
     return render_template("assets_overview.html", column_names=dataset_to_display.columns.values,
                            row_data=list(dataset_to_display.values.tolist()),
-                           link_column="Open_Asset", zip=zip)
-
-    #return render_template('assets_overview.html', data=dataset_to_display.to_html(), title="Assets Overview")
+                           link_column="Open_Asset", zip=zip, title="Assets Overview")
+    # return render_template('assets_overview.html', data=dataset_to_display.to_html(), title="Assets Overview")
     # return render_template('assets_overview.html', data=dataset.to_dict()) #transform to dictionary
 
 
 @app.route('/asset-components', methods=['GET', 'POST'])
 def asset_components():
-    return render_template("asset_components.html", title="Asset Components")
+    record_id=int(request.args['record_id'])
+    if request.method == 'GET':
+        components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
+        components_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
+        return render_template("asset_components.html", column_names=components_dataset.columns.values,
+                               row_data=list(components_dataset.values.tolist()),
+                               zip=zip, title="Asset Components")
+
+
+@app.route('/components-overview', methods=['GET', 'POST'])
+def components_overview():
+    components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
+    return render_template("components_overview.html", column_names=components_dataset.columns.values,
+                           row_data=list(components_dataset.values.tolist()), zip=zip, title="Components Overview")
 
 
 @app.route('/register')
@@ -51,6 +64,7 @@ def register():
 @app.route('/login')
 def login():
     return render_template('login.html', title="Login")
+
 
 @app.route('/scheduling-overview', methods=['GET', 'POST'])
 def scheduling_overview():                              # Provide forms for input
@@ -65,6 +79,10 @@ def scheduling_overview():                              # Provide forms for inpu
         Location = request.form['Location']
 
         if not AssetName:                               # Error message if fields are not filled out
+            flash('Asset name is required!')
+        elif not StartDate:
+            flash('Start date is required!')
+       if not AssetName:                               # Error message if fields are not filled out
             flash('Asset name is required!')
         elif not StartDate:
             flash('Start date is required!')
@@ -90,6 +108,7 @@ def scheduling_overview():                              # Provide forms for inpu
     projects = projects,
     projects_df = projects_df,
     tables=[projects_df.to_html(classes='data', header="true")])
+
 
 
 # run the application
