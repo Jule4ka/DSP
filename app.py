@@ -67,8 +67,8 @@ def login():
 
 
 @app.route('/scheduling-overview', methods=['GET', 'POST'])
-def scheduling_overview():                              # Provide forms for input
-    if request.method == 'POST':        
+def scheduling_overview():  # Provide forms for input
+    if request.method == 'POST':
         AssetName = request.form['AssetName']
         StartDate = request.form['start_date']
         Maintainer = request.form['Maintainer']
@@ -78,15 +78,11 @@ def scheduling_overview():                              # Provide forms for inpu
         Area = request.form['Area']
         Location = request.form['Location']
 
-        if not AssetName:                               # Error message if fields are not filled out
+        if not AssetName:  # Error message if fields are not filled out
             flash('Asset name is required!')
         elif not StartDate:
             flash('Start date is required!')
-       if not AssetName:                               # Error message if fields are not filled out
-            flash('Asset name is required!')
-        elif not StartDate:
-            flash('Start date is required!')
-        else:                                           # Add input to project dict
+        else:  # Add input to project dict
             projects['AssetName'].append(AssetName)
             projects['StartDate'].append(StartDate)
             projects['Maintainer'].append(Maintainer)
@@ -95,20 +91,19 @@ def scheduling_overview():                              # Provide forms for inpu
             projects['Length'].append(Length)
             projects['Area'].append(Area)
             projects['Location'].append(Location)
-            with open('planned_projects.txt', 'a') as f: # Add input to txt file. This is supposed to be used in the app
+            with open('planned_projects.txt', 'a') as f:  # Add input to txt file. This is supposed to be used in the app
                 print(projects, file=f)
 
             return redirect(url_for('scheduling_overview'))
 
-    projects_df = pd.DataFrame.from_dict(projects)      # Transfrom project dict to DataFrame (this is now used in the App)
+    projects_df = pd.DataFrame.from_dict(projects)  # Transfrom project dict to DataFrame (this is now used in the App)
 
-    with open('planned_projects.txt', 'r')
-        
+    #with open('planned_projects.txt', 'r')
+
     return render_template("scheduling_overview.html",
-    projects = projects,
-    projects_df = projects_df,
-    tables=[projects_df.to_html(classes='data', header="true")])
-
+                           projects=projects,
+                           projects_df=projects_df,
+                           tables=[projects_df.to_html(classes='data', header="true")])
 
 
 # run the application
