@@ -15,9 +15,9 @@
         {% if col == link_column %}
         <td>
              <form action= "{{ url_for('asset_components') }}"  method="POST">
-                <input type="hidden" name="asset_id" id="asset_id" value="{{row}}" class="btn btn-info">
-                <i class="material-icons"></i></input>
-                <button type = "submit" name="edit" value={{row}} formmethod="post">See details</button>
+                <!--<input type="hidden" name="asset_id" id="asset_id" value="{{row}}" class="btn btn-info">
+                <i class="material-icons"></i></input>-->
+                <button type = "submit" name="asset_id" value="{{row}}" formmethod="post" class="btn btn-info">See details</button>
             </form>
         <br>
         </td>
