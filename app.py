@@ -1,11 +1,14 @@
 from flask import Flask, render_template, request, url_for, flash, redirect, session
 import pandas as pd
 from flask_navigation import Navigation
+from flask_debugtoolbar import DebugToolbarExtension
 
 app = Flask("__name__")
+app.debug = True
+app.secret_key = 'development key'
 nav = Navigation(app)
 # Define dict for new projects
-projects = {'AssetName': [], 'StartDate':[], 'Maintainer': [],
+projects = {'AssetName': [], 'StartDate': [], 'Maintainer': [],
             'Owner': [], 'Width': [], 'Length': [],
             'Area': [], 'Location': []}
 
@@ -14,6 +17,7 @@ nav.Bar('top', [
     nav.Item('Assets Overview', 'assets_overview'),
     nav.Item('Components Overview', 'components_overview')
 ])
+
 
 
 @app.route('/')
@@ -40,10 +44,12 @@ def assets_overview():
 
 @app.route('/asset-components', methods=['GET', 'POST'])
 def asset_components():
-    record_id=int(request.args['record_id'])
-    if request.method == 'GET':
+    if request.method == 'POST':
+        # extracting the record_id to filter upon (ugly way but didn't find better"
+        record_id = int(request.form['asset_id'].split(',')[0].split('[')[1])
         components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
         components_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
+        # record_id = int(request.form['asset_id'].replace(",", "").replace("[", ""))
         return render_template("asset_components.html", column_names=components_dataset.columns.values,
                                row_data=list(components_dataset.values.tolist()),
                                zip=zip, title="Asset Components")
@@ -91,14 +97,15 @@ def scheduling_overview():  # Provide forms for input
             projects['Length'].append(Length)
             projects['Area'].append(Area)
             projects['Location'].append(Location)
-            with open('planned_projects.txt', 'a') as f:  # Add input to txt file. This is supposed to be used in the app
+            with open('planned_projects.txt',
+                      'a') as f:  # Add input to txt file. This is supposed to be used in the app
                 print(projects, file=f)
 
             return redirect(url_for('scheduling_overview'))
 
     projects_df = pd.DataFrame.from_dict(projects)  # Transfrom project dict to DataFrame (this is now used in the App)
 
-    #with open('planned_projects.txt', 'r')
+    # with open('planned_projects.txt', 'r')
 
     return render_template("scheduling_overview.html",
                            projects=projects,
