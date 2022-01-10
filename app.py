@@ -1,8 +1,19 @@
-from flask import Flask, render_template, request, url_for, flash, redirect, session
 import pandas as pd
+from flask import Flask, flash, request, redirect, url_for, render_template
 from flask_navigation import Navigation
+from flask_uploads import configure_uploads, IMAGES, UploadSet
+from flask_wtf import FlaskForm
+from wtforms import FileField
+import os
+# from werkzeug.utils import secure_filename
 
-app = Flask(__name__, static_url_path='')
+
+UPLOAD_FOLDER = '/static/uploads'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 nav = Navigation(app)
 # Define dict for new projects
 projects = {'AssetName': [], 'StartDate':[], 'Maintainer': [],
@@ -16,7 +27,7 @@ nav.Bar('top', [
 ])
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def navpage():
     return render_template("navpage.html", title="Home Page")
 
@@ -37,6 +48,10 @@ def assets_overview():
     # return render_template('assets_overview.html', data=dataset_to_display.to_html(), title="Assets Overview")
     # return render_template('assets_overview.html', data=dataset.to_dict()) #transform to dictionary
 
+@app.route('/product_overview', methods=['GET', 'POST'])
+def product_overview():
+    img1 = os.path.join(app.config['UPLOAD_FOLDER'])
+    return render_template("product_overview.html", user_image = img1)
 
 @app.route('/asset-components', methods=['GET', 'POST'])
 def asset_components():
@@ -106,6 +121,24 @@ def scheduling_overview():  # Provide forms for input
                            tables=[projects_df.to_html(classes='data', header="true")])
 
 
+## IMPORT image
+app.config['SECRET_KEY'] = 'thisisasecret'
+app.config['UPLOADED_IMAGES_DEST'] = 'static/uploads'
+
+images = UploadSet('images', IMAGES)
+configure_uploads(app, images)
+
+
+class MyForm(FlaskForm):
+    image = FileField('image')
+
+@app.route('/index', methods=['GET', 'POST'])
+def index():
+    form = MyForm()
+    if form.validate_on_submit():
+        filename = images.save(form.image.data)
+        return f'Filename: {filename}'
+    return render_template('index.html', form = form)
 # run the application
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
