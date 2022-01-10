@@ -12,7 +12,8 @@ projects = {'AssetName': [], 'StartDate':[], 'Maintainer': [],
 # initializing navigation
 nav.Bar('top', [
     nav.Item('Assets Overview', 'assets_overview'),
-    nav.Item('Components Overview', 'components_overview')
+    nav.Item('Components Overview', 'components_overview'),
+    nav.Item('Marketplace', 'marketplace')
 ])
 
 
@@ -20,6 +21,9 @@ nav.Bar('top', [
 def navpage():
     return render_template("navpage.html", title="Home Page")
 
+@app.route('/marketplace')
+def marketplace():
+    return render_template("marketplace.html", title="Marketplace")
 
 @app.route('/assets_overview', methods=['GET', 'POST'])
 def assets_overview():
