@@ -7,12 +7,13 @@
 <div class="main-content">
     <h1>Welcome to the material marketplace</h1>
     <h5>Browse through the different materials to find the right material for your bridge</h5>
+
     <table id="data" class="table table-striped">
-    <tr>
+    <thead>
         {% for col in column_names %}
         <th>{{col}}</th>
         {% endfor %}
-    </tr>
+    </thead>
     {% for row in row_data %}
     <tr>
         {% for col, row_ in zip(column_names, row) %}
