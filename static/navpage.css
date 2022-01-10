@@ -1,4 +1,7 @@
 .main-content {
-    color: purple;
-    padding-top: 10%;
+    position: relative;
+    top: 25%;
+    bottom: 25%;
+    color: blue;
+    text-align: center;
 }
