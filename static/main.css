@@ -1,19 +1,36 @@
 @import url('https://fonts.googleapis.com/css?family=Quicksand:400,500,700');
 
-html,
-body {
-    margin:0;
-    padding:0;
-    height:100%;
-    width: 100%;
+html {
+    position: relative;
+    min-height: 100%;
 }
 
+body {
+    margin: 0 0 100px;
+    /* bottom = footer height */
+    padding: 25px;
+    padding-top: 0px;
+}
+footer {
+    background-color: orange;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 100px;
+    width: 100%;
+    overflow:hidden;
+}
 body {
     box-sizing: border-box;
     font-family: "Quicksand", sans-serif;
     align-items: center;
     text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
+
+
 head {
     font-family: "Quicksand", sans-serif;
     align-items: center;
