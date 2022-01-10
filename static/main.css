@@ -48,6 +48,7 @@ head {
     -moz-box-shadow: 0px -1px 9px 1px rgba(0,0,0,0.62);
     box-shadow: 0px -1px 9px 1px rgba(0,0,0,0.62);
     max-height: 80px;
+    background: white;
 }
 
 
