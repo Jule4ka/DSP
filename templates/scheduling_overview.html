@@ -10,53 +10,64 @@
         <br>
         <input type="text" name="AssetName"
                placeholder="Project name"
-               value="{{ request.form['project_name'] }}"></input>
+               value="{{ request.form['project_name'] }}"
+               required></input>
+        <br>
+        <label for="AssetType">Choose an asset type:</label><br>
+        <select name="AssetType" id="AssetType" required>
+              <option value="Verkeersbrug">Verkeersbrug</option>
+              <option value="Fiets-voetbrug">Fiets-voetbrug</option>
+              <option value="Viaduct">Viaduct</option>
+              <option value="BeweegbareBrug">Beweegbare brug</option>
+              <option value="Duikerbrug">Duikerbrug</option>
+       </select>
         <br>
         <label for="title">Start date</label>
         <br>
-        <input type="datetime" name="start_date"
-               placeholder="mm/YYYY"
-               value="{{ request.form['start_date'] }}"></input>
+        <input type="date" name="start_date"
+               placeholder="dd/mm/YYYY"
+               value="{{ request.form['start_date'] }}"
+               min="da"
+               required></input>
         <br>
         <label for="title">Maintainer</label>
         <br>
         <input type="text" name="Maintainer"
                placeholder="Maintainer"
-               value="{{ request.form['maintainer'] }}"></input>
+               value="{{ request.form['maintainer'] }}"
+               required></input>
         <br>
         <label for="title">Owner</label>
         <br>
         <input type="text" name="Owner"
                placeholder="Owner"
-               value="{{ request.form['owner'] }}"></input>
+               value="{{ request.form['owner'] }}"
+               required></input>
         <br>
         <label for="title">Width</label>
         <br>
         <input type="text" name="Width"
                placeholder="Width in meters"
-               value="{{ request.form['Width'] }}"></input>
+               value="{{ request.form['Width'] }}"
+               required></input>
         <br>
         <label for="title">Length</label>
         <br>
         <input type="text" name="Length"
                placeholder="Length in meters"
-               value="{{ request.form['Length'] }}"></input>
-        <br>
-        <label for="title">Area</label>
-        <br>
-        <input type="text" name="Area"
-               placeholder="Area in m2"
-               value="{{ request.form['Area'] }}"></input>
+               value="{{ request.form['Length'] }}"
+               required></input>
         <br>
         <label for="title">Location</label>
         <br>
         <input type="text" name="Location"
                placeholder="Location"
-               value="{{ request.form['Location'] }}"></input>
+               value="{{ request.form['Location'] }}"
+               required></input>
         <br>
         <button type="submit">Submit</button>
     </form>
-
+{{ line }}
 
 {% endblock %}
 <!-- <H1>Component Scheduling</H1>

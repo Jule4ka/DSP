@@ -82,7 +82,7 @@ def scheduling_overview():                              # Provide forms for inpu
             flash('Asset name is required!')
         elif not StartDate:
             flash('Start date is required!')
-       if not AssetName:                               # Error message if fields are not filled out
+        if not AssetName:                               # Error message if fields are not filled out
             flash('Asset name is required!')
         elif not StartDate:
             flash('Start date is required!')
@@ -100,14 +100,15 @@ def scheduling_overview():                              # Provide forms for inpu
 
             return redirect(url_for('scheduling_overview'))
 
-    projects_df = pd.DataFrame.from_dict(projects)      # Transfrom project dict to DataFrame (this is now used in the App)
-
-    with open('planned_projects.txt', 'r')
+    with open('planned_projects.txt', 'r') as f: 
+        line = f.readlines()[-1]
+    projects_df = pd.DataFrame.from_dict(eval(line))      # Transfrom project dict to DataFrame (this is used in the App)
         
     return render_template("scheduling_overview.html",
     projects = projects,
     projects_df = projects_df,
-    tables=[projects_df.to_html(classes='data', header="true")])
+    tables=[projects_df.to_html(classes='data', header="true")],
+    line = line)
 
 
 
