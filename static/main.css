@@ -73,7 +73,7 @@ head {
     text-decoration: none;
     color: black;
     line-height: 80px;
-    font-size: 2rem;
+    font-size: 20px;
 }
 
 .nav div.main_list ul li a:hover {
@@ -99,13 +99,13 @@ head {
     -moz-box-shadow: 0px -1px 9px 1px rgba(0,0,0,0.62);
     box-shadow: 0px -1px 9px 1px rgba(0,0,0,0.62);
 }
-@media screen and (max-width: 1960px) {
+@media screen and (max-width: 1400px) {
     .navbar-right {
         display: none !important;
     }
 }
 
-@media screen and (max-width:1700px){
+@media screen and (max-width:1200px){
     .navTrigger {
         display: block;
     }

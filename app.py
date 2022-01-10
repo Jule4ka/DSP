@@ -23,7 +23,16 @@ def navpage():
 
 @app.route('/marketplace')
 def marketplace():
-    return render_template("marketplace.html", title="Marketplace")
+    dataset = pd.read_excel("data/dummy_data_marketplace.xlsx")
+    dataset = dataset.reindex(columns=dataset.columns.tolist() + ['More_info'])
+    # rename column titles
+    #dataset.columns = [c.replace(' ', '_') for c in dataset.columns]
+    dataset_to_display = dataset[['Material_type', 'Weight_(in_tonns)', 'Status', 'Seller', 'Location', 'Price_(per_tonn_in_euros)', 'More_info']]
+    # link_column is the column that I want to add a button to
+    return render_template("assets_overview.html", column_names=dataset_to_display.columns.values,
+                           row_data=list(dataset_to_display.values.tolist()),
+                           link_column='More_info', zip=zip, title="Marketplace")
+
 
 @app.route('/assets_overview', methods=['GET', 'POST'])
 def assets_overview():
