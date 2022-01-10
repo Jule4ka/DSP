@@ -340,6 +340,11 @@ head {
     height: 500px;   /* Height of the footer */
 }
 
+.clear {
+    clear: both;
+    height: 500px;
+}
+
 .footer-cta {
 border-bottom: 1px solid #373636;
 }
