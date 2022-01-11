@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='navpage.css') }}">
+    <div class="main-content">
+        <h1>Lorem ipsum dolor </h1>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    {{ super() }}
+{% endblock %}

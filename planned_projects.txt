@@ -4,3 +4,5 @@
 {'AssetName': ['test'], 'StartDate': ['test'], 'Maintainer': ['test'], 'Owner': ['test'], 'Width': ['test'], 'Length': ['test'], 'Area': ['test'], 'Location': ['test']}
 {'AssetName': ['test', 'a'], 'StartDate': ['test', 'a'], 'Maintainer': ['test', 'a'], 'Owner': ['test', 'a'], 'Width': ['test', 'a'], 'Length': ['test', 'a'], 'Area': ['test', 'a'], 'Location': ['test', 'a']}
 {'AssetName': ['b'], 'StartDate': ['b'], 'Maintainer': ['b'], 'Owner': ['b'], 'Width': ['b'], 'Length': ['b'], 'Area': ['b'], 'Location': ['b']}
+{'AssetName': ['a'], 'StartDate': ['2022-01-01'], 'Maintainer': ['a'], 'Owner': ['a'], 'Width': ['1'], 'Length': ['1'], 'Location': ['a']}
+{'AssetName': ['a', 'b'], 'StartDate': ['2022-01-01', '2022-01-13'], 'Maintainer': ['a', 'b'], 'Owner': ['a', 'b'], 'Width': ['1', '2'], 'Length': ['1', '2'], 'Location': ['a', 'bla']}

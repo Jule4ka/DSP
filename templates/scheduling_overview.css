@@ -1,0 +1,5 @@
+/* Fixes the positioning */
+.main-content {
+    padding-top: 100px;
+    position: relative;
+}

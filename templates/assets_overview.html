@@ -1,9 +1,12 @@
 {% extends "layout.html" %}
 {% block head %}
-  {{ super() }}
+    {{ super() }}
 {% endblock %}
 {% block content %}
-<table>
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='assets_overview.css') }}">
+
+<div class="main-content">
+     <table>
     <tr>
         {% for col in column_names %}
         <th>{{col}}</th>
@@ -26,7 +29,10 @@
         {% endfor %}
     </tr>
     {% endfor %}
-
 </table>
+</div>
+{% endblock %}
 
+{% block footer %}
+    {{ super() }}
 {% endblock %}

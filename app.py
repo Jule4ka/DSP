@@ -2,17 +2,18 @@ from flask import Flask, render_template, request, url_for, flash, redirect, ses
 import pandas as pd
 from flask_navigation import Navigation
 
-app = Flask("__name__")
+app = Flask(__name__, static_url_path='')
 nav = Navigation(app)
 # Define dict for new projects
 projects = {'AssetName': [], 'StartDate':[], 'Maintainer': [],
             'Owner': [], 'Width': [], 'Length': [],
-            'Area': [], 'Location': []}
+            'Location': []}
 
 # initializing navigation
 nav.Bar('top', [
     nav.Item('Assets Overview', 'assets_overview'),
-    nav.Item('Components Overview', 'components_overview')
+    nav.Item('Components Overview', 'components_overview'),
+    nav.Item('Marketplace', 'marketplace')
 ])
 
 
@@ -20,6 +21,9 @@ nav.Bar('top', [
 def navpage():
     return render_template("navpage.html", title="Home Page")
 
+@app.route('/marketplace')
+def marketplace():
+    return render_template("marketplace.html", title="Marketplace")
 
 @app.route('/assets_overview', methods=['GET', 'POST'])
 def assets_overview():
@@ -67,18 +71,17 @@ def login():
 
 
 @app.route('/scheduling-overview', methods=['GET', 'POST'])
-def scheduling_overview():                              # Provide forms for input
-    if request.method == 'POST':        
+def scheduling_overview():  # Provide forms for input
+    if request.method == 'POST':
         AssetName = request.form['AssetName']
         StartDate = request.form['start_date']
         Maintainer = request.form['Maintainer']
         Owner = request.form['Owner']
         Width = request.form['Width']
         Length = request.form['Length']
-        Area = request.form['Area']
         Location = request.form['Location']
 
-        if not AssetName:                               # Error message if fields are not filled out
+        if not AssetName:  # Error message if fields are not filled out
             flash('Asset name is required!')
         elif not StartDate:
             flash('Start date is required!')
@@ -93,9 +96,8 @@ def scheduling_overview():                              # Provide forms for inpu
             projects['Owner'].append(Owner)
             projects['Width'].append(Width)
             projects['Length'].append(Length)
-            projects['Area'].append(Area)
             projects['Location'].append(Location)
-            with open('planned_projects.txt', 'a') as f: # Add input to txt file. This is supposed to be used in the app
+            with open('planned_projects.txt', 'a') as f:  # Add input to txt file. This is supposed to be used in the app
                 print(projects, file=f)
 
             return redirect(url_for('scheduling_overview'))
@@ -110,6 +112,10 @@ def scheduling_overview():                              # Provide forms for inpu
     tables=[projects_df.to_html(classes='data', header="true")],
     line = line)
 
+    return render_template("scheduling_overview.html",
+                           projects=projects,
+                           projects_df=projects_df,
+                           tables=[projects_df.to_html(classes='data', header="true")])
 
 
 # run the application
