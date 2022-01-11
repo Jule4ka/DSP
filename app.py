@@ -3,8 +3,15 @@ import pandas as pd
 from flask_navigation import Navigation
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
+from flask_uploads import configure_uploads, IMAGES, UploadSet
+from flask_wtf import FlaskForm
+from wtforms import FileField
+import os
 
+UPLOAD_FOLDER = '/static/uploads'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app = Flask(__name__, static_url_path='')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 nav = Navigation(app)
 
 #code for connection
@@ -21,10 +28,9 @@ mysql = MySQL(app)
 
 
 # Define dict for new projects
-projects = {'AssetName': [], 'AssetType': [], 'ConstructionType': [],
-            'StartDate':[], 'EndDate':[], 'Maintainer': [],
+projects = {'AssetName': [], 'StartDate':[], 'Maintainer': [],
             'Owner': [], 'Width': [], 'Length': [],
-            'Location': []}
+            'Area': [], 'Location': []}
 
 # initializing navigation
 nav.Bar('top', [
@@ -33,7 +39,8 @@ nav.Bar('top', [
     nav.Item('Marketplace', 'marketplace')
 ])
 
-@app.route('/')
+
+@app.route('/', methods=['GET', 'POST'])
 def navpage():
     return render_template("navpage.html", title="Home Page")
 
@@ -46,6 +53,9 @@ def marketplace():
     # fetching all records from database
     data = cursor.fetchall()
 
+    for dict_row in data:
+        for key, value in dict_row.items():
+            print(type(value))
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("marketplace.html", data=data)
 
@@ -69,21 +79,21 @@ def assets_overview():
 
 @app.route('/asset-components', methods=['GET', 'POST'])
 def asset_components():
+    #table
     record_id=int(request.args['record_id'])
     if request.method == 'GET':
         components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
         components_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
+        #image
+        img1 = os.path.join(app.config['UPLOAD_FOLDER'])
+        #uploadbutton
+        form = MyForm()
+        if form.validate_on_submit():
+            filename = images.save(form.image.data)
+            return f'Filename: {filename}'
         return render_template("asset_components.html", column_names=components_dataset.columns.values,
                                row_data=list(components_dataset.values.tolist()),
-                               zip=zip, title="Asset Components")
-
-
-@app.route('/components-overview', methods=['GET', 'POST'])
-def components_overview():
-    components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
-    return render_template("components_overview.html", column_names=components_dataset.columns.values,
-                           row_data=list(components_dataset.values.tolist()), zip=zip, title="Components Overview")
-
+                               zip=zip, title="Asset Components", user_image = img1, form = form)
 
 @app.route('/register')
 def register():
@@ -94,49 +104,42 @@ def register():
 def login():
     return render_template('login.html', title="Login")
 
-
 @app.route('/scheduling-overview', methods=['GET', 'POST'])
 def scheduling_overview():  # Provide forms for input
     if request.method == 'POST':
         AssetName = request.form['AssetName']
-        AssetType = request.form['AssetType']
-        ConstructionType = request.form['ConstructionType']
         StartDate = request.form['start_date']
-        EndDate = request.form['end_date']
         Maintainer = request.form['Maintainer']
         Owner = request.form['Owner']
         Width = request.form['Width']
         Length = request.form['Length']
+        Area = request.form['Area']
         Location = request.form['Location']
 
         if not AssetName:  # Error message if fields are not filled out
             flash('Asset name is required!')
         elif not StartDate:
             flash('Start date is required!')
-        if not AssetName:                               # Error message if fields are not filled out
-            flash('Asset name is required!')
-        elif not StartDate:
-            flash('Start date is required!')
-        else:                                           # Add input to project dict
+        else:  # Add input to project dict
             projects['AssetName'].append(AssetName)
-            projects['AssetType'].append(AssetType)
-            projects['ConstructionType'].append(ConstructionType)
             projects['StartDate'].append(StartDate)
-            projects['EndDate'].append(EndDate)
             projects['Maintainer'].append(Maintainer)
             projects['Owner'].append(Owner)
             projects['Width'].append(Width)
             projects['Length'].append(Length)
+            projects['Area'].append(Area)
             projects['Location'].append(Location)
             with open('planned_projects.txt', 'a') as f:  # Add input to txt file. This is supposed to be used in the app
                 print(projects, file=f)
 
             return redirect(url_for('scheduling_overview'))
 
-    with open('planned_projects.txt', 'r') as f: 
+    projects_df = pd.DataFrame.from_dict(projects)  # Transfrom project dict to DataFrame (this is now used in the App)
+
+    with open('planned_projects.txt', 'r') as f:
         line = f.readlines()[-1]
-    projects_df = pd.DataFrame.from_dict(eval(line))      # Transfrom project dict to DataFrame (this is used in the App)
-    
+    projects_df = pd.DataFrame.from_dict(eval(line))  # Transfrom project dict to DataFrame (this is used in the App)
+
     # Get possible construction and asset types from Bruggenpaspoort data
     dataset = pd.read_excel("data/Gemeente Almere bruggen paspoort gegevens.xlsx")
     dataset = dataset.reindex(columns=dataset.columns.tolist() + ['Open_Asset'])
@@ -144,12 +147,21 @@ def scheduling_overview():  # Provide forms for input
     asset_type = dataset['AssetType'].unique()
 
     return render_template("scheduling_overview.html",
-    projects            = projects,
-    projects_df         = projects_df,
-    tables              = [projects_df.to_html(classes='data', header="true")],
-    line                = line,
-    construction_type   = construction_type,
-    asset_type          = asset_type)
+                           projects=projects,
+                           projects_df=projects_df,
+                           tables=[projects_df.to_html(classes='data', header="true")],
+                           line=line,
+                           construction_type=construction_type,
+                           asset_type=asset_type)
+
+## IMPORT image
+app.config['SECRET_KEY'] = 'thisisasecret'
+app.config['UPLOADED_IMAGES_DEST'] = 'static/uploads'
+images = UploadSet('images', IMAGES)
+configure_uploads(app, images)
+
+class MyForm(FlaskForm):
+    image = FileField('image')
 
 # run the application
 if __name__ == '__main__':
