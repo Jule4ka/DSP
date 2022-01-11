@@ -80,13 +80,6 @@
                placeholder="Location"
                value="{{ request.form['Location'] }}"
                required></input>
-        <br>
-        <label for="Component">Choose a component needed:</label><br>
-        <select name="Component" id="Component" required>
-              {% for type in component_type %}
-              <option value= "{{ type }}" > {{ type }} </option>
-              {% endfor %}
-       </select>
        <br><br>
 
 {% endblock %}
