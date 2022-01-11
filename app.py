@@ -136,12 +136,23 @@ def scheduling_overview():  # Provide forms for input
 
     projects_df = pd.DataFrame.from_dict(projects)  # Transfrom project dict to DataFrame (this is now used in the App)
 
-    #with open('planned_projects.txt', 'r')
+    with open('planned_projects.txt', 'r') as f:
+        line = f.readlines()[-1]
+    projects_df = pd.DataFrame.from_dict(eval(line))  # Transfrom project dict to DataFrame (this is used in the App)
+
+    # Get possible construction and asset types from Bruggenpaspoort data
+    dataset = pd.read_excel("data/Gemeente Almere bruggen paspoort gegevens.xlsx")
+    dataset = dataset.reindex(columns=dataset.columns.tolist() + ['Open_Asset'])
+    construction_type = dataset['ConstructionType'].unique()
+    asset_type = dataset['AssetType'].unique()
 
     return render_template("scheduling_overview.html",
                            projects=projects,
                            projects_df=projects_df,
-                           tables=[projects_df.to_html(classes='data', header="true")])
+                           tables=[projects_df.to_html(classes='data', header="true")],
+                           line=line,
+                           construction_type=construction_type,
+                           asset_type=asset_type)
 
 ## IMPORT image
 app.config['SECRET_KEY'] = 'thisisasecret'
