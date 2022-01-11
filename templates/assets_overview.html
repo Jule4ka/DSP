@@ -35,7 +35,11 @@
                 <td>{{ row.Status }}</td>
                 <td>{{ row.Location }}</td>
                 <td>{{ row.City }}</td>
-                <td>{{ row.Open_Asset }}</td>
+                <td>
+                    <a  href= "{{ url_for('asset_components', record_id=2) }}">
+                    <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+                    <i class="material-icons"></i></input></a>
+                </td>
         </tr>
         {% endfor %}
     </tbody>
