@@ -4,36 +4,3 @@
     position: relative;
     text-align: center;
 }
-
-/*Table part*/
-
-.test {
-    display: block;
-    width: 300 px;
-    height: 300 px;
-    background: purple;
-}
-
-.test p{color: white;}
-
-table {
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-}
-
-td, th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-}
-
-tr:nth-child(even) {
-    background-color: #dddddd;
-}
-}
-
-.content {
-    color: purple;
-}
-
