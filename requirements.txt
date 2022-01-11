@@ -6,3 +6,4 @@ flask_wtf
 WTForms
 flask-uploads
 Flask-Reuploaded
+flask-mysqldb
