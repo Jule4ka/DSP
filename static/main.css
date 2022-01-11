@@ -73,7 +73,7 @@ head {
     text-decoration: none;
     color: black;
     line-height: 80px;
-    font-size: 2rem;
+    font-size: 20px;
 }
 
 .nav div.main_list ul li a:hover {
@@ -99,13 +99,13 @@ head {
     -moz-box-shadow: 0px -1px 9px 1px rgba(0,0,0,0.62);
     box-shadow: 0px -1px 9px 1px rgba(0,0,0,0.62);
 }
-@media screen and (max-width: 1960px) {
+@media screen and (max-width: 1400px) {
     .navbar-right {
         display: none !important;
     }
 }
 
-@media screen and (max-width:1700px){
+@media screen and (max-width:1200px){
     .navTrigger {
         display: block;
     }
@@ -127,6 +127,7 @@ head {
         /*same background color of navbar*/
         background-position: center top;
         margin-top: 75px;
+        margin-bottom: 75px;
         margin-left: auto;
         margin-right: auto;
         border-radius: 8px;
@@ -146,7 +147,7 @@ head {
         color: #454545;
         text-align: center;
         width: 100%;
-        font-size: 2.5vw;
+        font-size: 20px;
     }
     .nav div.media_button {
         display: block;
@@ -464,34 +465,3 @@ line-height: 28px;
 
 
 
-/*Table part*/
-
-.test {
-    display: block;
-    width: 300 px;
-    height: 300 px;
-    background: purple;
-}
-
-.test p{color: white;}
-
-table {
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-}
-
-td, th {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-}
-
-tr:nth-child(even) {
-    background-color: #dddddd;
-}
-}
-
-.content {
-    color: purple;
-}
