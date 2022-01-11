@@ -102,12 +102,15 @@ def login():
 def scheduling_overview():  # Provide forms for input
     if request.method == 'POST':
         AssetName = request.form['AssetName']
+        AssetType = request.form['AssetType']
         StartDate = request.form['start_date']
+        EndDate = request.form['end_date']
         Maintainer = request.form['Maintainer']
         Owner = request.form['Owner']
         Width = request.form['Width']
         Length = request.form['Length']
         Location = request.form['Location']
+        ConstructionType = request.form['ConstructionType']
 
         if not AssetName:  # Error message if fields are not filled out
             flash('Asset name is required!')
@@ -117,15 +120,12 @@ def scheduling_overview():  # Provide forms for input
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)    # creating variable for connection
             sql = "INSERT INTO projects (assetname, assettype, startdate, enddate, maintainer, owner, " \
                   "width, length, Location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %d, %d, %s, %s)"
-            val = (Assetname, assettype, StartDate, EndDate, Maintainer, Owner, " \
-                  "Width, Length, Location, constructiontype)
+            val = (AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length, Location, ConstructionType)
             cursor.execute(sql, val)
 
-            mydb.commit()
+            cursor.commit()
 
             print(mycursor.rowcount, "record inserted.")
-
-            print(AssetName, StartDate, Maintainer, Owner, Width, Length, Area, Location)
 
 
             return redirect(url_for('scheduling_overview'))
