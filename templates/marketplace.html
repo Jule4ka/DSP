@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='marketplace.css') }}">
+<div class="main-content">
+        <h1>Welcome to the material marketplace</h1>
+        <h5>Browse through the different materials to find the right material for your bridge</h5>
+    <table id="data" class="table table-striped">
+    <thead>
+        <tr>
+                <th>Material</th>
+                <th>Weight</th>
+                <th>Status</th>
+                <th>Owner</th>
+                <th>Material</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr>
+                <td>{{ row.Material_type }}</td>
+                <td>{{ row.Weight_in_tonns }}</td>
+                <td>{{ row.Status }}</td>
+                <td>{{ row.Owner }}</td>
+                <td>{{ row.Location }}</td>
+                <td>{{ row.Price_per_tonn_in_euros }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block footer %}
+    {{ super() }}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function () {
+      $('#data').DataTable({
+        columns: [
+          null,
+          {searchable: false},
+          {orderable: false, searchable: false},
+          {orderable: false, searchable: false},
+          null],
+      });
+    });
+  </script>
+{% endblock %}
