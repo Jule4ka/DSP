@@ -1,9 +1,10 @@
 {% extends 'layout.html' %}
 {% block content %}
-<div class="main-content"><
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<div class="main-content">
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='scheduling_overview.css') }}">
     <h1>{% block title %} Planned projects {% endblock %}</h1>
-    {% for table in tables %}
+       {% for table in tables %}
             {{ table|safe }}
        {% endfor %}
     <h2>Add a new project</h2>
@@ -17,11 +18,9 @@
         <br>
         <label for="AssetType">Choose an asset type:</label><br>
         <select name="AssetType" id="AssetType" required>
-              <option value="Verkeersbrug">Verkeersbrug</option>
-              <option value="Fiets-voetbrug">Fiets-voetbrug</option>
-              <option value="Viaduct">Viaduct</option>
-              <option value="BeweegbareBrug">Beweegbare brug</option>
-              <option value="Duikerbrug">Duikerbrug</option>
+              {% for type in asset_type %}
+              <option value= "{{ type }}" > {{ type }} </option>
+              {% endfor %}
        </select>
         <br>
         <label for="title">Start date</label>
@@ -29,6 +28,14 @@
         <input type="date" name="start_date"
                placeholder="dd/mm/YYYY"
                value="{{ request.form['start_date'] }}"
+               min="da"
+               required></input>
+        <br>
+        <label for="title">End date</label>
+        <br>
+        <input type="date" name="end_date"
+               placeholder="dd/mm/YYYY"
+               value="{{ request.form['end_date'] }}"
                min="da"
                required></input>
         <br>
@@ -69,27 +76,32 @@
         <br>
         <label for="ConstructionType">Choose the main construction type:</label><br>
         <select name="ConstructionType" id="ConstructionType" required>
-              <option value="Concrete">Concrete</option>
-              <option value="Wood">Wood</option>
-              <option value="Steel">Steel</option>
-              <option value="Underpass">Underpass</option>
-              <option value="Composiet">Composiet</option>
+              {% for type in construction_type %}
+              <option value= "{{ type }}" > {{ type }} </option>
+              {% endfor %}
        </select>
-       <br>
-       <div class="input_fields_wrap">
-              <button class="add_field_button">Add More Fields</button>
-              <input type="text" class="form-control mb-3" name="mytext[]" placeholder="Enter Price">
+       <br><br>
+       <div class="row">
+              <div class="col-md-4"></div>
+              <div class="col-md-4">
+                  <form action="" method="post">
+                     <label for="ComponentType">Choose a main component type:</label><br>
+                      <div class="input_fields_wrap">
+                      <button class="add_field_button">Add More Fields</button>
+                      <input type="text" class="form-control mb-3" name="mytext[]" placeholder="Enter component">
+                      </div>
+                  </form>
               </div>
-        <button type="submit">Submit</button>
+              <div class="col-md-4"></div>
+          </div>
+       </div>
+       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
 {% endblock %}
-<!-- <H1>Component Scheduling</H1>
-<H2>Planned projects</H2>
-<H2>Available components</H2> -->
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script>
+// Adding input boxes for components
 $(document).ready(function() {
 var max_fields       = 10; //maximum input boxes allowed
 var wrapper          = $(".input_fields_wrap"); //Fields wrapper

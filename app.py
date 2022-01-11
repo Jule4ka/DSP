@@ -5,7 +5,8 @@ from flask_navigation import Navigation
 app = Flask(__name__, static_url_path='')
 nav = Navigation(app)
 # Define dict for new projects
-projects = {'AssetName': [], 'StartDate':[], 'Maintainer': [],
+projects = {'AssetName': [], 'AssetType': [], 'ConstructionType': [],
+            'StartDate':[], 'EndDate':[], 'Maintainer': [],
             'Owner': [], 'Width': [], 'Length': [],
             'Location': []}
 
@@ -15,7 +16,6 @@ nav.Bar('top', [
     nav.Item('Components Overview', 'components_overview'),
     nav.Item('Marketplace', 'marketplace')
 ])
-
 
 @app.route('/')
 def navpage():
@@ -74,7 +74,10 @@ def login():
 def scheduling_overview():  # Provide forms for input
     if request.method == 'POST':
         AssetName = request.form['AssetName']
+        AssetType = request.form['AssetType']
+        ConstructionType = request.form['ConstructionType']
         StartDate = request.form['start_date']
+        EndDate = request.form['end_date']
         Maintainer = request.form['Maintainer']
         Owner = request.form['Owner']
         Width = request.form['Width']
@@ -91,7 +94,10 @@ def scheduling_overview():  # Provide forms for input
             flash('Start date is required!')
         else:                                           # Add input to project dict
             projects['AssetName'].append(AssetName)
+            projects['AssetType'].append(AssetType)
+            projects['ConstructionType'].append(ConstructionType)
             projects['StartDate'].append(StartDate)
+            projects['EndDate'].append(EndDate)
             projects['Maintainer'].append(Maintainer)
             projects['Owner'].append(Owner)
             projects['Width'].append(Width)
@@ -105,18 +111,20 @@ def scheduling_overview():  # Provide forms for input
     with open('planned_projects.txt', 'r') as f: 
         line = f.readlines()[-1]
     projects_df = pd.DataFrame.from_dict(eval(line))      # Transfrom project dict to DataFrame (this is used in the App)
-        
-    return render_template("scheduling_overview.html",
-    projects = projects,
-    projects_df = projects_df,
-    tables=[projects_df.to_html(classes='data', header="true")],
-    line = line)
+    
+    # Get possible construction and asset types from Bruggenpaspoort data
+    dataset = pd.read_excel("data/Gemeente Almere bruggen paspoort gegevens.xlsx")
+    dataset = dataset.reindex(columns=dataset.columns.tolist() + ['Open_Asset'])
+    construction_type = dataset['ConstructionType'].unique()
+    asset_type = dataset['AssetType'].unique()
 
     return render_template("scheduling_overview.html",
-                           projects=projects,
-                           projects_df=projects_df,
-                           tables=[projects_df.to_html(classes='data', header="true")])
-
+    projects            = projects,
+    projects_df         = projects_df,
+    tables              = [projects_df.to_html(classes='data', header="true")],
+    line                = line,
+    construction_type   = construction_type,
+    asset_type          = asset_type)
 
 # run the application
 if __name__ == '__main__':
