@@ -23,6 +23,13 @@
               {% endfor %}
        </select>
         <br>
+        <label for="ConstructionType">Choose the main construction type:</label><br>
+        <select name="ConstructionType" id="ConstructionType" required>
+              {% for type in construction_type %}
+              <option value= "{{ type }}" > {{ type }} </option>
+              {% endfor %}
+       </select>
+       <br>
         <label for="title">Start date</label>
         <br>
         <input type="date" name="start_date"
@@ -74,51 +81,13 @@
                value="{{ request.form['Location'] }}"
                required></input>
         <br>
-        <label for="ConstructionType">Choose the main construction type:</label><br>
-        <select name="ConstructionType" id="ConstructionType" required>
-              {% for type in construction_type %}
+        <label for="Component">Choose a component needed:</label><br>
+        <select name="Component" id="Component" required>
+              {% for type in component_type %}
               <option value= "{{ type }}" > {{ type }} </option>
               {% endfor %}
        </select>
        <br><br>
-       <div class="row">
-              <div class="col-md-4"></div>
-              <div class="col-md-4">
-                  <form action="" method="post">
-                     <label for="ComponentType">Choose a main component type:</label><br>
-                      <div class="input_fields_wrap">
-                      <button class="add_field_button">Add More Fields</button>
-                      <input type="text" class="form-control mb-3" name="mytext[]" placeholder="Enter component">
-                      </div>
-                  </form>
-              </div>
-              <div class="col-md-4"></div>
-          </div>
-       </div>
-       <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-</div>
+
 {% endblock %}
 
-<script>
-// Adding input boxes for components
-$(document).ready(function() {
-var max_fields       = 10; //maximum input boxes allowed
-var wrapper          = $(".input_fields_wrap"); //Fields wrapper
-var add_button       = $(".add_field_button"); //Add button ID
-
-var x = 1; //initlal text box count
-$(add_button).click(function(e){ //on add input button click
-e.preventDefault();
-    if(x < max_fields){ //max input box allowed
-        x++; //text box increment
-        $(wrapper).append('<div class="input-group mb-3"><input placeholder="Enter Price" type="text" name="mytext[]" class="form-control"><div class="input-group-append"><button class="btn btn-outline-danger remove_field" type="button">Remove</button></div></div>'); //add input box
-    }
-});
-
-$(wrapper).on("click",".remove_field", function(e){ //user click on remove text
-    e.preventDefault(); $(this).parent('div').parent('div').remove(); x--;
-    })
-});
-
-</script>

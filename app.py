@@ -86,12 +86,6 @@ def scheduling_overview():  # Provide forms for input
 
         if not AssetName:  # Error message if fields are not filled out
             flash('Asset name is required!')
-        elif not StartDate:
-            flash('Start date is required!')
-        if not AssetName:                               # Error message if fields are not filled out
-            flash('Asset name is required!')
-        elif not StartDate:
-            flash('Start date is required!')
         else:                                           # Add input to project dict
             projects['AssetName'].append(AssetName)
             projects['AssetType'].append(AssetType)
@@ -118,13 +112,18 @@ def scheduling_overview():  # Provide forms for input
     construction_type = dataset['ConstructionType'].unique()
     asset_type = dataset['AssetType'].unique()
 
+    components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
+    components_dataset = components_dataset.reindex(columns=components_dataset.columns.tolist())
+    component_type = components_dataset['ComponentName'].unique()
+
     return render_template("scheduling_overview.html",
     projects            = projects,
     projects_df         = projects_df,
     tables              = [projects_df.to_html(classes='data', header="true")],
     line                = line,
     construction_type   = construction_type,
-    asset_type          = asset_type)
+    asset_type          = asset_type,
+    component_type      = component_type)
 
 # run the application
 if __name__ == '__main__':
