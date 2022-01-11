@@ -4,29 +4,22 @@
 {% endblock %}
 
 {% block content %}
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='marketplace.css') }}">
 <div class="main-content">
         <h1>Welcome to the material marketplace</h1>
         <h5>Browse through the different materials to find the right material for your bridge</h5>
     <table id="data" class="table table-striped">
-    <tr>
-        {% for col in column_names %}
-        <th>{{col}}</th>
-        {% endfor %}
-    </tr>
+    <thead>
+        <tr>
+            {% for col in column_names %}
+            <th>{{col}}</th>
+            {% endfor %}
+        </tr>
+    </thead>
     {% for row in row_data %}
     <tr>
         {% for col, row_ in zip(column_names, row) %}
-        {% if col == link_column %}
-        <td>
-            <a  href= "{{ url_for('asset_components', record_id=2) }}">
-            <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
-            <i class="material-icons"></i></input></a>
-
-            <!--<a href="{{url_for('asset_components')}}">Show Details</a>-->
-        </td>
-        {% else %}
-        <td>{{row_}}</td>
-        {% endif %}
+            <td>{{row_}}</td>
         {% endfor %}
     </tr>
     {% endfor %}

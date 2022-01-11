@@ -1,9 +1,25 @@
 from flask import Flask, render_template, request, url_for, flash, redirect, session
 import pandas as pd
 from flask_navigation import Navigation
+from flask_mysqldb import MySQL
+import MySQLdb.cursors
 
 app = Flask(__name__, static_url_path='')
 nav = Navigation(app)
+
+#code for connection
+#MySQL Hostname
+app.config['MYSQL_HOST'] = 'localhost'
+#MySQL username
+app.config['MYSQL_USER'] = 'root'
+#MySQL password here in my case password is null so i left empty
+app.config['MYSQL_PASSWORD'] = 'DSPB1'
+#Database name In my case database name is projectreporting
+app.config['MYSQL_DB'] = 'dummy_db'
+
+mysql = MySQL(app)
+
+
 # Define dict for new projects
 projects = {'AssetName': [], 'StartDate':[], 'Maintainer': [],
             'Owner': [], 'Width': [], 'Length': [],
@@ -21,17 +37,26 @@ nav.Bar('top', [
 def navpage():
     return render_template("navpage.html", title="Home Page")
 
-@app.route('/marketplace')
+@app.route('/marketplace', methods=['GET','POST'])
 def marketplace():
-    dataset = pd.read_excel("data/dummy_data_marketplace.xlsx")
-    dataset = dataset.reindex(columns=dataset.columns.tolist() + ['More_info'])
-    # rename column titles
-    #dataset.columns = [c.replace(' ', '_') for c in dataset.columns]
-    dataset_to_display = dataset[['Material_type', 'Weight_(in_tonns)', 'Status', 'Seller', 'Location', 'Price_(per_tonn_in_euros)', 'More_info']]
-    # link_column is the column that I want to add a button to
-    return render_template("assets_overview.html", column_names=dataset_to_display.columns.values,
-                           row_data=list(dataset_to_display.values.tolist()),
-                           link_column='More_info', zip=zip, title="Marketplace")
+    # creating variable for connection
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    # executing query
+    cursor.execute("select * from pro_reg")
+    # fetching all records from database
+    data = cursor.fetchall()
+    # returning back to projectlist.html with all records from MySQL which are stored in variable data
+    return render_template("projectlist.html", data=data)
+
+    # dataset = pd.read_excel("data/dummy_data_marketplace.xlsx")
+    # dataset = dataset.reindex(columns=dataset.columns.tolist() + ['More_info'])
+    # # rename column titles
+    # #dataset.columns = [c.replace(' ', '_') for c in dataset.columns]
+    # dataset_to_display = dataset[['Material_type', 'Weight_(in_tonns)', 'Status', 'Seller', 'Location', 'Price_(per_tonn_in_euros)', 'More_info']]
+    # # link_column is the column that I want to add a button to
+    # return render_template("marketplace.html", column_names=dataset_to_display.columns.values,
+    #                        row_data=list(dataset_to_display.values.tolist()),
+    #                        link_column='More_info', zip=zip, title="Marketplace")
 
 
 @app.route('/assets_overview', methods=['GET', 'POST'])
