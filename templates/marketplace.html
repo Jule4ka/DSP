@@ -8,14 +8,15 @@
 <div class="main-content">
         <h1>Welcome to the material marketplace</h1>
         <h5>Browse through the different materials to find the right material for your bridge</h5>
-    <table id="data" class="table table-striped">
+<table id="data" class="table table-striped">
     <thead>
         <tr>
-                <th>Material</th>
-                <th>Weight</th>
-                <th>Status</th>
-                <th>Owner</th>
-                <th>Material</th>
+            <th>Component type</th>
+            <th>Weight (in tonnes)</th>
+            <th>Status</th>
+            <th>Owner/Seller</th>
+            <th>Location</th>
+
         </tr>
     </thead>
     <tbody>
@@ -26,7 +27,7 @@
                 <td>{{ row.Status }}</td>
                 <td>{{ row.Owner }}</td>
                 <td>{{ row.Location }}</td>
-                <td>{{ row.Price_per_tonn_in_euros }}</td>
+
         </tr>
         {% endfor %}
     </tbody>
@@ -44,9 +45,10 @@
       $('#data').DataTable({
         columns: [
           null,
-          {searchable: false},
-          {orderable: false, searchable: false},
-          {orderable: false, searchable: false},
+          null,
+          null,
+          null,
+          null,
           null],
       });
     });

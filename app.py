@@ -46,9 +46,6 @@ def marketplace():
     # fetching all records from database
     data = cursor.fetchall()
 
-    for dict_row in data:
-        for key, value in dict_row.items():
-            print(type(value))
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("marketplace.html", data=data)
 
