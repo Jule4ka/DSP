@@ -100,7 +100,7 @@ def login():
 
 @app.route('/scheduling-overview', methods=['GET', 'POST'])
 def scheduling_overview():  # Provide forms for input
-    if request.method == 'POST':
+    if request.method == 'POST' and 'AssetName' in request.form and 'Assettype' in request.form and 'start_date' in request.form and 'end_date' in request.form and 'Maintainer' in request.form and 'Owner' in request.form and 'Width' in request.form and 'Length' in request.form and 'Location' in request.form and 'ConstructionType' in request.form: #check to see if all data is filled in
         AssetName = request.form['AssetName']
         AssetType = request.form['AssetType']
         StartDate = request.form['start_date']
@@ -112,25 +112,19 @@ def scheduling_overview():  # Provide forms for input
         Location = request.form['Location']
         ConstructionType = request.form['ConstructionType']
 
-        if not AssetName:  # Error message if fields are not filled out
-            flash('Asset name is required!')
-        elif not StartDate:
-            flash('Start date is required!')
-        else:  # Add input to project dict
-            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)    # creating variable for connection
-            sql = "INSERT INTO projects (assetname, assettype, startdate, enddate, maintainer, owner, " \
-                  "width, length, Location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %d, %d, %s, %s)"
-            val = (AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length, Location, ConstructionType)
-            cursor.execute(sql, val)
 
-            cursor.commit()
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)    # creating variable for connection
 
-            print(mycursor.rowcount, "record inserted.")
+        sql = "INSERT INTO projects (assetname, assettype, startdate, enddate, maintainer, owner, " \
+              "width, length, Location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %d, %d, %s, %s)"
+        val = (AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length, Location, ConstructionType)
 
+        cursor.execute(sql, val)
+        mysql.connection.commit()
 
-            return redirect(url_for('scheduling_overview'))
+        print(mycursor.rowcount, "record inserted.")
+        return redirect(url_for('marketplace.html'))
 
-    #projects_df = pd.DataFrame.from_dict(projects)  # Transfrom project dict to DataFrame (this is now used in the App)
 
     with open('planned_projects.txt', 'r') as f:
         line = f.readlines()[-1]
@@ -143,12 +137,11 @@ def scheduling_overview():  # Provide forms for input
     asset_type = dataset['AssetType'].unique()
 
     return render_template("scheduling_overview.html",
-                           projects=projects,
-                           projects_df=projects_df,
-                           tables=[projects_df.to_html(classes='data', header="true")],
-                           line=line,
-                           construction_type=construction_type,
-                           asset_type=asset_type)
+                           projects= projects,
+                           projects_df= projects_df,
+                           tables= [projects_df.to_html(classes='data', header="true")],
+                           construction_type= construction_type,
+                           asset_type= asset_type)
 
 ## IMPORT image
 app.config['SECRET_KEY'] = 'thisisasecret'
