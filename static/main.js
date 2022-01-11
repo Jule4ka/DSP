@@ -11,16 +11,10 @@ $('.nav div.main_list ul li a').click(function () {
 });
 
 
+$(document).ready(function() {
+    $('#data').DataTable( {
+        "order": [[ 3, "desc" ]]
+    } );
+} );
 
-
-$(document).ready(function () {
-      $('#data').DataTable({
-        columns: [
-          null,
-          {searchable: false},
-          {orderable: false, searchable: false},
-          {orderable: false, searchable: false},
-          null],
-      });
-    });
 
