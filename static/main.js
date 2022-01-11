@@ -12,9 +12,17 @@ $('.nav div.main_list ul li a').click(function () {
 
 
 $(document).ready(function() {
-    $('#data').DataTable( {
-        "order": [[ 3, "desc" ]]
+    $('#marketplace').DataTable( {
     } );
 } );
+
+$(document).ready(function () {
+      $('#assets').DataTable({
+        columns: [
+          null,null,null,null,null,null,null,null,null,null,
+          {orderable: false, searchable: false}
+        ],
+    });
+});
 
 

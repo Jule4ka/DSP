@@ -53,28 +53,36 @@ def marketplace():
     # fetching all records from database
     data = cursor.fetchall()
 
-    for dict_row in data:
-        for key, value in dict_row.items():
-            print(type(value))
+
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("marketplace.html", data=data)
 
 
 @app.route('/assets_overview', methods=['GET', 'POST'])
 def assets_overview():
-    dataset = pd.read_excel("data/Gemeente Almere bruggen paspoort gegevens.xlsx")
-    dataset = dataset.reindex(columns=dataset.columns.tolist() + ['Open_Asset'])
-    # rename column titles
-    dataset.columns = [c.replace(' ', '_') for c in dataset.columns]
-    dataset_to_display = dataset[
-        ["Assetnumber", "AssetName", "AssetType", "Maintainance_State", "Buildyear", "Maintainer",
-         "Owner", "Status", "Location", "City", "Open_Asset"]]
-    # link_column is the column that I want to add a button to
-    return render_template("assets_overview.html", column_names=dataset_to_display.columns.values,
-                           row_data=list(dataset_to_display.values.tolist()),
-                           link_column="Open_Asset", zip=zip, title="Assets Overview")
-    # return render_template('assets_overview.html', data=dataset_to_display.to_html(), title="Assets Overview")
-    # return render_template('assets_overview.html', data=dataset.to_dict()) #transform to dictionary
+    # creating variable for connection
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    # executing query
+    cursor.execute("select * from asset_overview")
+    # fetching all records from database
+    data = cursor.fetchall()
+
+    # returning back to projectlist.html with all records from MySQL which are stored in variable data
+    return render_template("assets_overview.html", data = data)
+
+    # dataset = pd.read_excel("data/Gemeente Almere bruggen paspoort gegevens.xlsx")
+    # dataset = dataset.reindex(columns=dataset.columns.tolist() + ['Open_Asset'])
+    # # rename column titles
+    # dataset.columns = [c.replace(' ', '_') for c in dataset.columns]
+    # dataset_to_display = dataset[
+    #     ["Assetnumber", "AssetName", "AssetType", "Maintainance_State", "Buildyear", "Maintainer",
+    #      "Owner", "Status", "Location", "City", "Open_Asset"]]
+    # # link_column is the column that I want to add a button to
+    # return render_template("assets_overview.html", column_names=dataset_to_display.columns.values,
+    #                        row_data=list(dataset_to_display.values.tolist()),
+    #                        link_column="Open_Asset", zip=zip, title="Assets Overview")
+    # # return render_template('assets_overview.html', data=dataset_to_display.to_html(), title="Assets Overview")
+    # # return render_template('assets_overview.html', data=dataset.to_dict()) #transform to dictionary
 
 
 @app.route('/asset-components', methods=['GET', 'POST'])
