@@ -11,16 +11,25 @@
     <table id="data" class="table table-striped">
     <thead>
         <tr>
-            {% for col in data[0] %}
-            <th>{{col}}</th>
-            {% endfor %}
+                <th>Material</th>
+                <th>Weight</th>
+                <th>Status</th>
+                <th>Owner</th>
+                <th>Material</th>
         </tr>
     </thead>
-    {% for row in data %}
-    <tr>
-        <td>{{row}}</td>
-    </tr>
-    {% endfor %}
+    <tbody>
+        {% for row in data %}
+        <tr>
+                <td>{{ row.Material_type }}</td>
+                <td>{{ row.Weight_in_tonns }}</td>
+                <td>{{ row.Status }}</td>
+                <td>{{ row.Owner }}</td>
+                <td>{{ row.Location }}</td>
+                <td>{{ row.Price_per_tonn_in_euros }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
     </table>
 </div>
 {% endblock %}
@@ -32,14 +41,14 @@
 {% block scripts %}
 <script>
     $(document).ready(function () {
-        $('#data').DataTable({
-            columns: [
-            null,
-            {searchable: false},
-            {orderable: false, searchable: false},
-            {orderable: false, searchable: false},
-            null],
-        });
+      $('#data').DataTable({
+        columns: [
+          null,
+          {searchable: false},
+          {orderable: false, searchable: false},
+          {orderable: false, searchable: false},
+          null],
+      });
     });
-</script>
+  </script>
 {% endblock %}

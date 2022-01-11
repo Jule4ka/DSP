@@ -45,18 +45,12 @@ def marketplace():
     cursor.execute("select * from dummy_data_marketplace")
     # fetching all records from database
     data = cursor.fetchall()
+
+    for dict_row in data:
+        for key, value in dict_row.items():
+            print(type(value))
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("marketplace.html", data=data)
-
-    # dataset = pd.read_excel("data/dummy_data_marketplace.xlsx")
-    # dataset = dataset.reindex(columns=dataset.columns.tolist() + ['More_info'])
-    # # rename column titles
-    # #dataset.columns = [c.replace(' ', '_') for c in dataset.columns]
-    # dataset_to_display = dataset[['Material_type', 'Weight_(in_tonns)', 'Status', 'Seller', 'Location', 'Price_(per_tonn_in_euros)', 'More_info']]
-    # # link_column is the column that I want to add a button to
-    # return render_template("marketplace.html", column_names=dataset_to_display.columns.values,
-    #                        row_data=list(dataset_to_display.values.tolist()),
-    #                        link_column='More_info', zip=zip, title="Marketplace")
 
 
 @app.route('/assets_overview', methods=['GET', 'POST'])
