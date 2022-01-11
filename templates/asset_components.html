@@ -3,6 +3,12 @@
   {{ super() }}
 {% endblock %}
 {% block content %}
+<img src="{{url_for('static', filename='uploads/brug.jpg')}}" align="middle" />
+<form action="/" method="POST" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        {{ form.image }}
+        <button type="submit">upload</button>
+    </form>
 <table>
     <tr>
         {% for col in column_names %}
