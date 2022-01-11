@@ -42,11 +42,11 @@ def marketplace():
     # creating variable for connection
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     # executing query
-    cursor.execute("select * from pro_reg")
+    cursor.execute("select * from dummy_data_marketplace")
     # fetching all records from database
     data = cursor.fetchall()
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
-    return render_template("projectlist.html", data=data)
+    return render_template("marketplace.html", data=data)
 
     # dataset = pd.read_excel("data/dummy_data_marketplace.xlsx")
     # dataset = dataset.reindex(columns=dataset.columns.tolist() + ['More_info'])

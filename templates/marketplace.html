@@ -11,16 +11,14 @@
     <table id="data" class="table table-striped">
     <thead>
         <tr>
-            {% for col in column_names %}
+            {% for col in data[0] %}
             <th>{{col}}</th>
             {% endfor %}
         </tr>
     </thead>
-    {% for row in row_data %}
+    {% for row in data %}
     <tr>
-        {% for col, row_ in zip(column_names, row) %}
-            <td>{{row_}}</td>
-        {% endfor %}
+        <td>{{row}}</td>
     </tr>
     {% endfor %}
     </table>
