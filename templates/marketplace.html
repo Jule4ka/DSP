@@ -6,8 +6,8 @@
 {% block content %}
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='marketplace.css') }}">
 <div class="main-content">
-        <h1>Welcome to the material marketplace</h1>
-        <h5>Browse through the different materials to find the right material for your bridge</h5>
+        <h1>Welcome to the Material Marketplace</h1>
+        <h5>Browse through the different materials to find the right material for your bridge.</h5>
         <div class="add_component">
             <a  href= "{{ url_for('add_component') }}">
             <input type="submit" name="edit_btn" value="Sell new component"rel="tooltip" class="btn btn-info">
@@ -17,27 +17,30 @@
 <table id="marketplace" class="table table-striped">
     <thead>
         <tr>
-            <th>Component type</th>
-            <th>Weight (in tonnes)</th>
-            <th>Status</th>
-            <th>Owner/Seller</th>
+            <th>Component Material</th>
+            <th>Category</th>
+            <th>Weight (kg)</th>
+            <th>Condition</th>
+            <th>Availability</th>
+            <th>Owner/seller</th>
             <th>Location</th>
-            <th>Price (per tonne in €)</th>
-            <th>Asset</th>
+            <th>Price (€)</th>
 
         </tr>
     </thead>
     <tbody>
         {% for row in data %}
         <tr>
-                <td>{{ row.Material_type }}</td>
-                <td>{{ row.Weight_in_tonns }}</td>
-                <td>{{ row.Status }}</td>
-                <td>{{ row.Owner }}</td>
-                <td>{{ row.Location }}</td>
-                <td>{{ row.Price_per_tonn_in_euros }}</td>
+                <td>{{ row.material }}</td>
+                <td>{{ row.category }}</td>
+                <td>{{ row.weight }} </td>
+                <td>{{ row.component_condition }}</td>
+                <td>{{ row.availability }}</td>
+                <td>{{ row.component_owner }}</td>
+                <td>{{ row.location }}</td>
+                <td>{{ row.price }}</td>
                 <td>
-                    <a  href= "{{ url_for('asset_components', record_id=2) }}">
+                    <a  href= "{{ url_for('component_page') }}">
                     <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
                     <i class="material-icons"></i></input></a>
                 </td>
