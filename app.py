@@ -121,6 +121,12 @@ def asset_components():
     if request.method == 'GET':
         components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
         components_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
+
+        # Fetch bridge specific data
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("select * from asset_overview WHERE Assetnumber=2")
+        bridge_dataset = cursor.fetchall()
+        # bridge_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
         #image
         img1 = os.path.join(app.config['UPLOAD_FOLDER'])
         #uploadbutton
@@ -128,8 +134,14 @@ def asset_components():
         if form.validate_on_submit():
             filename = images.save(form.image.data)
             return f'Filename: {filename}'
+
+        #Fetch bridge specific data
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("select * from dummy_data_marketplace")
+        data = cursor.fetchall()
+
         return render_template("asset_components.html", column_names=components_dataset.columns.values,
-                               row_data=list(components_dataset.values.tolist()),
+                               row_data=list(components_dataset.values.tolist()), bridge_dataset = bridge_dataset,
                                zip=zip, title="Asset Components", user_image = img1, form = form)
 
 @app.route('/register', methods =['GET', 'POST'])
