@@ -224,6 +224,7 @@ def project_overview():  # Provide forms for input
     if request.method == 'POST': #check to see if all data is filled in
         try:
             #create unique id for the asset
+            UserId = session['email']
             ProjectId = uuid.uuid1()
             AssetName = request.form['AssetName']
             AssetType = request.form['AssetType']
@@ -241,8 +242,8 @@ def project_overview():  # Provide forms for input
 
 
 
-            sql = "INSERT INTO projects (project_id, assetname, assettype, startdate, enddate, maintainer, owner, width, length, location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            val = (ProjectId, AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length, Location, ConstructionType)
+            sql = "INSERT INTO projects (user_id, project_id, assetname, assettype, startdate, enddate, maintainer, owner, width, length, location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (UserId, ProjectId, AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length, Location, ConstructionType)
 
 
 
