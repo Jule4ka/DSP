@@ -70,20 +70,6 @@ def assets_overview():
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("assets_overview.html", data = data)
 
-    # dataset = pd.read_excel("data/Gemeente Almere bruggen paspoort gegevens.xlsx")
-    # dataset = dataset.reindex(columns=dataset.columns.tolist() + ['Open_Asset'])
-    # # rename column titles
-    # dataset.columns = [c.replace(' ', '_') for c in dataset.columns]
-    # dataset_to_display = dataset[
-    #     ["Assetnumber", "AssetName", "AssetType", "Maintainance_State", "Buildyear", "Maintainer",
-    #      "Owner", "Status", "Location", "City", "Open_Asset"]]
-    # # link_column is the column that I want to add a button to
-    # return render_template("assets_overview.html", column_names=dataset_to_display.columns.values,
-    #                        row_data=list(dataset_to_display.values.tolist()),
-    #                        link_column="Open_Asset", zip=zip, title="Assets Overview")
-    # # return render_template('assets_overview.html', data=dataset_to_display.to_html(), title="Assets Overview")
-    # # return render_template('assets_overview.html', data=dataset.to_dict()) #transform to dictionary
-
 
 @app.route('/asset-components', methods=['GET', 'POST'])
 def asset_components():
@@ -114,35 +100,36 @@ def login():
 
 @app.route('/scheduling-overview', methods=['GET', 'POST'])
 def scheduling_overview():  # Provide forms for input
-    if request.method == 'POST':
-        AssetName = request.form['AssetName']
-        StartDate = request.form['start_date']
-        Maintainer = request.form['Maintainer']
-        Owner = request.form['Owner']
-        Width = request.form['Width']
-        Length = request.form['Length']
-        Area = request.form['Area']
-        Location = request.form['Location']
+    if request.method == 'POST': #check to see if all data is filled in
+        try:
+            AssetName = request.form['AssetName']
+            AssetType = request.form['AssetType']
+            StartDate = request.form['start_date']
+            EndDate = request.form['end_date']
+            Maintainer = request.form['Maintainer']
+            Owner = request.form['Owner']
+            Width = request.form['Width']
+            Length = request.form['Length']
+            Location = request.form['Location']
+            ConstructionType = request.form['ConstructionType']
 
-        if not AssetName:  # Error message if fields are not filled out
-            flash('Asset name is required!')
-        elif not StartDate:
-            flash('Start date is required!')
-        else:  # Add input to project dict
-            projects['AssetName'].append(AssetName)
-            projects['StartDate'].append(StartDate)
-            projects['Maintainer'].append(Maintainer)
-            projects['Owner'].append(Owner)
-            projects['Width'].append(Width)
-            projects['Length'].append(Length)
-            projects['Area'].append(Area)
-            projects['Location'].append(Location)
-            with open('planned_projects.txt', 'a') as f:  # Add input to txt file. This is supposed to be used in the app
-                print(projects, file=f)
 
-            return redirect(url_for('scheduling_overview'))
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)    # creating variable for connection
 
-    projects_df = pd.DataFrame.from_dict(projects)  # Transfrom project dict to DataFrame (this is now used in the App)
+
+
+            sql = "INSERT INTO projects (assetname, assettype, startdate, enddate, maintainer, owner, width, length, Location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length, Location, ConstructionType)
+
+
+            #hier gaat het fout
+            cursor.execute(sql, val)
+            mysql.connection.commit()
+
+            flash("Project suddefully added")
+        except:
+            flash('an error occured')
+
 
     with open('planned_projects.txt', 'r') as f:
         line = f.readlines()[-1]
@@ -155,12 +142,11 @@ def scheduling_overview():  # Provide forms for input
     asset_type = dataset['AssetType'].unique()
 
     return render_template("scheduling_overview.html",
-                           projects=projects,
-                           projects_df=projects_df,
-                           tables=[projects_df.to_html(classes='data', header="true")],
-                           line=line,
-                           construction_type=construction_type,
-                           asset_type=asset_type)
+                           projects= projects,
+                           projects_df= projects_df,
+                           tables= [projects_df.to_html(classes='data', header="true")],
+                           construction_type= construction_type,
+                           asset_type= asset_type)
 
 ## IMPORT image
 app.config['SECRET_KEY'] = 'thisisasecret'

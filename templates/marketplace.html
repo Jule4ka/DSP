@@ -18,6 +18,7 @@
             <th>Owner/Seller</th>
             <th>Location</th>
             <th>Price (per tonne in €)</th>
+            <th>Asset</th>
 
         </tr>
     </thead>
@@ -30,6 +31,11 @@
                 <td>{{ row.Owner }}</td>
                 <td>{{ row.Location }}</td>
                 <td>{{ row.Price_per_tonn_in_euros }}</td>
+                <td>
+                    <a  href= "{{ url_for('asset_components', record_id=2) }}">
+                    <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+                    <i class="material-icons"></i></input></a>
+                </td>
         </tr>
         {% endfor %}
     </tbody>
