@@ -32,6 +32,6 @@ input[type=submit] {
 }
 
 /* Style delete all button */
-    input[type=delete] {
+    .delete-button {
     width: auto;
     }
