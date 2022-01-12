@@ -7,6 +7,7 @@ from flask_uploads import configure_uploads, IMAGES, UploadSet
 from flask_wtf import FlaskForm
 from wtforms import FileField
 import os
+import uuid
 
 UPLOAD_FOLDER = '/static/uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
@@ -102,6 +103,8 @@ def login():
 def scheduling_overview():  # Provide forms for input
     if request.method == 'POST': #check to see if all data is filled in
         try:
+            #create unique id for the asset
+            ProjectId = uuid.uuid1()
             AssetName = request.form['AssetName']
             AssetType = request.form['AssetType']
             StartDate = request.form['start_date']
@@ -118,23 +121,31 @@ def scheduling_overview():  # Provide forms for input
 
 
 
-            sql = "INSERT INTO projects (assetname, assettype, startdate, enddate, maintainer, owner, width, length, Location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            val = (AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length, Location, ConstructionType)
+            sql = "INSERT INTO projects (project_id, assetname, assettype, startdate, enddate, maintainer, owner, width, length, location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (ProjectId, AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length, Location, ConstructionType)
 
 
-            #hier gaat het fout
+
             cursor.execute(sql, val)
             mysql.connection.commit()
 
-            flash("Project suddefully added")
+            print('Succesfull')
+            flash("Project succesfully added")
         except:
             flash('an error occured')
 
+    # creating variable for connection
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    # executing query
+    cursor.execute("select * from projects")
+    # fetching all project data
+    data = cursor.fetchall()
+
+    #df_data = pd.DataFrame(data)
 
     with open('planned_projects.txt', 'r') as f:
         line = f.readlines()[-1]
     projects_df = pd.DataFrame.from_dict(eval(line))  # Transfrom project dict to DataFrame (this is used in the App)
-
     # Get possible construction and asset types from Bruggenpaspoort data
     dataset = pd.read_excel("data/Gemeente Almere bruggen paspoort gegevens.xlsx")
     dataset = dataset.reindex(columns=dataset.columns.tolist() + ['Open_Asset'])
