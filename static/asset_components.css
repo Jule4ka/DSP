@@ -1,0 +1,75 @@
+/* Fixes the positioning */
+.main-content {
+    padding-top: 100px;
+    position: relative;
+    width: 100%;
+}
+
+.asset_details_container {
+    width:100vw;
+    height:100vh;
+
+    font-family: 'Quicksand', sans-serif;
+    fonth-weight:bold;
+    font-size: 20px;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 50px 1fr 50px 1fr 1fr;
+
+    gap: 10px;
+
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.asset_details_container div {
+    padding: 10px;
+    border: 1px solid #000000;
+}
+
+.header {
+    grid-column-start: 1;
+    grid-column-end: span 3;
+    grid-row-start: 1;
+    grid-row-end: 1;
+}
+
+.content-large1 {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 2;
+    grid-row-end: 2;
+}
+
+.content-large2 {
+    grid-column-start: 2;
+    grid-column-end: span 3;
+    grid-row-start: 2;
+    grid-row-end: 2;
+}
+
+.content-table-header {
+    grid-column-start: 1;
+    grid-column-end: span 3;
+    grid-row-start: 3;
+    grid-row-end: 3;
+}
+
+.content-below {
+    grid-column-start: 1;
+    grid-column-end: span 3;
+    grid-row-start: 4;
+    grid-row-end: 4;
+}
+
+img {
+  width: 100%;
+
+}
+
+table {
+  width: 100%;
+
+}
