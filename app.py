@@ -251,19 +251,16 @@ def project_overview():  # Provide forms for input
             mysql.connection.commit()
 
             print('Succesfull')
-            flash("Project succesfully added")
+            msg = "Project succesfully added"
             return(redirect(url_for('project_overview')))
         except:
-            flash('an error occured')
+            msg = 'an error occured'
 
     # creating variable for connection
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    # executing query
-    cursor.execute("select * from projects")
-
-    # fetching all project data
+    #collecting all the projects that the user has
+    cursor.execute("select * from projects where %s = user_id", (session['email'],))
     project_data = cursor.fetchall()
-
 
 
     # Get possible construction and asset types from Asset database and convert it to a dataframe
