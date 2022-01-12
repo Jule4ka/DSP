@@ -21,7 +21,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 #MySQL username
 app.config['MYSQL_USER'] = 'root'
 #MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'DSPB1111'
 #Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -124,7 +124,8 @@ def asset_components():
 
         # Fetch bridge specific data
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute("select * from asset_overview WHERE Assetnumber=2")
+        record_id = str(record_id)
+        cursor.execute("select * from asset_overview WHERE Assetnumber= %s", (record_id))
         bridge_dataset = cursor.fetchall()
         # bridge_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
         #image
