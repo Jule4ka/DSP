@@ -131,6 +131,7 @@ def scheduling_overview():  # Provide forms for input
 
             print('Succesfull')
             flash("Project succesfully added")
+            return(redirect(url_for('scheduling_overview')))
         except:
             flash('an error occured')
 
