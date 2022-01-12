@@ -86,6 +86,14 @@ def assets_overview():
 
 @app.route('/add_component', methods=['GET', 'POST'])
 def add_component():
+    msg=''
+    #check to see if user is logged in otherwise, redirect user to the login page
+    if session.get('loggedin') == True:
+        msg = 'add a component'
+    else:
+        msg = 'You need to be logged in to add components'
+        render_template('login.html')
+        return redirect(url_for('login'))
     if request.method == 'POST': #check to see if all data is filled in
         try:
             #create unique id for the asset
@@ -207,9 +215,11 @@ def login():
             session['email'] = account['email']
             session['companyname'] = account['companyname']
             msg = 'Logged in successfully !'
-            return render_template('navpage.html', msg = msg)
+            render_template('navpage.html', msg=msg)
+            return redirect(url_for('navpage'))
         else:
             msg = 'Incorrect username / password !'
+
     return render_template('login.html', msg = msg)
 
 @app.route('/logout')
@@ -259,9 +269,13 @@ def project_overview():  # Provide forms for input
     # creating variable for connection
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     #collecting all the projects that the user has
-    cursor.execute("select * from projects where %s = user_id", (session['email'],))
-    project_data = cursor.fetchall()
+    if session.get('loggedin') == True:
 
+        cursor.execute("select * from projects where %s = user_id", (session['email'],))
+        project_data = cursor.fetchall()
+    else:
+        render_template('login.html')
+        return redirect(url_for('login'))
 
     # Get possible construction and asset types from Asset database and convert it to a dataframe
     cursor.execute("select * from asset_overview")
