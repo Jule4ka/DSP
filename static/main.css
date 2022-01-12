@@ -37,7 +37,10 @@ head {
 }
 
 
+msg {
+    display: grid;
 
+}
 
 /* Navigation part */
 .nav {
