@@ -52,9 +52,10 @@ var check = function() {
     document.getElementById('confirm_password').value) {
     document.getElementById('message').style.color = 'green';
     document.getElementById('message').innerHTML = 'matching';
+    document.getElementById('registerbutton').removeAttribute('disabled');
   } else {
     document.getElementById('message').style.color = 'red';
     document.getElementById('message').innerHTML = 'not matching';
+    document.getElementById('registerbutton').setAttribute("disabled", "disabled");
   }
 }
-

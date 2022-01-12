@@ -21,7 +21,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 #MySQL username
 app.config['MYSQL_USER'] = 'root'
 #MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'DSPB1111'
+app.config['MYSQL_PASSWORD'] = 'DSPB1'
 #Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -136,6 +136,12 @@ def asset_components():
     if request.method == 'GET':
         components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
         components_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
+
+        # Fetch bridge specific data
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("select * from asset_overview WHERE Assetnumber=2")
+        bridge_dataset = cursor.fetchall()
+        # bridge_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
         #image
         img1 = os.path.join(app.config['UPLOAD_FOLDER'])
         #uploadbutton
@@ -143,14 +149,43 @@ def asset_components():
         if form.validate_on_submit():
             filename = images.save(form.image.data)
             return f'Filename: {filename}'
+
+        #Fetch bridge specific data
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("select * from dummy_data_marketplace")
+        data = cursor.fetchall()
+
         return render_template("asset_components.html", column_names=components_dataset.columns.values,
-                               row_data=list(components_dataset.values.tolist()),
+                               row_data=list(components_dataset.values.tolist()), bridge_dataset = bridge_dataset,
                                zip=zip, title="Asset Components", user_image = img1, form = form)
 
-@app.route('/register')
+@app.route('/register', methods =['GET', 'POST'])
 def register():
-    return render_template('register.html', title="Register")
+    msg = ''
+    if request.method == 'POST' and 'phonenumber' in request.form and 'password' in request.form and 'email' in request.form and 'companyname' in request.form and 'address' in request.form and 'city' in request.form:
 
+        kvknumber = request.form['kvknumber']
+        phonenumber = request.form['phonenumber']
+        password = request.form['password']
+        email = request.form['email']
+        companyname = request.form['companyname']
+        location = str(request.form['address'] + request.form['city'])
+
+        #connect to database
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT * FROM accounts WHERE username = % s', (email, ))
+        account = cursor.fetchone()
+        if account:
+            msg = 'Account already exists !'
+        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+            msg = 'Invalid email address !'
+        else:
+            cursor.execute('INSERT INTO accounts VALUES (% s, % s, % s, % s, % s, % s)', (kvknumber, phonenumber, password, email, companyname, location))
+            mysql.connection.commit()
+            msg = 'You have successfully registered !'
+    elif request.method == 'POST':
+        msg = 'Please fill out the form !'
+    return render_template('register.html', msg = msg)
 
 @app.route('/login')
 def login():
