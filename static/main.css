@@ -467,4 +467,14 @@ line-height: 28px;
 }
 
 
+/* Style input checkbox */
+input[type=checkbox]{
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    color: black;
+    border: solid;
+}
+
+
 

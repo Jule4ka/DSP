@@ -52,10 +52,11 @@
         {% endfor %}
     </tbody>
 </table>
+    <br/>
     <input type = "submit" value="Delete All Selected" class = "btn btn-info">
     <br/>
     {% if msg %}
-    <div class="alert alert-danger" role="alert">{{msg}}</div>
+    <p><div class="alert alert-danger" role="alert">{{msg}}</div></p>
     {% endif %}
 </form>
 
