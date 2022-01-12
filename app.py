@@ -21,7 +21,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 #MySQL username
 app.config['MYSQL_USER'] = 'root'
 #MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'DSPB1'
+app.config['MYSQL_PASSWORD'] = 'DSPB1111'
 #Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -118,13 +118,14 @@ def add_component():
 def asset_components():
     #table
     record_id=int(request.args['record_id'])
+    record_id_test = str(record_id)
     if request.method == 'GET':
         components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
         components_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
 
         # Fetch bridge specific data
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute("select * from asset_overview WHERE Assetnumber=2")
+        cursor.execute("select * from asset_overview WHERE Assetnumber= %s", record_id_test)
         bridge_dataset = cursor.fetchall()
         # bridge_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
         #image
