@@ -7,79 +7,78 @@
        {% for table in tables %}
             {{ table|safe }}
        {% endfor %}
+
     <h2>Add a new project</h2>
-    <form method="post">
+    <form action= "{{ url_for('scheduling_overview') }}"    method="post">
         <label for="title">Asset Name</label>
-        <br>
-        <input type="text" name="AssetName"
-               placeholder="Project name"
-               value="{{ request.form['project_name'] }}"
-               required></input>
-        <br>
-        <label for="AssetType">Choose an asset type:</label><br>
+            <input type="text" name="AssetName" placeholder="Project name" required></input>
+        <label for="AssetType">Choose an asset type:</label>
         <select name="AssetType" id="AssetType" required>
               {% for type in asset_type %}
-              <option value= "{{ type }}" > {{ type }} </option>
+                  <option value= "{{ type }}" > {{ type }} </option>
               {% endfor %}
-       </select>
-        <br>
-        <label for="ConstructionType">Choose the main construction type:</label><br>
+        </select>
+
+        <label for="title">Start date</label>
+        <input type="date" name="start_date" placeholder="dd/mm/YYYY" min="da" required></input>
+
+        <label for="title">End date</label>
+        <input type="date" name="end_date" placeholder="dd/mm/YYYY" min="da" required></input>
+
+        <label for="title">Maintainer</label>
+        <input type="text" name="Maintainer" placeholder="Maintainer" required></input>
+
+        <label for="title">Owner</label>
+        <input type="text" name="Owner" placeholder="Owner" required></input>
+
+        <label for="title">Width</label>
+        <input type="text" name="Width" placeholder="Width in meters" required></input>
+
+        <label for="title">Length</label>
+        <input type="text" name="Length" placeholder="Length in meters" required></input>
+
+        <label for="title">Location</label>
+        <input type="text" name="Location" placeholder="Location" required></input>
+
+
+        <label for="ConstructionType">Choose the main construction type:</label>
         <select name="ConstructionType" id="ConstructionType" required>
               {% for type in construction_type %}
               <option value= "{{ type }}" > {{ type }} </option>
               {% endfor %}
-       </select>
-       <br>
-        <label for="title">Start date</label>
-        <br>
-        <input type="date" name="start_date"
-               placeholder="dd/mm/YYYY"
-               value="{{ request.form['start_date'] }}"
-               min="da"
-               required></input>
-        <br>
-        <label for="title">End date</label>
-        <br>
-        <input type="date" name="end_date"
-               placeholder="dd/mm/YYYY"
-               value="{{ request.form['end_date'] }}"
-               min="da"
-               required></input>
-        <br>
-        <label for="title">Maintainer</label>
-        <br>
-        <input type="text" name="Maintainer"
-               placeholder="Maintainer"
-               value="{{ request.form['maintainer'] }}"
-               required></input>
-        <br>
-        <label for="title">Owner</label>
-        <br>
-        <input type="text" name="Owner"
-               placeholder="Owner"
-               value="{{ request.form['owner'] }}"
-               required></input>
-        <br>
-        <label for="title">Width</label>
-        <br>
-        <input type="text" name="Width"
-               placeholder="Width in meters"
-               value="{{ request.form['Width'] }}"
-               required></input>
-        <br>
-        <label for="title">Length</label>
-        <br>
-        <input type="text" name="Length"
-               placeholder="Length in meters"
-               value="{{ request.form['Length'] }}"
-               required></input>
-        <br>
-        <label for="title">Location</label>
-        <br>
-        <input type="text" name="Location"
-               placeholder="Location"
-               value="{{ request.form['Location'] }}"
-               required></input>
+        </select>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+    </form>
+
+    <!--<div class="row">
+              <div class="col-md-4"></div>
+              <div class="col-md-4">
+                  <form action="" method="post">
+                     <label for="ComponentType">Choose a main component type:</label>
+                      <div class="input_fields_wrap">
+                      <button class="add_field_button">Add More Fields</button>
+                      <input type="text" class="form-control mb-3" name="mytext[]" placeholder="Enter component">
+                      </div>
+                  </form>
+              </div>
+              <div class="col-md-4"></div>
+          </div>
+       </div>
+       <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    -->
+
+</div>
+{% endblock %}
+
+<script>
+// Adding input boxes for components
+$(document).ready(function() {
+var max_fields       = 10; //maximum input boxes allowed
+var wrapper          = $(".input_fields_wrap"); //Fields wrapper
+var add_button       = $(".add_field_button"); //Add button ID
 
 {% endblock %}
 

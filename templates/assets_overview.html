@@ -6,31 +6,51 @@
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='assets_overview.css') }}">
 
 <div class="main-content">
-    <table>
-    <tr>
-        {% for col in column_names %}
-        <th>{{col}}</th>
+    <table id="assets" class="table table-striped">
+    <thead>
+        <tr>
+            <th>Assetnumber</th>
+            <th>AssetName</th>
+            <th>AssetType</th>
+            <th>Maintainance state</th>
+            <th>Buildyear</th>
+            <th>Maintainer</th>
+            <th>Owner</th>
+            <th>Status</th>
+            <th>Location</th>
+            <th>City</th>
+            <th>Open_Asset</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr>
+                <td>{{ row.Assetnumber }}</td>
+                <td>{{ row.AssetName }}</td>
+                <td>{{ row.AssetType }}</td>
+                <td>{{ row.Maintainance_State }}</td>
+                <td>{{ row.Buildyear }}</td>
+                <td>{{ row.Maintainer }}</td>
+                <td>{{ row.Owner }}</td>
+                <td>{{ row.Status }}</td>
+                <td>{{ row.Location }}</td>
+                <td>{{ row.City }}</td>
+                <td>
+                    <a  href= "{{ url_for('asset_components', record_id=2) }}">
+                    <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+                    <i class="material-icons"></i></input></a>
+                </td>
+        </tr>
         {% endfor %}
-    </tr>
-    {% for row in row_data %}
-    <tr>
-        {% for col, row_ in zip(column_names, row) %}
-        {% if col == link_column %}
-        <td>
-            <a  href= "{{ url_for('asset_components', record_id=2) }}">
-            <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
-            <i class="material-icons"></i></input></a>
-
-            <!--<a href="{{url_for('asset_components')}}">Show Details</a>-->
-        </td>
-        {% else %}
-        <td>{{row_}}</td>
-        {% endif %}
-        {% endfor %}
-    </tr>
-    {% endfor %}
-</table>
+    </tbody>
+    </table>
 </div>
+
+
+<a  href= "{{ url_for('asset_components', record_id=2) }}">
+    <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+    <i class="material-icons"></i></input>
+</a>
 {% endblock %}
 
 {% block footer %}

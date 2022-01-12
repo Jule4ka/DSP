@@ -11,16 +11,22 @@ $('.nav div.main_list ul li a').click(function () {
 });
 
 
-
+$(document).ready(function () {
+      $('#marketplace').DataTable({
+        columns: [
+          null,null,null,null,null,null,
+          {orderable: false, searchable: false}
+        ],
+    });
+});
 
 $(document).ready(function () {
-      $('#data').DataTable({
+      $('#assets').DataTable({
         columns: [
-          null,
-          {searchable: false},
-          {orderable: false, searchable: false},
-          {orderable: false, searchable: false},
-          null],
-      });
+          null,null,null,null,null,null,null,null,null,null,
+          {orderable: false, searchable: false}
+        ],
     });
+});
+
 

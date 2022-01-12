@@ -53,28 +53,22 @@ def marketplace():
     # fetching all records from database
     data = cursor.fetchall()
 
-    for dict_row in data:
-        for key, value in dict_row.items():
-            print(type(value))
+
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("marketplace.html", data=data)
 
 
 @app.route('/assets_overview', methods=['GET', 'POST'])
 def assets_overview():
-    dataset = pd.read_excel("data/Gemeente Almere bruggen paspoort gegevens.xlsx")
-    dataset = dataset.reindex(columns=dataset.columns.tolist() + ['Open_Asset'])
-    # rename column titles
-    dataset.columns = [c.replace(' ', '_') for c in dataset.columns]
-    dataset_to_display = dataset[
-        ["Assetnumber", "AssetName", "AssetType", "Maintainance_State", "Buildyear", "Maintainer",
-         "Owner", "Status", "Location", "City", "Open_Asset"]]
-    # link_column is the column that I want to add a button to
-    return render_template("assets_overview.html", column_names=dataset_to_display.columns.values,
-                           row_data=list(dataset_to_display.values.tolist()),
-                           link_column="Open_Asset", zip=zip, title="Assets Overview")
-    # return render_template('assets_overview.html', data=dataset_to_display.to_html(), title="Assets Overview")
-    # return render_template('assets_overview.html', data=dataset.to_dict()) #transform to dictionary
+    # creating variable for connection
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    # executing query
+    cursor.execute("select * from asset_overview")
+    # fetching all records from database
+    data = cursor.fetchall()
+
+    # returning back to projectlist.html with all records from MySQL which are stored in variable data
+    return render_template("assets_overview.html", data = data)
 
 
 @app.route('/asset-components', methods=['GET', 'POST'])
@@ -106,57 +100,47 @@ def login():
 
 @app.route('/scheduling-overview', methods=['GET', 'POST'])
 def scheduling_overview():  # Provide forms for input
-    # Get possible construction, asset and component types from Bruggenpaspoort data
-    dataset = pd.read_excel("data/Gemeente Almere bruggen paspoort gegevens.xlsx")
-    dataset = dataset.reindex(columns=dataset.columns.tolist() + ['Open_Asset'])
-    construction_type = dataset['ConstructionType'].unique()
-    asset_type = dataset['AssetType'].unique()
+    if request.method == 'POST': #check to see if all data is filled in
+        try:
+            AssetName = request.form['AssetName']
+            AssetType = request.form['AssetType']
+            StartDate = request.form['start_date']
+            EndDate = request.form['end_date']
+            Maintainer = request.form['Maintainer']
+            Owner = request.form['Owner']
+            Width = request.form['Width']
+            Length = request.form['Length']
+            Location = request.form['Location']
+            ConstructionType = request.form['ConstructionType']
 
-    components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
-    components_dataset = components_dataset.reindex(columns=components_dataset.columns.tolist())
-    component_type = components_dataset['ComponentName'].unique()
 
-    if request.method == 'POST':
-        AssetName = request.form['AssetName']
-        StartDate = request.form['start_date']
-        Maintainer = request.form['Maintainer']
-        Owner = request.form['Owner']
-        Width = request.form['Width']
-        Length = request.form['Length']
-        Area = request.form['Area']
-        Location = request.form['Location']
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)    # creating variable for connection
 
-        if not AssetName:  # Error message if fields are not filled out
-            flash('Asset name is required!')
-      
-        else:  # Add input to project dict
-            projects['AssetName'].append(AssetName)
-            projects['StartDate'].append(StartDate)
-            projects['Maintainer'].append(Maintainer)
-            projects['Owner'].append(Owner)
-            projects['Width'].append(Width)
-            projects['Length'].append(Length)
-            projects['Area'].append(Area)
-            projects['Location'].append(Location)
-            with open('planned_projects.txt', 'a') as f:  # Add input to txt file. This is supposed to be used in the app
-                print(projects, file=f)
 
-            return redirect(url_for('scheduling_overview'))
 
-    projects_df = pd.DataFrame.from_dict(projects)  # Transfrom project dict to DataFrame (this is now used in the App)
+            sql = "INSERT INTO projects (assetname, assettype, startdate, enddate, maintainer, owner, width, length, Location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length, Location, ConstructionType)
+
+
+            #hier gaat het fout
+            cursor.execute(sql, val)
+            mysql.connection.commit()
+
+            flash("Project suddefully added")
+        except:
+            flash('an error occured')
+
 
     with open('planned_projects.txt', 'r') as f:
         line = f.readlines()[-1]
     projects_df = pd.DataFrame.from_dict(eval(line))  # Transfrom project dict to DataFrame (this is used in the App)
 
     return render_template("scheduling_overview.html",
-                           
-    projects            = projects,
-    projects_df         = projects_df,
-    tables              = [projects_df.to_html(classes='data', header="true")],
-    line                = line,
-    construction_type   = construction_type,
-    asset_type          = asset_type)
+                           projects= projects,
+                           projects_df= projects_df,
+                           tables= [projects_df.to_html(classes='data', header="true")],
+                           construction_type= construction_type,
+                           asset_type= asset_type)
 
 ## IMPORT image
 app.config['SECRET_KEY'] = 'thisisasecret'
