@@ -38,10 +38,41 @@ $(document).ready(function () {
     });
 });
 
+// function to check all on marketplace page for deletion
+$(document).ready(function(){
+$("#marketplace #checkall").click(function () {
+        if ($("#marketplace #checkall").is(':checked')) {
+            $("#marketplace input[type=checkbox]").each(function () {
+                $(this).prop("checked", true);
+            });
 
+        } else {
+            $("#marketplace input[type=checkbox]").each(function () {
+                $(this).prop("checked", false);
+            });
+        }
+    });
 
+    $("[data-toggle=tooltip]").tooltip();
+});
 
+// function to check all on my-projects page for deletion
+$(document).ready(function(){
+$("#projects #checkall").click(function () {
+        if ($("#projects #checkall").is(':checked')) {
+            $("#projects input[type=checkbox]").each(function () {
+                $(this).prop("checked", true);
+            });
 
+        } else {
+            $("#projects input[type=checkbox]").each(function () {
+                $(this).prop("checked", false);
+            });
+        }
+    });
+
+    $("[data-toggle=tooltip]").tooltip();
+});
 
 
 

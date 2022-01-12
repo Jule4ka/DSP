@@ -47,15 +47,17 @@
                       {% endfor %}
                 </select>
 
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary" name="action" value="submit">Submit</button>
 
             </form>
         </div>
         <div class="col-sm-7 offset-md-1 shadow p-3 mb-5 bg-white rounded">
             <h2>My projects</h2>
+            <form method="POST" action="/project-overview">
             <table id="projects" class="table table-striped">
             <thead>
                 <tr>
+                    <th><input type="checkbox" id="checkall"></th>
                     <th>Assetname</th>
                     <th>Assettype</th>
                     <th>Startdate</th>
@@ -67,6 +69,7 @@
             <tbody>
                 {% for project in projects_df %}
                 <tr>
+                        <td> <input type="checkbox" value={{project.project_id}} name="mycheckbox" class="checkthis"> </td>
                         <td>{{ project.assetname }}</td>
                         <td>{{ project.assettype }}</td>
                         <td>{{ project.startdate }}</td>
@@ -74,13 +77,20 @@
                         <td>{{ project.location }}</td>
                         <td>
                             <a  href= "{{ url_for('asset_components', record_id=2) }}">
-                            <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+                            <input type="submit" name="action" value="Show Details"rel="tooltip" class="btn btn-info">
                             <i class="material-icons"></i></input></a>
                         </td>
                 </tr>
                 {% endfor %}
             </tbody>
             </table>
+                    <br/>
+    <input type = "submit" value="Delete All Selected" class = "btn btn-info" name="action">
+    <br/>
+    {% if msg %}
+    <p><div class="alert alert-danger" role="alert">{{msg}}</div></p>
+    {% endif %}
+            </form>
         </div>
     </div>
 </div>
