@@ -19,26 +19,34 @@
         <div align="left" class="content-large2">Asset details</div>
         <div align="middle" class="content-table-header">Components</div>
         <div class="content-below">
-            <table>
-                <tr>
-                    {% for col in column_names %}
-                    <th>{{col}}</th>
+            <table id="asset-components" class="table table-striped">
+                <thead>
+                    <tr>
+                    <th>Assetnumber</th>
+                    <th>ComponentNumber</th>
+                    <th>ComponentName</th>
+                    <th>ComponentState</th>
+                    <th>ComponentVolume</th>
+                    <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in row_data %}
+                    <tr>
+                        {% for col, row_ in zip(column_names, row) %}
+                        <td>{{row_}}</td>
+                        {% endfor %}
+                        <td>-->
+                            <a  href= "{{ url_for('asset_components') }}">
+                            <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+                            <i class="material-icons"></i></input></a>
+                        </td>
+                    </tr>
                     {% endfor %}
-                </tr>
-                {% for row in row_data %}
-                <tr>
-                    {% for col, row_ in zip(column_names, row) %}
-                    <td>{{row_}}</td>
-                    {% endfor %}
-                </tr>
-                <td>
-                    <a  href= "{{ url_for('asset_components', record_id=2) }}">
-                    <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
-                    <i class="material-icons"></i></input></a>
-                </td>
-                {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>
 </div>
+
 {% endblock %}
