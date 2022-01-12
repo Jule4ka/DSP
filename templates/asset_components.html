@@ -16,7 +16,28 @@
             <button type="submit">upload</button>
     </form>
         </div>
-        <div align="left" class="content-large2">Asset details</div>
+        <div align="left" class="content-large2">
+            <h1>Asset details</h1>
+            <p>
+                {% for row in bridge_dataset %}
+                <b>Name:</b>  {{ row.AssetName }} <br>
+                <b>Type:</b>  {{ row.AssetType }} <br>
+                <b>Maintenance State:</b> {{ row.Maintainance_State }} <br>
+                <b>Build Year:</b> {{ row.Buildyear }} <br>
+                <b>Maintainer:</b> {{ row.Maintainer }} <br>
+                <b>Owner:</b> {{ row.Owner }} <br>
+                <b>Status:</b> {{ row.Status }} <br>
+                <b>Location:</b> {{ row.Location }} <br>
+                <b>City:</b> {{ row.City }} <br>
+
+
+                {% endfor %}
+            </p>
+        </div>
+
+
+
+
         <div align="middle" class="content-table-header">Components</div>
         <div class="content-below">
             <table id="asset-components" class="table table-striped">
