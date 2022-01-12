@@ -137,7 +137,8 @@ def asset_components():
 
         # Fetch bridge specific data
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute("select * from asset_overview WHERE Assetnumber=2")
+        record_id = str(record_id)
+        cursor.execute("select * from asset_overview WHERE Assetnumber= %s", (record_id))
         bridge_dataset = cursor.fetchall()
         # bridge_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
         #image
