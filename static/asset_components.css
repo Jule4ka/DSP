@@ -3,6 +3,7 @@
     padding-top: 100px;
     position: relative;
     width: 100%;
+    text-align: center;
 }
 
 .asset_details_container {
@@ -72,4 +73,12 @@ img {
 table {
   width: 100%;
 
+}
+
+button {
+  width: 100%;
+}
+
+input {
+  width: 100%;
 }
