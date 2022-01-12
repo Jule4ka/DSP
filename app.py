@@ -21,7 +21,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 #MySQL username
 app.config['MYSQL_USER'] = 'root'
 #MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'DSPB1'
+app.config['MYSQL_PASSWORD'] = 'root'
 #Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -53,8 +53,16 @@ def marketplace():
     cursor.execute("select * from components")
     # fetching all records from database
     data = cursor.fetchall()
-
-
+    if request.method == "POST":
+        msg = ''
+        for getid in request.form.getlist('mycheckbox'):
+            cursor.execute("delete from components where component_id= %s", [getid])
+            mysql.connection.commit()
+            cursor.execute("select * from components")
+            data = cursor.fetchall()
+            msg = 'Successfully deleted'
+        if (not msg): msg = "There is nothing to delete"
+        return render_template("marketplace.html", msg=msg, data=data)
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("marketplace.html", data=data)
 
@@ -146,7 +154,7 @@ def asset_components():
         # Fetch bridge specific data
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         record_id = str(record_id)
-        cursor.execute("select * from asset_overview WHERE Assetnumber= %s", (record_id))
+        cursor.execute("select * from asset_overview WHERE Assetnumber= %s", [record_id])
         bridge_dataset = cursor.fetchall()
         # bridge_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
         #image

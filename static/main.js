@@ -39,7 +39,22 @@ $(document).ready(function () {
 });
 
 
+$(document).ready(function(){
+$("#marketplace #checkall").click(function () {
+        if ($("#marketplace #checkall").is(':checked')) {
+            $("#marketplace input[type=checkbox]").each(function () {
+                $(this).prop("checked", true);
+            });
 
+        } else {
+            $("#marketplace input[type=checkbox]").each(function () {
+                $(this).prop("checked", false);
+            });
+        }
+    });
+
+    $("[data-toggle=tooltip]").tooltip();
+});
 
 
 
