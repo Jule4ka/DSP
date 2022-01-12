@@ -135,30 +135,37 @@ def asset_components():
 @app.route('/register', methods =['GET', 'POST'])
 def register():
     msg = ''
-    if request.method == 'POST' and 'phonenumber' in request.form and 'password' in request.form and 'email' in request.form and 'companyname' in request.form and 'address' in request.form and 'city' in request.form:
+    if request.method == 'POST':
+        try:
+            kvknumber = request.form['kvknumber']
+            phonenumber = request.form['phone']
+            password = request.form['password']
+            email = request.form['email']
+            companyname = request.form['companyname']
+            location = str(request.form['adress'] + request.form['city'])
 
-        kvknumber = request.form['kvknumber']
-        phonenumber = request.form['phonenumber']
-        password = request.form['password']
-        email = request.form['email']
-        companyname = request.form['companyname']
-        location = str(request.form['address'] + request.form['city'])
+            #connect to database
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('SELECT * FROM accounts WHERE email = %s', (email, ))
+            account = cursor.fetchone()
 
-        #connect to database
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM accounts WHERE username = % s', (email, ))
-        account = cursor.fetchone()
-        if account:
-            msg = 'Account already exists !'
-        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-            msg = 'Invalid email address !'
-        else:
-            cursor.execute('INSERT INTO accounts VALUES (% s, % s, % s, % s, % s, % s)', (kvknumber, phonenumber, password, email, companyname, location))
-            mysql.connection.commit()
-            msg = 'You have successfully registered !'
+            if account:
+                msg = 'Account already exists !'
+            else:
+
+                cursor.execute('INSERT INTO accounts VALUES (% s, % s, % s, % s, % s, % s, NULL, NULL, NULL)', (kvknumber, phonenumber, password, email, companyname, location))
+
+                mysql.connection.commit()
+
+                msg = 'You have successfully registered !'
+
+                return render_template('login.html', msg = msg)
+        except:
+            msg = 'Failed to register, please try again later'
     elif request.method == 'POST':
         msg = 'Please fill out the form !'
     return render_template('register.html', msg = msg)
+
 
 @app.route('/login')
 def login():
