@@ -7,6 +7,7 @@ from flask_uploads import configure_uploads, IMAGES, UploadSet
 from flask_wtf import FlaskForm
 from wtforms import FileField
 import os
+import uuid
 
 UPLOAD_FOLDER = '/static/uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
@@ -102,6 +103,8 @@ def login():
 def scheduling_overview():  # Provide forms for input
     if request.method == 'POST': #check to see if all data is filled in
         try:
+            #create unique id for the asset
+            ProjectId = uuid.uuid1()
             AssetName = request.form['AssetName']
             AssetType = request.form['AssetType']
             StartDate = request.form['start_date']
@@ -118,27 +121,43 @@ def scheduling_overview():  # Provide forms for input
 
 
 
-            sql = "INSERT INTO projects (assetname, assettype, startdate, enddate, maintainer, owner, width, length, Location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            val = (AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length, Location, ConstructionType)
+            sql = "INSERT INTO projects (project_id, assetname, assettype, startdate, enddate, maintainer, owner, width, length, location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (ProjectId, AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length, Location, ConstructionType)
 
 
-            #hier gaat het fout
+
             cursor.execute(sql, val)
             mysql.connection.commit()
 
-            flash("Project suddefully added")
+            print('Succesfull')
+            flash("Project succesfully added")
         except:
             flash('an error occured')
 
+    # creating variable for connection
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    # executing query
+    cursor.execute("select * from projects")
 
-    with open('planned_projects.txt', 'r') as f:
-        line = f.readlines()[-1]
-    projects_df = pd.DataFrame.from_dict(eval(line))  # Transfrom project dict to DataFrame (this is used in the App)
+    # fetching all project data
+    project_data = cursor.fetchall()
+
+
+
+    # Get possible construction and asset types from Asset database and convert it to a dataframe
+    cursor.execute("select * from asset_overview")
+    asset_data = pd.DataFrame(cursor.fetchall())
+
+    #reindex the dataframe and get the right information
+    dataset = asset_data.reindex(columns=asset_data.columns.tolist() + ['Open_Asset'])
+    construction_type = dataset['ConstructionType'].unique()
+    asset_type = dataset['AssetType'].unique()
+
 
     return render_template("scheduling_overview.html",
-                           projects= projects,
-                           projects_df= projects_df,
-                           tables= [projects_df.to_html(classes='data', header="true")])
+                           projects_df=project_data,
+                           construction_type=construction_type,
+                           asset_type=asset_type)
 
 ## IMPORT image
 app.config['SECRET_KEY'] = 'thisisasecret'
