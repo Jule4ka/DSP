@@ -1,0 +1,93 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="main-content">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='scheduling_overview.css') }}">
+<!--
+    <table id="projects" class="table table-striped">
+    <thead>
+        <tr>
+            <th>Assetname</th>
+            <th>Assettype</th>
+            <th>Startdate</th>
+            <th>Enddate</th>
+            <th>Owner</th>
+            <th>Location</th>
+            <th>Project overview</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for project in projects_df %}
+        <tr>
+                <td>{{ project.assetname }}</td>
+                <td>{{ project.assettype }}</td>
+                <td>{{ project.startdate }}</td>
+                <td>{{ project.enddate }}</td>
+                <td>{{ project.owner }}</td>
+                <td>{{ project.location }}</td>
+                <td>
+                    <a  href= "{{ url_for('asset_components', record_id=2) }}">
+                    <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+                    <i class="material-icons"></i></input></a>
+                </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+-->
+    <h2>Add a new component</h2>
+    <form action= "{{ url_for('add_component') }}"    method="post">
+        <label for="title">Material of component</label>
+        <input type="text" name="ComponentMaterial" placeholder="Material of component" required></input>
+
+        <label for="title">Weight</label>
+        <input type="text" name="ComponentWeight" placeholder="Weight in kilograms" required></input>
+        
+        <label for="title">Condition</label>
+        <select name="ComponentCondition" id="ComponentCondition" required>
+            <option value= "1. Perfect" >Perfect</option>
+            <option value= "2. Good" >Good</option>
+            <option value= "3. Reasonable" >Reasonable</option>
+            <option value= "4. Moderate" >Moderate</option>
+            <option value= "5. Poor" >Poor</option>
+        </select>
+
+        <label for="title">Owner</label>
+        <input type="text" name="Owner" placeholder="Owner" required></input>
+
+        <label for="title">Location</label>
+        <input type="text" name="Location" placeholder="Location" required></input>
+
+        <label for="Availability">Select the availibility status:</label>
+        <select name="Availability" id="Availability" required>
+            <option value= "Available">Available</option>
+            <option value= "In process">In process</option>
+            <option value= "In asset">In asset</option>
+        </select>
+
+        <label for="title">Price (€)</label>
+        <input type="number" min="1" step="any" name="Price" placeholder="Price in euros" required></input>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+
+    </form>
+
+    <!--<div class="row">
+              <div class="col-md-4"></div>
+              <div class="col-md-4">
+                  <form action="" method="post">
+                     <label for="ComponentType">Choose a main component type:</label>
+                      <div class="input_fields_wrap">
+                      <button class="add_field_button">Add More Fields</button>
+                      <input type="text" class="form-control mb-3" name="mytext[]" placeholder="Enter component">
+                      </div>
+                  </form>
+              </div>
+              <div class="col-md-4"></div>
+          </div>
+       </div>
+       <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    -->
+
+</div>
+{% endblock %}

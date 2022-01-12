@@ -21,7 +21,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 #MySQL username
 app.config['MYSQL_USER'] = 'root'
 #MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'DSPB1'
+app.config['MYSQL_PASSWORD'] = 'DSPB1111'
 #Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -70,6 +70,10 @@ def assets_overview():
 
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("assets_overview.html", data = data)
+
+@app.route('/add_component', methods=['GET', 'POST'])
+def add_component():
+    return render_template("add_component.html", title="Add Component")
 
 
 @app.route('/asset-components', methods=['GET', 'POST'])
