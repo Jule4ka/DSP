@@ -100,30 +100,35 @@ def login():
 
 @app.route('/scheduling-overview', methods=['GET', 'POST'])
 def scheduling_overview():  # Provide forms for input
-    if request.method == 'POST' and 'AssetName' in request.form and 'Assettype' in request.form and 'start_date' in request.form and 'end_date' in request.form and 'Maintainer' in request.form and 'Owner' in request.form and 'Width' in request.form and 'Length' in request.form and 'Location' in request.form and 'ConstructionType' in request.form: #check to see if all data is filled in
-        AssetName = request.form['AssetName']
-        AssetType = request.form['AssetType']
-        StartDate = request.form['start_date']
-        EndDate = request.form['end_date']
-        Maintainer = request.form['Maintainer']
-        Owner = request.form['Owner']
-        Width = request.form['Width']
-        Length = request.form['Length']
-        Location = request.form['Location']
-        ConstructionType = request.form['ConstructionType']
+    if request.method == 'POST': #check to see if all data is filled in
+        try:
+            AssetName = request.form['AssetName']
+            AssetType = request.form['AssetType']
+            StartDate = request.form['start_date']
+            EndDate = request.form['end_date']
+            Maintainer = request.form['Maintainer']
+            Owner = request.form['Owner']
+            Width = request.form['Width']
+            Length = request.form['Length']
+            Location = request.form['Location']
+            ConstructionType = request.form['ConstructionType']
 
 
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)    # creating variable for connection
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)    # creating variable for connection
 
-        sql = "INSERT INTO projects (assetname, assettype, startdate, enddate, maintainer, owner, " \
-              "width, length, Location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %d, %d, %s, %s)"
-        val = (AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length, Location, ConstructionType)
 
-        cursor.execute(sql, val)
-        mysql.connection.commit()
 
-        print(mycursor.rowcount, "record inserted.")
-        return redirect(url_for('marketplace.html'))
+            sql = "INSERT INTO projects (assetname, assettype, startdate, enddate, maintainer, owner, width, length, Location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length, Location, ConstructionType)
+
+
+            #hier gaat het fout
+            cursor.execute(sql, val)
+            mysql.connection.commit()
+
+            flash("Project suddefully added")
+        except:
+            flash('an error occured')
 
 
     with open('planned_projects.txt', 'r') as f:
