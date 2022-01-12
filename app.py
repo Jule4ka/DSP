@@ -21,7 +21,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 #MySQL username
 app.config['MYSQL_USER'] = 'root'
 #MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'DSPB1'
+app.config['MYSQL_PASSWORD'] = 'DSPB1111'
 #Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -63,10 +63,8 @@ def component_page():
 
     # creating variable for connection
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    # executing query
-    cursor.execute("select * from components")
-
-    # fetching all component data
+ 
+    cursor.execute("select * from components WHERE component_id='da26b52a-73b3-11ec-ac0f-38f9d34975e5'")
     component_data = cursor.fetchall()
 
 
