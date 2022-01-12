@@ -2,13 +2,13 @@
 {% block content %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 
-<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='scheduling_overview.css') }}">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='project_overview.css') }}">
 <div class="main-content">
 <div class="container">
     <div class="row">
         <div class="col-sm-4 shadow p-3 mb-5 bg-white rounded">
             <h2>Add a new project</h2>
-            <form action= "{{ url_for('scheduling_overview') }}"    method="post">
+            <form action= "{{ url_for('project_overview') }}"    method="post">
                 <label for="title">Asset Name</label>
                     <input type="text" name="AssetName" placeholder="Project name" required></input>
                 <label for="AssetType">Choose an asset type:</label>

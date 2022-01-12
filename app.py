@@ -21,7 +21,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 #MySQL username
 app.config['MYSQL_USER'] = 'root'
 #MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'DSPB1111'
+app.config['MYSQL_PASSWORD'] = 'DSPB1'
 #Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -219,8 +219,8 @@ def logout():
    session.pop('companyname', None)
    return redirect(url_for('login'))
 
-@app.route('/scheduling-overview', methods=['GET', 'POST'])
-def scheduling_overview():  # Provide forms for input
+@app.route('/project-overview', methods=['GET', 'POST'])
+def project_overview():  # Provide forms for input
     if request.method == 'POST': #check to see if all data is filled in
         try:
             #create unique id for the asset
@@ -251,7 +251,7 @@ def scheduling_overview():  # Provide forms for input
 
             print('Succesfull')
             flash("Project succesfully added")
-            return(redirect(url_for('scheduling_overview')))
+            return(redirect(url_for('project_overview')))
         except:
             flash('an error occured')
 
@@ -275,7 +275,7 @@ def scheduling_overview():  # Provide forms for input
     asset_type = dataset['AssetType'].unique()
 
 
-    return render_template("scheduling_overview.html",
+    return render_template("project_overview.html",
                            projects_df=project_data,
                            construction_type=construction_type,
                            asset_type=asset_type)
