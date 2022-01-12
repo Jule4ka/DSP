@@ -138,9 +138,7 @@ def scheduling_overview():  # Provide forms for input
     return render_template("scheduling_overview.html",
                            projects= projects,
                            projects_df= projects_df,
-                           tables= [projects_df.to_html(classes='data', header="true")],
-                           construction_type= construction_type,
-                           asset_type= asset_type)
+                           tables= [projects_df.to_html(classes='data', header="true")])
 
 ## IMPORT image
 app.config['SECRET_KEY'] = 'thisisasecret'
