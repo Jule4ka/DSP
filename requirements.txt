@@ -3,8 +3,9 @@ Flask~=2.0.2
 Flask-Navigation
 openpyxl
 flask_wtf
-WTForms
+WTForms~=3.0.1
 flask-uploads
 Flask-Reuploaded
 flask-mysqldb
 mysql-connector
+mysqlclient~=2.1.0

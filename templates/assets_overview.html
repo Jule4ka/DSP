@@ -36,9 +36,11 @@
                 <td>{{ row.Location }}</td>
                 <td>{{ row.City }}</td>
                 <td>
-                    <a  href= "{{ url_for('asset_components', record_id=2) }}">
-                    <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
-                    <i class="material-icons"></i></input></a>
+                <form action= "{{ url_for('asset_components', record_id=row.Assetnumber) }}" >
+                    <button type = "submit" name="asset_id" value="{{row.Assetnumber}}"
+                        formmethod="post" class="btn btn-info">See details</button>
+                </form>
+        <br>
                 </td>
         </tr>
         {% endfor %}
@@ -47,10 +49,6 @@
 </div>
 
 
-<a  href= "{{ url_for('asset_components', record_id=2) }}">
-    <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
-    <i class="material-icons"></i></input>
-</a>
 {% endblock %}
 
 {% block footer %}

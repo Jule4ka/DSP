@@ -21,7 +21,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 #MySQL username
 app.config['MYSQL_USER'] = 'root'
 #MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'DSPB1111'
+app.config['MYSQL_PASSWORD'] = 'root'
 #Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -116,9 +116,9 @@ def add_component():
 
 @app.route('/asset-components', methods=['GET', 'POST'])
 def asset_components():
-    #table
-    record_id=int(request.args['record_id'])
-    if request.method == 'GET':
+    # table
+    if request.method == 'POST':
+        record_id = int(request.form['asset_id'])
         components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
         components_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
         #image
