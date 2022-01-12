@@ -34,10 +34,21 @@
     </tbody>
     </table>
 -->
+<div class="col-sm-4 shadow p-3 mb-5 bg-white rounded">
     <h2>Add a new component</h2>
-    <form action= "{{ url_for('add_component') }}"    method="post">
+    <br>
+    <form action= "{{ url_for('add_component') }}"    method="post" id="component_form">
         <label for="title">Material of component</label>
         <input type="text" name="ComponentMaterial" placeholder="Material of component" required></input>
+
+        <label for="title">Category</label>
+        <select name="Category" id="Category" required>
+            <option value= "Concrete" >Concrete</option>
+            <option value= "Metal" >Steel</option>
+            <option value= "Wood" >Wood</option>
+            <option value= "Stone" >Stone</option>
+            <option value= "Rubber" >Rubber</option>
+        </select>
 
         <label for="title">Weight</label>
         <input type="text" name="ComponentWeight" placeholder="Weight in kilograms" required></input>
@@ -51,12 +62,6 @@
             <option value= "5. Poor" >Poor</option>
         </select>
 
-        <label for="title">Owner</label>
-        <input type="text" name="Owner" placeholder="Owner" required></input>
-
-        <label for="title">Location</label>
-        <input type="text" name="Location" placeholder="Location" required></input>
-
         <label for="Availability">Select the availibility status:</label>
         <select name="Availability" id="Availability" required>
             <option value= "Available">Available</option>
@@ -64,12 +69,21 @@
             <option value= "In asset">In asset</option>
         </select>
 
+        <label for="title">Owner</label>
+        <input type="text" name="Owner" placeholder="Owner" required></input>
+
+        <label for="title">Location</label>
+        <input type="text" name="Location" placeholder="Location" required></input>
+
         <label for="title">Price (€)</label>
         <input type="number" min="1" step="any" name="Price" placeholder="Price in euros" required></input>
 
+        <label for="title">Component description (max. 200 characters)</label>
+        <textarea rows="4" cols="50" name="comment" form="component_form" maxlength="200"></textarea>
         <button type="submit" class="btn btn-primary">Submit</button>
 
     </form>
+    </div>
 
     <!--<div class="row">
               <div class="col-md-4"></div>

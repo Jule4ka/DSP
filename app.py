@@ -73,6 +73,44 @@ def assets_overview():
 
 @app.route('/add_component', methods=['GET', 'POST'])
 def add_component():
+    if request.method == 'POST': #check to see if all data is filled in
+        try:
+            #create unique id for the asset
+            ComponentID = uuid.uuid1()
+            ComponentMaterial = request.form['ComponentMaterial']
+            Category = request.form['Category']
+            Weight = request.form['ComponentWeight']
+            Condition = request.form['ComponentCondition']
+            Availability = request.form['Availability']
+            Owner = request.form['Owner']
+            Location = request.form['Location']
+            Price = request.form['Price']
+            Description = request.form['comment']
+
+
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)    # creating variable for connection
+
+
+
+            sql = "INSERT INTO components (component_id, category, material, weight, component_condition, availability, component_owner, location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, Owner, Location, Price, Description)
+
+
+
+            cursor.execute(sql, val)
+            mysql.connection.commit()
+
+            print('Succesfull')
+            flash("Project succesfully added")
+            return(redirect(url_for('marketplace.html')))
+        except:
+            flash('an error occured')
+
+    # creating variable for connection
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    # executing query
+    cursor.execute("select * from components")
+
     return render_template("add_component.html", title="Add Component")
 
 
