@@ -71,6 +71,10 @@ def assets_overview():
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("assets_overview.html", data = data)
 
+@app.route('/add_component', methods=['GET', 'POST'])
+def add_component():
+    return render_template("add_component.html", title="Add Component")
+
 
 @app.route('/asset-components', methods=['GET', 'POST'])
 def asset_components():
