@@ -50,13 +50,28 @@ def marketplace():
     # creating variable for connection
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     # executing query
-    cursor.execute("select * from dummy_data_marketplace")
+    cursor.execute("select * from components")
     # fetching all records from database
     data = cursor.fetchall()
 
 
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("marketplace.html", data=data)
+
+@app.route('/component_page.html', methods=['GET','POST'])
+def component_page():
+
+    # creating variable for connection
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    # executing query
+    cursor.execute("select * from components")
+
+    # fetching all component data
+    component_data = cursor.fetchall()
+
+
+
+    return render_template("component_page.html", component_data=component_data)
 
 
 @app.route('/assets_overview', methods=['GET', 'POST'])
@@ -92,7 +107,7 @@ def add_component():
 
 
 
-            sql = "INSERT INTO components (component_id, category, material, weight, component_condition, availability, component_owner, location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            sql = "INSERT INTO components (component_id, material, category, weight, component_condition, availability, component_owner, location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
             val = (ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, Owner, Location, Price, Description)
 
 

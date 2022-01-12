@@ -1,0 +1,22 @@
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='asset_components.css') }}">
+{% extends "layout.html" %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+
+<div class="main-content">
+    <div class="asset_details_container">
+        <div align="left" class="header"><h2> Component Details</h2></div>
+        <div class="content-large1" align="left">
+            <h4>Contact details seller</h4>
+        </div>
+        <div align="left" class="content-large2">Component details</div>
+        <div align="middle" class="content-table-header">Components</div>
+        <div class="content-below">
+            <table>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
