@@ -24,8 +24,14 @@
 
                 </ul>
                 <ul class = "navbar-right">
-                    <li><a  href="{{url_for('register')}}">Register</a></li>
-                    <li><a href="{{url_for('login')}}">Login</a></li>
+                    {% if session.loggedin %}
+                        <li><a>Logged in as: {{ session.companyname }} </a></li>
+                        <li><a href="/logout">logout</a></li>
+                    {% else %}
+                        <li><a  href="{{url_for('register')}}">Register</a></li>
+                        <li><a href="{{url_for('login')}}">Login</a></li>
+                    {% endif %}
+
                 </ul>
 
 

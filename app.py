@@ -179,9 +179,31 @@ def register():
     return render_template('register.html', msg = msg)
 
 
-@app.route('/login')
+@app.route('/login', methods =['GET', 'POST'])
 def login():
-    return render_template('login.html', title="Login")
+    msg = ''
+    if request.method == 'POST' and 'email' in request.form and 'password' in request.form:
+        email = request.form['email']
+        password = request.form['password']
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT * FROM accounts WHERE email = % s AND password = % s', (email, password, ))
+        account = cursor.fetchone()
+        if account:
+            session['loggedin'] = True
+            session['email'] = account['email']
+            session['companyname'] = account['companyname']
+            msg = 'Logged in successfully !'
+            return render_template('navpage.html', msg = msg)
+        else:
+            msg = 'Incorrect username / password !'
+    return render_template('login.html', msg = msg)
+
+@app.route('/logout')
+def logout():
+   session.pop('loggedin', None)
+   session.pop('email', None)
+   session.pop('companyname', None)
+   return redirect(url_for('login'))
 
 @app.route('/scheduling-overview', methods=['GET', 'POST'])
 def scheduling_overview():  # Provide forms for input
