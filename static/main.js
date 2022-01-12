@@ -29,4 +29,13 @@ $(document).ready(function () {
     });
 });
 
+$(document).ready(function () {
+      $('#projects').DataTable({
+        columns: [
+          null,null,null,null,null,null,
+          {orderable: false, searchable: false}
+        ],
+    });
+});
+
 
