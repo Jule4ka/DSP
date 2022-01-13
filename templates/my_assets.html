@@ -1,0 +1,139 @@
+{% extends 'layout.html' %}
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='project_overview.css') }}">
+<div class="main-content">
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4 shadow p-3 mb-5 bg-white rounded">
+            <h2>Asset overview</h2>
+            <hr>
+            <a>On this page you can see all the assets you own. An asset can be any type of civil work of art such as
+                bridges or viaducts. You can also add a new asset in case this asset is not
+               yet present on the assets page. </a>
+        </div>
+        <div class="col-sm-7 offset-md-1 shadow p-3 mb-5 bg-white rounded">
+            <h2>Add an asset</h2>
+            <form class="row g-3" action= "{{ url_for('my_assets') }}"    method="post">
+                <div class="col-md-6"
+                    <label for="title">Asset Name</label>
+                    <input type="text" name="AssetName" placeholder="Asset name" required></input>
+                </div>
+                <div class="col-md-6">
+                    <label for="AssetType">Choose an asset type:</label>
+                    <select name="AssetType" id="AssetType" required>
+                        {% for type in asset_type %}
+                            <option value= "{{ type }}" > {{ type }} </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="title">When will the project start?</label>
+                    <input type="date" name="start_date" placeholder="dd/mm/YYYY" min="da" required></input>
+                </div>
+                <div class="col-md-6">
+                    <label for="title">When is the project finished?</label>
+                    <input type="date" name="end_date" placeholder="dd/mm/YYYY" min="da" required></input>
+                </div>
+                <div class="col-md-12">
+                    <label for="title">Who will maintain the bridge?</label>
+                    <input type="text" name="Maintainer" placeholder="Maintainer" required></input>
+                </div>
+                <div class="col-md-6">
+                    <label for="title">Width of the bridge (in m&sup2;)</label>
+                    <input type="text" name="Width" placeholder="Width in meters" required></input>
+                </div>
+                <div class="col-md-6">
+                    <label for="title">Length of the bridge (in m&sup2;)</label>
+                    <input type="text" name="Length" placeholder="Length in meters" required></input>
+                </div>
+                <div class="col-md-6">
+                    <label for="title">Address of the bridge</label>
+                    <input type="text" name="address" placeholder="e.g.) Street 45" required></input>
+                </div>
+                <div class="col-md-6">
+                    <label for="title">City</label>
+                    <input type="text" name="city" placeholder="City" required></input>
+                </div>
+                <div class="col-md-12">
+                    <label for="ConstructionType">Choose the main construction type:</label>
+                    <select name="ConstructionType" id="ConstructionType" required>
+                          {% for type in construction_type %}
+                          <option value= "{{ type }}" > {{ type }} </option>
+                          {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-12">
+                <button type="submit" class="btn btn-primary" name="action" value="submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 shadow p-3 mb-5 bg-white rounded ">
+            <h2>My projects</h2>
+            <form method="POST" action="/project-overview">
+            <table id="projects" class="table table-striped">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="checkall"></th>
+                    <th>Assetname</th>
+                    <th>Assettype</th>
+                    <th>Startdate</th>
+                    <th>Owner</th>
+                    <th>Location</th>
+                    <th>Project overview</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects_df %}
+                <tr>
+                    <td> <input type="checkbox" value={{project.project_id}} name="mycheckbox" class="checkthis"> </td>
+                    <td>{{ project.assetname }}</td>
+                    <td>{{ project.assettype }}</td>
+                    <td>{{ project.startdate }}</td>
+                    <td>{{ project.owner }}</td>
+                    <td>{{ project.location }}</td>
+                    <td>
+                        <a  href= "{{ url_for('asset_components', record_id=2) }}">
+                        <input type="submit" name="action" value="Show Details"rel="tooltip" class="btn btn-info">
+                        <i class="material-icons"></i></input></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+            <br/>
+                <input type = "submit" value="Delete All Selected" class = "btn btn-info" name="action">
+            <br/>
+                {% if msg %}
+                    <p><div class="alert alert-danger" role="alert">{{msg}}</div></p>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+    <!--<div class="row">
+              <div class="col-md-4"></div>
+              <div class="col-md-4">
+                  <form action="" method="post">
+                     <label for="ComponentType">Choose a main component type:</label>
+                      <div class="input_fields_wrap">
+                      <button class="add_field_button">Add More Fields</button>
+                      <input type="text" class="form-control mb-3" name="mytext[]" placeholder="Enter component">
+                      </div>
+                  </form>
+              </div>
+              <div class="col-md-4"></div>
+          </div>
+       </div>
+       <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    -->
+
+
+{% endblock %}
