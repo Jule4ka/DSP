@@ -14,7 +14,6 @@ $('.nav div.main_list ul li a').click(function () {
 $(document).ready(function () {
       $('#marketplace').DataTable({
         columns: [
-          {orderable: false, searchable: false},
           null,null,null,null,null,null,null,null,
           {orderable: false, searchable: false}
         ],

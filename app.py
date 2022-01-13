@@ -198,14 +198,15 @@ def add_component():
             Availability = request.form['Availability']
             Owner = session['companyname']
             Owner_email = session['email']
+            Availability_Date = request.form['AvailabilityDate']
             Location = request.form['Location']
             Price = request.form['Price']
             Description = request.form['comment']
 
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
-            sql = "INSERT INTO components (component_id, material, category, weight, component_condition, availability, component_owner, owner_email, location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            val = (ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, Owner, Owner_email, Location, Price,
+            sql = "INSERT INTO components (component_id, material, category, weight, component_condition, availability, component_owner, owner_email, location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner, Owner_email, Location, Price,
                    Description)
 
             cursor.execute(sql, val)
