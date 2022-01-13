@@ -23,6 +23,7 @@
                 <b>Weight:</b> {{ row.weight }} kg <br>
                 <b>Condition:</b> {{ row.component_condition }} <br>
                 <b>Availability:</b> {{ row.availability }} <br>
+                <b> Availability date:</b> {{ row.availability_date }} <br>
                 <b>Description:</b> {{ row.component_description }} <br>
                 {% endfor %}
             </p>
@@ -51,6 +52,7 @@
                     <th>Weight (kg)</th>
                     <th>Condition</th>
                     <th>Availability</th>
+                    <th>Availability Date</th>
                     <th>Owner</th>
                     <th>Location</th>
                     <th>Price</th>
@@ -64,6 +66,7 @@
                 <td>{{ row.weight }} </td>
                 <td>{{ row.component_condition }}</td>
                 <td>{{ row.availability }}</td>
+                <td> {{ row.availability_date }}</td>
                 <td>{{ row.component_owner }}</td>
                 <td>{{ row.location }}</td>
                 <td>{{ row.price }}</td>
