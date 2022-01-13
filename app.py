@@ -103,9 +103,9 @@ def my_assets():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     # collecting all the assets that the user has
     if session.get('loggedin') == True:
-        cursor.execute("select * from asset_overview where %s = userid", (session['email'],))
-        asset_data = pd.DataFrame(cursor.fetchall())
-
+        cursor.execute("select * from asset_overview where %s = user_id", (session['email'],))
+        asset_data = cursor.fetchall()
+        print(asset_data)
     else:
         render_template('login.html')
         return redirect(url_for('login'))
@@ -118,6 +118,7 @@ def my_assets():
                 AssetId = uuid.uuid1()
                 AssetName = request.form['AssetName']
                 AssetType = request.form['AssetType']
+                Maintanencestate = request.form['maintanencestate']
                 BuildYear = request.form['Builddate']
                 DestructionYear = request.form['Destructiondate']
                 Maintainer = request.form['Maintainer']
@@ -130,8 +131,8 @@ def my_assets():
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
 
-                sql = "INSERT INTO asset_overview (userid, assetid, assetname, assettype, buildyear, destructionyear, maintainer, owner, width, length, location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                val = (UserId, AssetId, AssetName, AssetType, BuildYear, DestructionYear, Maintainer, Owner, Width, Length, Location, ConstructionType)
+                sql = "INSERT INTO asset_overview (Assetnumber,	AssetName,	AssetType,	ConstructionType,	Maintainance State,	Buildyear,	Maintainer,	Owner,	Status,	Width,	Length,	Area,	Location,	Passage road-width,	Passage road-height,	Passage sail-width,	Passage sail-height,	Technical lifespan expires,	OBJECT_GUID	Area,	Connection Type	Neighborhood,	City,	RD-X,	RD-Y,	Length,	Area,	circumference,	user_id,	Destructionyear) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, %s, NULL, %s, NULL, NULL, NULL, NULL, %s, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, %s, %s)"
+                val = (AssetId,	AssetName,	AssetType,	ConstructionType,	Maintanencestate,	BuildYear,	Maintainer,	Owner,	Width,	Length,	Location,	DestructionYear, UserId,	Destructionyear)
 
 
                 cursor.execute(sql, val)
@@ -158,14 +159,12 @@ def my_assets():
         elif request.form['action'] == 'Show Details':  # check whether post is coming from 'show details'
             return render_template("component_page.html")
 
-    # Get possible construction and asset types from Asset database and convert it to a dataframe
-    cursor.execute("select * from asset_overview")
-    asset_data = pd.DataFrame(cursor.fetchall())
 
     # reindex the dataframe and get the right information
-    dataset = asset_data.reindex(columns=asset_data.columns.tolist() + ['Open_Asset'])
-    construction_type = dataset['constructiontype'].unique()
-    asset_type = dataset['assettype'].unique()
+    asset_cat = pd.DataFrame(asset_data)
+    dataset = asset_cat.reindex(columns=asset_cat.columns.tolist() + ['Open_Asset'])
+    construction_type = dataset['ConstructionType'].unique()
+    asset_type = dataset['AssetType'].unique()
 
     return render_template("my_assets.html",
                            asset_data=asset_data,

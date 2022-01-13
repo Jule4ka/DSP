@@ -40,6 +40,15 @@ $(document).ready(function () {
     });
 });
 
+$(document).ready(function () {
+      $('#my_assets').DataTable({
+        columns: [
+          null,null,null,null,null,
+          {orderable: false, searchable: false}
+        ],
+    });
+});
+
 // function to check all on marketplace page for deletion
 $(document).ready(function(){
 $("#marketplace #checkall").click(function () {
