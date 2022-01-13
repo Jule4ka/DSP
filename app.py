@@ -338,8 +338,9 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
-    asset_id = '2'
     if request.method == 'POST' and 'file' in request.files:
+        asset_id = '2'
+        # asset_id = int(request.form['record_id'])
         file = request.files['file']
 
         # select unique user id from database to use as profile picture name
@@ -374,8 +375,8 @@ def upload():
         # # redirect to profile page.the function viewprofile should return a html file.
         # return redirect(url_for('upload.html',
         #                         filename=filename))
-    # return render_template("asset_components.html")
     return render_template("upload.html")
+    # return redirect(url_for('upload'))
 
 # run the application
 if __name__ == '__main__':

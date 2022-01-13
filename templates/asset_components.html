@@ -11,10 +11,10 @@
         <div class="content-large1">
             <img src="{{url_for('static', filename='uploads/brug.jpg')}}" align="left"/>
 
-            <form method=post enctype=multipart/form-data>
-                <input type=file name=file>
-                <input type=submit value=Upload>
-            </form>
+         <form action= "{{ url_for('upload') }}" >
+                    <button type = "submit" name="asset_id" value="{{record_id}}"
+                        formmethod="post" class="btn btn-info">Upload image</button>
+                </form>
 
         </div>
         <div align="left" class="content-large2">
