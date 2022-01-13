@@ -78,11 +78,16 @@ def component_page():
     cursor.execute("select * from components WHERE component_id=%s", [record_id])
     component_data = cursor.fetchall()
 
+    # Fetch user data
+    cursor.execute("select * from accounts WHERE email=(select owner_email from components WHERE component_id=%s)", [record_id])
+    user_data = cursor.fetchall()
+
     # Fetch similar components
     cursor.execute("select * from components where category=%s and component_id<>%s", [component_data[0]['category'], record_id])
     similar_components_data = cursor.fetchall()
-    return render_template("component_page.html", component_data=component_data,
-                           similar_components_data=similar_components_data)
+    return render_template("component_page.html",   component_data=component_data,
+                                                    similar_components_data=similar_components_data,
+                                                    user_data=user_data)
 
 
 @app.route('/assets_overview', methods=['GET', 'POST'])
@@ -117,15 +122,16 @@ def add_component():
             Weight = request.form['ComponentWeight']
             Condition = request.form['ComponentCondition']
             Availability = request.form['Availability']
-            Owner = request.form['Owner']
+            Owner = session['companyname']
+            Owner_email = session['email']
             Location = request.form['Location']
             Price = request.form['Price']
             Description = request.form['comment']
 
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
-            sql = "INSERT INTO components (component_id, material, category, weight, component_condition, availability, component_owner, location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            val = (ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, Owner, Location, Price,
+            sql = "INSERT INTO components (component_id, material, category, weight, component_condition, availability, component_owner, owner_email, location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, Owner, Owner_email, Location, Price,
                    Description)
 
             cursor.execute(sql, val)
