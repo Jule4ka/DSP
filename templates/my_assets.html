@@ -29,23 +29,23 @@
                     </select>
                 </div>
                 <div class="col-md-6">
-                    <label for="title">When will the project start?</label>
-                    <input type="date" name="start_date" placeholder="dd/mm/YYYY" min="da" required></input>
+                    <label for="title">When was the asset built?</label>
+                    <input type="date" name="Builddate" placeholder="dd/mm/YYYY" min="da" required></input>
                 </div>
                 <div class="col-md-6">
-                    <label for="title">When is the project finished?</label>
-                    <input type="date" name="end_date" placeholder="dd/mm/YYYY" min="da" required></input>
+                    <label for="title">When will the asset be replaced/destroyed?</label>
+                    <input type="date" name="Destructiondate" placeholder="dd/mm/YYYY" min="da" required></input>
                 </div>
-                <div class="col-md-12">
-                    <label for="title">Who will maintain the bridge?</label>
+                <div class="col-md-6">
+                    <label for="title">Who maintains the asset?</label>
                     <input type="text" name="Maintainer" placeholder="Maintainer" required></input>
                 </div>
                 <div class="col-md-6">
-                    <label for="title">Width of the bridge (in m&sup2;)</label>
+                    <label for="title">Width of the bridge (in m)</label>
                     <input type="text" name="Width" placeholder="Width in meters" required></input>
                 </div>
                 <div class="col-md-6">
-                    <label for="title">Length of the bridge (in m&sup2;)</label>
+                    <label for="title">Length of the bridge (in m)</label>
                     <input type="text" name="Length" placeholder="Length in meters" required></input>
                 </div>
                 <div class="col-md-6">
@@ -73,29 +73,27 @@
 
     <div class="row">
         <div class="col-sm-12 shadow p-3 mb-5 bg-white rounded ">
-            <h2>My projects</h2>
-            <form method="POST" action="/project-overview">
+            <h2>My Assets</h2>
             <table id="projects" class="table table-striped">
             <thead>
                 <tr>
-                    <th><input type="checkbox" id="checkall"></th>
                     <th>Assetname</th>
                     <th>Assettype</th>
-                    <th>Startdate</th>
+                    <th>Buildyear</th>
                     <th>Owner</th>
                     <th>Location</th>
-                    <th>Project overview</th>
+                    <th>Asset details</th>
                 </tr>
             </thead>
             <tbody>
-                {% for project in projects_df %}
+                {% for asset in asset_df %}
                 <tr>
-                    <td> <input type="checkbox" value={{project.project_id}} name="mycheckbox" class="checkthis"> </td>
-                    <td>{{ project.assetname }}</td>
-                    <td>{{ project.assettype }}</td>
-                    <td>{{ project.startdate }}</td>
-                    <td>{{ project.owner }}</td>
-                    <td>{{ project.location }}</td>
+
+                    <td>{{ asset.assetname }}</td>
+                    <td>{{ asset.assettype }}</td>
+                    <td>{{ asset.buildyear }}</td>
+                    <td>{{ asset.owner }}</td>
+                    <td>{{ asset.location }}</td>
                     <td>
                         <a  href= "{{ url_for('asset_components', record_id=2) }}">
                         <input type="submit" name="action" value="Show Details"rel="tooltip" class="btn btn-info">
@@ -105,13 +103,6 @@
                 {% endfor %}
             </tbody>
             </table>
-            <br/>
-                <input type = "submit" value="Delete All Selected" class = "btn btn-info" name="action">
-            <br/>
-                {% if msg %}
-                    <p><div class="alert alert-danger" role="alert">{{msg}}</div></p>
-                {% endif %}
-            </form>
         </div>
     </div>
 </div>
