@@ -21,7 +21,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'DSPB1'
+app.config['MYSQL_PASSWORD'] = 'root'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -64,8 +64,6 @@ def marketplace():
                 msg = 'Successfully deleted'
             if (not msg): msg = "There is nothing to delete"
             return render_template("marketplace.html", msg=msg, data=data)
-        elif request.form['action'] == 'Show Details':
-            return render_template("component_page.html")
 
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("marketplace.html", data=data)
@@ -73,12 +71,12 @@ def marketplace():
 
 @app.route('/component_page.html', methods=['GET', 'POST'])
 def component_page():
-    # creating variable for connection
+    record_id = request.args.get("record_id")
+
+    # Fetch component specific data
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-
-    cursor.execute("select * from components WHERE component_id='da26b52a-73b3-11ec-ac0f-38f9d34975e5'")
+    cursor.execute("select * from components WHERE component_id=%s", [record_id])
     component_data = cursor.fetchall()
-
     return render_template("component_page.html", component_data=component_data)
 
 
@@ -295,6 +293,7 @@ def project_overview():  # Provide forms for input
                 project_data = cursor.fetchall()
                 msg = 'Successfully deleted'
             if (not msg): msg = "There is nothing to delete"
+
             return render_template("project_overview.html", msg=msg, projects_df=project_data)
         elif request.form['action'] == 'Show Details':  #check whether post is coming from 'show details'
             return render_template("component_page.html")
