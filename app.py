@@ -110,7 +110,6 @@ def my_assets():
     if session.get('loggedin') == True:
         cursor.execute("select * from asset_overview where %s = user_id", (session['email'],))
         asset_data = cursor.fetchall()
-        print(asset_data)
     else:
         render_template('login.html')
         return redirect(url_for('login'))
@@ -123,7 +122,7 @@ def my_assets():
                 AssetId = uuid.uuid1()
                 AssetName = request.form['AssetName']
                 AssetType = request.form['AssetType']
-                Maintanencestate = request.form['maintanencestate']
+                Maintanencestate = request.form['maintainancestate']
                 BuildYear = request.form['Builddate']
                 DestructionYear = request.form['Destructiondate']
                 Maintainer = request.form['Maintainer']
@@ -135,11 +134,10 @@ def my_assets():
 
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
+                sql = "INSERT INTO asset_overview (Assetnumber,	AssetName,	AssetType,	ConstructionType,	Maintainance_State,	Buildyear,	Maintainer,	Owner,	Status,	Width,	Length,	Area,	Location,	Passage_road-width,	Passage_road-height, Passage_sail-width, Passage_sail-height, Technical_lifespan_expires,	OBJECT_GUID, Area_1, Connection_Type, Neighborhood,	City, RD-X, RD-Y, Length_1,	Area_2,	circumference,	user_id, Destructionyear) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, NULL, %s, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, %s, %s)"
+                val = (AssetId,	AssetName,	AssetType,	ConstructionType,	Maintanencestate,	BuildYear,	Maintainer,	Owner,	Width,	Length,	Location, UserId,	DestructionYear)
 
-                sql = "INSERT INTO asset_overview (Assetnumber,	AssetName,	AssetType,	ConstructionType,	Maintainance State,	Buildyear,	Maintainer,	Owner,	Status,	Width,	Length,	Area,	Location,	Passage road-width,	Passage road-height,	Passage sail-width,	Passage sail-height,	Technical lifespan expires,	OBJECT_GUID	Area,	Connection Type	Neighborhood,	City,	RD-X,	RD-Y,	Length,	Area,	circumference,	user_id,	Destructionyear) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, %s, NULL, %s, NULL, NULL, NULL, NULL, %s, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, %s, %s)"
-                val = (AssetId,	AssetName,	AssetType,	ConstructionType,	Maintanencestate,	BuildYear,	Maintainer,	Owner,	Width,	Length,	Location,	DestructionYear, UserId,	Destructionyear)
-
-
+                print(val)
                 cursor.execute(sql, val)
                 mysql.connection.commit()
 
@@ -166,15 +164,20 @@ def my_assets():
 
 
     # reindex the dataframe and get the right information
-    asset_cat = pd.DataFrame(asset_data)
+    cursor.execute("select * from asset_overview")
+    categories = cursor.fetchall()
+    asset_cat = pd.DataFrame(categories)
     dataset = asset_cat.reindex(columns=asset_cat.columns.tolist() + ['Open_Asset'])
     construction_type = dataset['ConstructionType'].unique()
     asset_type = dataset['AssetType'].unique()
+    maintainance_type = dataset['Maintainance_State'].unique()
+
 
     return render_template("my_assets.html",
                            asset_data=asset_data,
                            construction_type=construction_type,
-                           asset_type=asset_type)
+                           asset_type=asset_type,
+                           maintainance_type=maintainance_type)
 
 
 @app.route('/add_component', methods=['GET', 'POST'])

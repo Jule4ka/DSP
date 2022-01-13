@@ -37,9 +37,9 @@
                     <input type="date" name="Destructiondate" placeholder="dd/mm/YYYY" min="da" required></input>
                 </div>
                 <div class="col-md-6">
-                    <label>How well is the bridge maintained?</label>
-                    <select name="maintanencestate" id="maintanencestate" required>
-                        {% for type in maintanance_type %}
+                    <label for="maintainancestate">How well is the bridge maintained?</label>
+                    <select name="maintainancestate" id="maintainancestate" required>
+                        {% for type in maintainance_type %}
                             <option value= "{{ type }}" > {{ type }} </option>
                         {% endfor %}
                     </select>
