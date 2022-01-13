@@ -1,18 +1,17 @@
-from flask import Flask, render_template, request, url_for, flash, redirect, session
+from flask import Flask, render_template, request, url_for, flash, redirect, session, Response
 import pandas as pd
 from flask_navigation import Navigation
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
+from flask_navigation.item import Item
 from flask_uploads import configure_uploads, IMAGES, UploadSet
 from flask_wtf import FlaskForm
+from werkzeug.utils import secure_filename
 from wtforms import FileField
 import os
 import uuid
 
-UPLOAD_FOLDER = '/static/uploads'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app = Flask(__name__, static_url_path='')
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 nav = Navigation(app)
 
 # code for connection
@@ -26,6 +25,7 @@ app.config['MYSQL_PASSWORD'] = 'DSPB1'
 app.config['MYSQL_DB'] = 'dummy_db'
 
 mysql = MySQL(app)
+
 
 # Define dict for new projects
 projects = {'AssetName': [], 'StartDate': [], 'Maintainer': [],
@@ -225,7 +225,6 @@ def add_component():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     # executing query
     cursor.execute("select * from components")
-
     return render_template("add_component.html", title="Add Component")
 
 
@@ -242,23 +241,15 @@ def asset_components():
         record_id = str(record_id)
         cursor.execute("select * from asset_overview WHERE Assetnumber= %s", [record_id])
         bridge_dataset = cursor.fetchall()
-        # bridge_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
-        # image
-        img1 = os.path.join(app.config['UPLOAD_FOLDER'])
-        # uploadbutton
-        form = MyForm()
-        if form.validate_on_submit():
-            filename = images.save(form.image.data)
-            return f'Filename: {filename}'
-
-        # Fetch bridge specific data
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         cursor.execute("select * from dummy_data_marketplace")
         data = cursor.fetchall()
 
         return render_template("asset_components.html", column_names=components_dataset.columns.values,
                                row_data=list(components_dataset.values.tolist()), bridge_dataset=bridge_dataset,
-                               zip=zip, title="Asset Components", user_image=img1, form=form)
+                               zip=zip, title="Asset Components",
+                               # , user_image=img1, form=form
+                               record_id=record_id)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -403,16 +394,21 @@ def project_overview():  # Provide forms for input
                            asset_type=asset_type)
 
 
-## IMPORT image
-app.config['SECRET_KEY'] = 'thisisasecret'
-app.config['UPLOADED_IMAGES_DEST'] = 'static/uploads'
-images = UploadSet('images', IMAGES)
-configure_uploads(app, images)
+# Upload Image
+UPLOAD_FOLDER = './static/uploads'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-
-class MyForm(FlaskForm):
-    image = FileField('image')
-
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if request.method == 'POST' and 'file' in request.files:
+        asset_id = request.args.get('record_id')
+        file = request.files['file']
+        bridgeimgname = 'asset_id=' + str(asset_id) + '.jpg'
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'],bridgeimgname))
+        flash("Success! Profile photo uploaded successfully.", 'success')
+    return render_template("upload.html")
 
 # run the application
 if __name__ == '__main__':
