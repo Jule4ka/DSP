@@ -77,7 +77,12 @@ def component_page():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("select * from components WHERE component_id=%s", [record_id])
     component_data = cursor.fetchall()
-    return render_template("component_page.html", component_data=component_data)
+
+    # Fetch similar components
+    cursor.execute("select * from components where category=%s and component_id<>%s", [component_data[0]['category'], record_id])
+    similar_components_data = cursor.fetchall()
+    return render_template("component_page.html", component_data=component_data,
+                           similar_components_data=similar_components_data)
 
 
 @app.route('/assets_overview', methods=['GET', 'POST'])
