@@ -21,7 +21,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'DSPB1'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -103,8 +103,9 @@ def my_assets():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     # collecting all the assets that the user has
     if session.get('loggedin') == True:
-        cursor.execute("select * from asset_overview where %s = user_id", (session['email'],))
-        asset_data = cursor.fetchall()
+        cursor.execute("select * from asset_overview where %s = userid", (session['email'],))
+        asset_data = pd.DataFrame(cursor.fetchall())
+
     else:
         render_template('login.html')
         return redirect(url_for('login'))
@@ -129,9 +130,10 @@ def my_assets():
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
 
-                sql = "INSERT INTO asset_overview (userid, assetid, assetname, assettype, buildyear, destructionyear, maintainer, owner, width, length, location, constructionType) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                sql = "INSERT INTO asset_overview (userid, assetid, assetname, assettype, buildyear, destructionyear, maintainer, owner, width, length, location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 val = (UserId, AssetId, AssetName, AssetType, BuildYear, DestructionYear, Maintainer, Owner, Width, Length, Location, ConstructionType)
-                print('test2')
+
+
                 cursor.execute(sql, val)
                 mysql.connection.commit()
 
@@ -146,9 +148,9 @@ def my_assets():
             msg = ''
             for getid in request.form.getlist('mycheckbox'):
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-                cursor.execute("delete from asset_overview where asset_id= %s", [getid])
+                cursor.execute("delete from asset_overview where assetid = %s", [getid])
                 mysql.connection.commit()
-                cursor.execute("select * from asset_overview where %s = user_id", (session['email'],))
+                cursor.execute("select * from asset_overview where %s = userid", (session['email'],))
                 asset_data = cursor.fetchall()
                 msg = 'Successfully deleted'
             if (not msg): msg = "There is nothing to delete"
@@ -166,7 +168,7 @@ def my_assets():
     asset_type = dataset['assettype'].unique()
 
     return render_template("my_assets.html",
-                           asset_df=asset_data,
+                           asset_data=asset_data,
                            construction_type=construction_type,
                            asset_type=asset_type)
 
@@ -383,8 +385,8 @@ def project_overview():  # Provide forms for input
 
     # reindex the dataframe and get the right information
     dataset = asset_data.reindex(columns=asset_data.columns.tolist() + ['Open_Asset'])
-    construction_type = dataset['ConstructionType'].unique()
-    asset_type = dataset['AssetType'].unique()
+    construction_type = dataset['constructiontype'].unique()
+    asset_type = dataset['assettype'].unique()
 
     return render_template("project_overview.html",
                            projects_df=project_data,

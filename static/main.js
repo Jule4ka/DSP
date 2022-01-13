@@ -33,6 +33,7 @@ $(document).ready(function () {
 $(document).ready(function () {
       $('#projects').DataTable({
         columns: [
+          {orderable: false, searchable: false},
           null,null,null,null,null,
           {orderable: false, searchable: false}
         ],

@@ -74,11 +74,9 @@
     <div class="row">
         <div class="col-sm-12 shadow p-3 mb-5 bg-white rounded ">
             <h2>My Assets</h2>
-            <form method="POST" action="/my_assets">
             <table id="projects" class="table table-striped">
             <thead>
                 <tr>
-                    <th><input type="checkbox" id="checkall"></th>
                     <th>Assetname</th>
                     <th>Assettype</th>
                     <th>Buildyear</th>
@@ -88,12 +86,12 @@
                 </tr>
             </thead>
             <tbody>
-                {% for asset in assets_df %}
+                {% for asset in asset_df %}
                 <tr>
-                    <td> <input type="checkbox" value={{asset.asset_id}} name="mycheckbox" class="checkthis"> </td>
+
                     <td>{{ asset.assetname }}</td>
                     <td>{{ asset.assettype }}</td>
-                    <td>{{ asset.startdate }}</td>
+                    <td>{{ asset.buildyear }}</td>
                     <td>{{ asset.owner }}</td>
                     <td>{{ asset.location }}</td>
                     <td>
@@ -105,13 +103,6 @@
                 {% endfor %}
             </tbody>
             </table>
-            <br/>
-                <input type = "submit" value="Delete All Selected" class = "btn btn-info" name="action">
-            <br/>
-                {% if msg %}
-                    <p><div class="alert alert-danger" role="alert">{{msg}}</div></p>
-                {% endif %}
-            </form>
         </div>
     </div>
 </div>
