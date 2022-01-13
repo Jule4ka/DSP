@@ -157,17 +157,17 @@ def asset_components():
         bridge_dataset = cursor.fetchall()
         # bridge_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
         # image
-        img1 = os.path.join(app.config['UPLOAD_FOLDER'])
-        # uploadbutton
-        form = MyForm()
-        if form.validate_on_submit():
-            filename = images.save(form.image.data)
-            url = filename
-            item = Item(url)
-            mysql.session.add(item)
-            mysql.session.commit()
-            flash("Congratulations, your item has been added")
-            return f'Filename: {filename}'
+        # img1 = os.path.join(app.config['UPLOAD_FOLDER'])
+        # # uploadbutton
+        # form = MyForm()
+        # if form.validate_on_submit():
+        #     filename = images.save(form.image.data)
+        #     url = filename
+        #     item = Item(url)
+        #     mysql.session.add(item)
+        #     mysql.session.commit()
+        #     flash("Congratulations, your item has been added")
+        #     return f'Filename: {filename}'
 
         # Fetch bridge specific data
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -176,7 +176,9 @@ def asset_components():
 
         return render_template("asset_components.html", column_names=components_dataset.columns.values,
                                row_data=list(components_dataset.values.tolist()), bridge_dataset=bridge_dataset,
-                               zip=zip, title="Asset Components", user_image=img1, form=form)
+                               zip=zip, title="Asset Components",
+                               # , user_image=img1, form=form
+                               record_id=record_id)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -339,8 +341,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST' and 'file' in request.files:
-        asset_id = '2'
-        # asset_id = int(request.form['record_id'])
+        # asset_id = '2'
+        asset_id = request.args.get('record_id')
         file = request.files['file']
 
         # select unique user id from database to use as profile picture name

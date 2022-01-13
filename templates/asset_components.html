@@ -9,10 +9,10 @@
     <div class="asset_details_container">
         <div align="left" class="header">Asset Components</div>
         <div class="content-large1">
-            <img src="{{url_for('static', filename='uploads/brug.jpg')}}" align="left"/>
+            <img src="{{url_for('static', filename='uploads/asset_id='+ record_id+'.jpg')}}" align="left"/>
 
-         <form action= "{{ url_for('upload') }}" >
-                    <button type = "submit" name="asset_id" value="{{record_id}}"
+         <form action= "{{ url_for('upload', record_id=record_id) }}" >
+                    <button type = "submit" name="asset_id" value={{record_id}}
                         formmethod="post" class="btn btn-info">Upload image</button>
                 </form>
 
@@ -57,7 +57,7 @@
                         <td>{{row_}}</td>
                         {% endfor %}
                         <td>-->
-                            <a  href= "{{ url_for('asset_components') }}">
+                            <a  href= "{{ url_for('asset_components', record_id = record_id) }}">
                             <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
                             <i class="material-icons"></i></input></a>
                         </td>
