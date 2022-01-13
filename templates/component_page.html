@@ -1,4 +1,4 @@
-<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='asset_components.css') }}">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='component_page.css') }}">
 {% extends "layout.html" %}
 {% block head %}
   {{ super() }}
@@ -6,7 +6,7 @@
 {% block content %}
 
 <div class="main-content">
-    <div class="asset_details_container">
+    <div class="component_details_container">
         <div align="left" class="header">
         <h3>
         {% for row in component_data %}

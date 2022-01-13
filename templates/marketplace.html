@@ -19,7 +19,7 @@
 <table id="marketplace" class="table table-striped">
     <thead>
         <tr>
-            <th><input type="checkbox" id="checkall" /></th>
+            {% if session.loggedin %} <th><input type="checkbox" id="checkall" /></th> {% endif %}
             <th>Component Material</th>
             <th>Category</th>
             <th>Weight (kg)</th>
@@ -34,7 +34,7 @@
     <tbody>
         {% for row in data %}
         <tr>
-            <td> <input type="checkbox" value={{row.component_id}} name="mycheckbox" class="checkthis"> </td>
+            {% if session.loggedin %} <td> <input type="checkbox" value={{row.component_id}} name="mycheckbox" class="checkthis"> </td> {% endif %}
                 <td>{{ row.material }}</td>
                 <td>{{ row.category }}</td>
                 <td>{{ row.weight }} </td>
