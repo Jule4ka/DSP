@@ -20,7 +20,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'DSPB1'
+app.config['MYSQL_PASSWORD'] = 'DSPB1111'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -393,6 +393,14 @@ def project_overview():  # Provide forms for input
                            construction_type=construction_type,
                            asset_type=asset_type)
 
+## IMPORT image
+app.config['SECRET_KEY'] = 'thisisasecret'
+app.config['UPLOADED_IMAGES_DEST'] = 'static/uploads'
+images = UploadSet('images', IMAGES)
+configure_uploads(app, images)
+
+class MyForm(FlaskForm):
+    image = FileField('image')
 
 # Upload Image
 UPLOAD_FOLDER = './static/uploads'
