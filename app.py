@@ -21,7 +21,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'DSPB1'
+app.config['MYSQL_PASSWORD'] = 'root'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -201,15 +201,16 @@ def add_component():
             Availability = request.form['Availability']
             Owner = session['companyname']
             Owner_email = session['email']
+            AvailabilityDate = request.form['AvailabilityDate']
             Location = request.form['Location']
             Price = request.form['Price']
             Description = request.form['comment']
 
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
-            sql = "INSERT INTO components (component_id, material, category, weight, component_condition, availability, component_owner, owner_email, location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            val = (ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, Owner, Owner_email, Location, Price,
-                   Description)
+            sql = "INSERT INTO components (component_id, material, category, weight, component_condition, availability, availability_date, component_owner, owner_email, " \
+                  "location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner, Owner_email, Location, Price,Description)
 
             cursor.execute(sql, val)
             mysql.connection.commit()
