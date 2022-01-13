@@ -35,3 +35,11 @@ input[type=submit] {
     .delete-button {
     width: auto;
     }
+
+hr {
+    display: center;
+    width:100%;
+    size="3";
+    color = black;
+}
+

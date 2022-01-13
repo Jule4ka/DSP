@@ -94,6 +94,79 @@ def assets_overview():
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("assets_overview.html", data=data)
 
+@app.route('/my_assets', methods=['GET', 'POST'])
+def my_assets():
+    # creating variable for connection
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    # collecting all the assets that the user has
+    if session.get('loggedin') == True:
+        cursor.execute("select * from asset_overview where %s = user_id", (session['email'],))
+        asset_data = cursor.fetchall()
+    else:
+        render_template('login.html')
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':  # check to see if all data is filled in
+        if request.form['action'] == 'submit':  # check whether post is coming from insert
+            try:
+                # create unique id for the asset
+                UserId = session['email']
+                AssetId = uuid.uuid1()
+                AssetName = request.form['AssetName']
+                AssetType = request.form['AssetType']
+                BuildYear = request.form['Builddate']
+                DestructionYear = request.form['Destructiondate']
+                Maintainer = request.form['Maintainer']
+                Owner = session['companyname']
+                Width = request.form['Width']
+                Length = request.form['Length']
+                Location = str(request.form['address'] + request.form['city'])
+                ConstructionType = request.form['ConstructionType']
+
+                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+
+
+                sql = "INSERT INTO asset_overview (userid, assetid, assetname, assettype, buildyear, destructionyear, maintainer, owner, width, length, location, constructionType) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                val = (UserId, AssetId, AssetName, AssetType, BuildYear, DestructionYear, Maintainer, Owner, Width, Length, Location, ConstructionType)
+                print('test2')
+                cursor.execute(sql, val)
+                mysql.connection.commit()
+
+                print('Succesfull')
+                msg = "Asset succesfully added"
+                return redirect(url_for('my_assets'))
+            except:
+                msg = 'an error occurred'
+                print('failed')
+
+        if request.form['action'] == 'Delete All Selected':  # check whether post is coming from delete
+            msg = ''
+            for getid in request.form.getlist('mycheckbox'):
+                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+                cursor.execute("delete from asset_overview where asset_id= %s", [getid])
+                mysql.connection.commit()
+                cursor.execute("select * from asset_overview where %s = user_id", (session['email'],))
+                asset_data = cursor.fetchall()
+                msg = 'Successfully deleted'
+            if (not msg): msg = "There is nothing to delete"
+            return render_template("my_assets.html", msg=msg, asset_df=asset_data)
+        elif request.form['action'] == 'Show Details':  # check whether post is coming from 'show details'
+            return render_template("component_page.html")
+
+    # Get possible construction and asset types from Asset database and convert it to a dataframe
+    cursor.execute("select * from asset_overview")
+    asset_data = pd.DataFrame(cursor.fetchall())
+
+    # reindex the dataframe and get the right information
+    dataset = asset_data.reindex(columns=asset_data.columns.tolist() + ['Open_Asset'])
+    construction_type = dataset['constructiontype'].unique()
+    asset_type = dataset['assettype'].unique()
+
+    return render_template("my_assets.html",
+                           asset_df=asset_data,
+                           construction_type=construction_type,
+                           asset_type=asset_type)
+
 
 @app.route('/add_component', methods=['GET', 'POST'])
 def add_component():
@@ -184,7 +257,7 @@ def register():
             password = request.form['password']
             email = request.form['email']
             companyname = request.form['companyname']
-            location = str(request.form['adress'] + request.form['city'])
+            location = str(request.form['address'] + request.form['city'])
 
             # connect to database
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -264,10 +337,10 @@ def project_overview():  # Provide forms for input
                 StartDate = request.form['start_date']
                 EndDate = request.form['end_date']
                 Maintainer = request.form['Maintainer']
-                Owner = request.form['Owner']
+                Owner = session['companyname']
                 Width = request.form['Width']
                 Length = request.form['Length']
-                Location = request.form['Location']
+                Location = str(request.form['address'] + request.form['city'])
                 ConstructionType = request.form['ConstructionType']
 
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
@@ -282,9 +355,10 @@ def project_overview():  # Provide forms for input
 
                 print('Succesfull')
                 msg = "Project succesfully added"
-                return (redirect(url_for('project_overview')))
+                return redirect(url_for('project_overview'))
             except:
                 msg = 'an error occurred'
+
         elif request.form['action'] == 'Delete All Selected':  # check whether post is coming from delete
             msg = ''
             for getid in request.form.getlist('mycheckbox'):
