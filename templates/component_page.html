@@ -19,8 +19,6 @@
                 <b>Condition:</b> {{ row.component_condition }} <br>
                 <b>Availability:</b> {{ row.availability }} <br>
                 <b>Description:</b> {{ row.component_description }} <br>
-        
-        
                 {% endfor %}
             </p>
         </div>
@@ -32,16 +30,47 @@
                 <b>Address:</b> {{ row.location }} <br>
                 <b>Email address:</b> mock@mail.com <br>
                 <b>KvK number:</b> 12345678 <br>
-        
-        
                 {% endfor %}
             </p>
-
         </div>
-
-        <div align="middle" class="content-table-header">Components</div>
+        <div align="middle" class="content-table-header">Similar components</div>
         <div class="content-below">
-            <table>
+            <table id="similar-components" class="table table-striped">
+                <thead>
+                    <tr>
+                    <th>Component Material</th>
+                    <th>Component Category</th>
+                    <th>Weight (kg)</th>
+                    <th>Condition</th>
+                    <th>Availability</th>
+                    <th>Owner</th>
+                    <th>Location</th>
+                    <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+        {% for row in data %}
+        <tr>
+            <td> <input type="checkbox" value={{row.component_id}} name="mycheckbox" class="checkthis"> </td>
+                <td>{{ row.material }}</td>
+                <td>{{ row.category }}</td>
+                <td>{{ row.weight }} </td>
+                <td>{{ row.component_condition }}</td>
+                <td>{{ row.availability }}</td>
+                <td>{{ row.component_owner }}</td>
+                <td>{{ row.location }}</td>
+                <td>{{ row.price }}</td>
+                <td>
+                    <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
+                         <input name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+                        <i class="material-icons"></i></input>
+                    </a>
+        <br>
+
+                </td>
+        </tr>
+        {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>
