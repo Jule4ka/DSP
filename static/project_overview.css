@@ -21,7 +21,7 @@ input, select {
 
 /* Style the submit button */
 input[type=submit] {
-  width: 100%;
+  width: auto;
   background-color: #04AA6D;
   color: white;
   padding: 14px 20px;
