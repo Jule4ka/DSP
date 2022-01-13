@@ -1,18 +1,17 @@
-from flask import Flask, render_template, request, url_for, flash, redirect, session
+from flask import Flask, render_template, request, url_for, flash, redirect, session, Response
 import pandas as pd
 from flask_navigation import Navigation
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
+from flask_navigation.item import Item
 from flask_uploads import configure_uploads, IMAGES, UploadSet
 from flask_wtf import FlaskForm
+from werkzeug.utils import secure_filename
 from wtforms import FileField
 import os
 import uuid
 
-UPLOAD_FOLDER = '/static/uploads'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app = Flask(__name__, static_url_path='')
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 nav = Navigation(app)
 
 # code for connection
@@ -21,11 +20,12 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'DSPB1111'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
 mysql = MySQL(app)
+
 
 # Define dict for new projects
 projects = {'AssetName': [], 'StartDate': [], 'Maintainer': [],
@@ -162,6 +162,11 @@ def asset_components():
         form = MyForm()
         if form.validate_on_submit():
             filename = images.save(form.image.data)
+            url = filename
+            item = Item(url)
+            mysql.session.add(item)
+            mysql.session.commit()
+            flash("Congratulations, your item has been added")
             return f'Filename: {filename}'
 
         # Fetch bridge specific data
@@ -324,6 +329,53 @@ configure_uploads(app, images)
 class MyForm(FlaskForm):
     image = FileField('image')
 
+
+# Upload Image
+UPLOAD_FOLDER = './static/uploads'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    asset_id = '2'
+    if request.method == 'POST' and 'file' in request.files:
+        file = request.files['file']
+
+        # select unique user id from database to use as profile picture name
+        # cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # cur.execute('select Assetnumber from asset_overview WHERE Assetnumber= %s', asset_id)
+        # member = cur.fetchone()
+        # (asset_id, *others) = member
+
+        # assign the member unique id as the file name for our uploaded image
+        # we are also getting some URLs to the image we will use in our profile.html file
+        profilepic_name = 'asset_id=' + str(asset_id) + '.jpg'
+        profilepic_url = '/static/uploads/' + profilepic_name
+        workingdir = os.path.abspath(os.getcwd())
+        fullprofilepic_url = workingdir + profilepic_url
+        # remove similar file name if it already exists. If this is not done, the new file
+        # uploaded will be named diffrently as a file name with the required name alreay exists
+        if os.path.isfile(fullprofilepic_url) == True:
+            os.remove(fullprofilepic_url)
+
+        # save file name on disk and show success message
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'],profilepic_name))
+        flash("Success! Profile photo uploaded successfully.", 'success')
+
+        # # save the image url on database for future use
+        # cur = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # cur.execute('UPDATE asset_overview SET pic_url = %s WHERE Assetnumber = %s', (profilepic_url, asset_id))
+        # mysql.connection.commit()
+        # cur.close()
+        #
+        #
+        # # redirect to profile page.the function viewprofile should return a html file.
+        # return redirect(url_for('upload.html',
+        #                         filename=filename))
+    # return render_template("asset_components.html")
+    return render_template("upload.html")
 
 # run the application
 if __name__ == '__main__':
