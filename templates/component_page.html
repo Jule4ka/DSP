@@ -8,7 +8,11 @@
 <div class="main-content">
     <div class="asset_details_container">
         <div align="left" class="header">
-        Component Overview
+        <h3>
+        {% for row in component_data %}
+        {{ row.material }}, € {{ row.price }}
+        {% endfor %}
+        </h3>
         </div>
         <div align="left" class="content-large1">
             <h4>Component details</h4>
@@ -23,17 +27,20 @@
                 {% endfor %}
             </p>
         </div>
+
         <div class="content-large2" align="left">
             <h4>Contact details seller</h4>
             <p>
-                {% for row in component_data %}
-                <b>Name:</b>  {{ row.component_owner }} <br>
-                <b>Address:</b> {{ row.location }} <br>
-                <b>Email address:</b> mock@mail.com <br>
-                <b>KvK number:</b> 12345678 <br>
+                {% for user in user_data %}
+                <b>Name:</b>  {{ user.companyname }} <br>
+                <b>Address:</b> {{ user.location }} <br>
+                <b>Email address:</b> {{ user.email }} <br>
+                <b>KvK number:</b> {{ user.kvknumber }} <br>
                 {% endfor %}
             </p>
         </div>
+        
+
         <div align="middle" class="content-table-header">Similar components</div>
         <div class="content-below">
             <table id="similar-components" class="table table-striped">
