@@ -64,8 +64,6 @@ def marketplace():
                 msg = 'Successfully deleted'
             if (not msg): msg = "There is nothing to delete"
             return render_template("marketplace.html", msg=msg, data=data)
-        elif request.form['action'] == 'Show Details':
-            return render_template("component_page.html")
 
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("marketplace.html", data=data)
@@ -73,13 +71,18 @@ def marketplace():
 
 @app.route('/component_page.html', methods=['GET', 'POST'])
 def component_page():
-    # creating variable for connection
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    record_id = request.args.get("record_id")
 
-    cursor.execute("select * from components WHERE component_id='da26b52a-73b3-11ec-ac0f-38f9d34975e5'")
+    # Fetch component specific data
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("select * from components WHERE component_id=%s", [record_id])
     component_data = cursor.fetchall()
 
-    return render_template("component_page.html", component_data=component_data)
+    # Fetch similar components
+    cursor.execute("select * from components where category=%s and component_id<>%s", [component_data[0]['category'], record_id])
+    similar_components_data = cursor.fetchall()
+    return render_template("component_page.html", component_data=component_data,
+                           similar_components_data=similar_components_data)
 
 
 @app.route('/assets_overview', methods=['GET', 'POST'])
@@ -295,6 +298,7 @@ def project_overview():  # Provide forms for input
                 project_data = cursor.fetchall()
                 msg = 'Successfully deleted'
             if (not msg): msg = "There is nothing to delete"
+
             return render_template("project_overview.html", msg=msg, projects_df=project_data)
         elif request.form['action'] == 'Show Details':  #check whether post is coming from 'show details'
             return render_template("component_page.html")

@@ -44,16 +44,21 @@
                 <td>{{ row.location }}</td>
                 <td>{{ row.price }}</td>
                 <td>
-                    <a  href= "{{ url_for('component_page') }}">
-                    <input type="submit" name="action" value="Show Details"rel="tooltip" class="btn btn-info">
-                    <i class="material-icons"></i></input></a>
+                    <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
+                         <input name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+                        <i class="material-icons"></i></input>
+                    </a>
+        <br>
+
                 </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
     <br/>
+    {% if session.loggedin %}
     <input type = "submit" name = "action" value="Delete All Selected" class = "btn btn-info" class = "delete-button">
+    {% endif %}
     <br/>
     {% if msg %}
     <p><div class="alert alert-danger" role="alert">{{msg}}</div></p>
