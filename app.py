@@ -21,7 +21,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'DSPB1'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -134,7 +134,7 @@ def my_assets():
 
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
-                sql = "INSERT INTO asset_overview (Assetnumber,	AssetName,	AssetType,	ConstructionType,	Maintainance_State,	Buildyear,	Maintainer,	Owner,	Status,	Width,	Length,	Area,	Location,	Passage_road-width,	Passage_road-height, Passage_sail-width, Passage_sail-height, Technical_lifespan_expires,	OBJECT_GUID, Area_1, Connection_Type, Neighborhood,	City, RD-X, RD-Y, Length_1,	Area_2,	circumference,	user_id, Destructionyear) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, NULL, %s, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, %s, %s)"
+                sql = "INSERT INTO asset_overview (Assetnumber, AssetName, AssetType, ConstructionType,	Maintainance_State,	Buildyear, Maintainer, Owner, Status, Width, Length, Area, Location, Passage_road-width, Passage_road-height, Passage_sail-width, Passage_sail-height, Technical_lifespan_expires, OBJECT_GUID, Area_1, Connection_Type, Neighborhood, City, RD-X, RD-Y, Length_1, Area_2, circumference, user_id, Destructionyear) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, NULL, %s, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, %s, %s)"
                 val = (AssetId,	AssetName,	AssetType,	ConstructionType,	Maintanencestate,	BuildYear,	Maintainer,	Owner,	Width,	Length,	Location, UserId,	DestructionYear)
 
                 print(val)
@@ -394,8 +394,8 @@ def project_overview():  # Provide forms for input
 
     # reindex the dataframe and get the right information
     dataset = asset_data.reindex(columns=asset_data.columns.tolist() + ['Open_Asset'])
-    construction_type = dataset['constructiontype'].unique()
-    asset_type = dataset['assettype'].unique()
+    construction_type = dataset['ConstructionType'].unique()
+    asset_type = dataset['AssetType'].unique()
 
     return render_template("project_overview.html",
                            projects_df=project_data,
