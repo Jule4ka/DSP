@@ -97,11 +97,11 @@
                 {% for asset in asset_data %}
                 <tr>
 
-                    <td>{{ asset.assetname }}</td>
-                    <td>{{ asset.assettype }}</td>
-                    <td>{{ asset.buildyear }}</td>
-                    <td>{{ asset.owner }}</td>
-                    <td>{{ asset.location }}</td>
+                    <td>{{ asset.AssetName }}</td>
+                    <td>{{ asset.AssetType }}</td>
+                    <td>{{ asset.Buildyear }}</td>
+                    <td>{{ asset.Owner }}</td>
+                    <td>{{ asset.Location }}</td>
                     <td>
                         <a  href= "{{ url_for('asset_components', record_id=2) }}">
                         <input type="submit" name="action" value="Show Details"rel="tooltip" class="btn btn-info">
