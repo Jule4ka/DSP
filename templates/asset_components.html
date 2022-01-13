@@ -53,10 +53,11 @@
                         {% for col, row_ in zip(column_names, row) %}
                         <td>{{row_}}</td>
                         {% endfor %}
-                        <td>-->
-                            <a  href= "{{ url_for('asset_components', record_id = record_id) }}">
-                            <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
-                            <i class="material-icons"></i></input></a>
+                        <td>
+                            <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
+                                <input name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+                                <i class="material-icons"></i></input>
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
