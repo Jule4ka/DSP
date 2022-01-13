@@ -44,9 +44,17 @@
                 <td>{{ row.location }}</td>
                 <td>{{ row.price }}</td>
                 <td>
-                    <a  href= "{{ url_for('component_page') }}">
-                    <input type="submit" name="action" value="Show Details"rel="tooltip" class="btn btn-info">
-                    <i class="material-icons"></i></input></a>
+                    <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
+                         <input name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+                        <i class="material-icons"></i></input>
+                    </a>
+                    <!--
+               <form action= "{{ url_for('component_page', record_id=row.component_id) }}" >
+                    <button type="submit" name="component_id" value="{{row.component_id}}"
+                        formmethod="post" class="btn btn-info">See details</button>
+                </form> -->
+        <br>
+
                 </td>
         </tr>
         {% endfor %}
