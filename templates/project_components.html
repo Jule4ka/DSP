@@ -11,10 +11,10 @@
         <div class="content-large1">
             <img src="{{url_for('static', filename='uploads/asset_id=2.jpg')}}" align="left"/>
 
-         <form action= "{{ url_for('upload', record_id=2) }}" >
-                    <button type = "submit" name="asset_id" value={{record_id}}
-                        formmethod="post" class="btn btn-info">Upload image</button>
-                </form>
+<!--         <form action= "{{ url_for('upload', record_id=2) }}" >-->
+<!--                    <button type = "submit" name="asset_id" value={{record_id}}-->
+<!--                        formmethod="post" class="btn btn-info">Upload image</button>-->
+<!--                </form>-->
 
         </div>
         <div align="left" class="content-large2">
@@ -57,10 +57,6 @@
                         <td>{{ row.ProjectComponentState }}</td>
                         <td>{{ row.ProjectComponentVolume }}</td>
                         <td>
-<!--                        <form action= "{{ url_for('components', project_id=row.ProjectComponentId) }}" >-->
-<!--                            <button type = "submit" name="project_id" value="{{row.ProjectComponentId}}"-->
-<!--                                formmethod="post" class="btn btn-info">See details</button>-->
-<!--                        </form>-->
                         </td>
                     </tr>
                     {% endfor %}
