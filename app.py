@@ -6,6 +6,7 @@ import MySQLdb.cursors
 from flask_navigation.item import Item
 from flask_uploads import configure_uploads, IMAGES, UploadSet
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField
 from werkzeug.utils import secure_filename
 from wtforms import FileField
 import os
@@ -368,14 +369,10 @@ def project_overview():  # Provide forms for input
             if (not msg): msg = "There is nothing to delete"
             return redirect(url_for('project_overview'))
 
-<<<<<<< HEAD
-        elif request.form['action'] == 'Show Details':  # check whether post is coming from 'show details'
-            return render_template("component_page.html")
-=======
-            return render_template("project_overview.html", msg=msg, projects_df=project_data)
+
         elif request.form['action'] == 'Show Details':  #check whether post is coming from 'show details'
             return render_template("project_components.html")
->>>>>>> master
+
 
     # Get possible construction and asset types from Asset database and convert it to a dataframe
     cursor.execute("select * from asset_overview")
@@ -420,20 +417,7 @@ def upload():
         flash("Success! Profile photo uploaded successfully.", 'success')
     return render_template("upload.html")
 
-<<<<<<< HEAD
 
-@app.route('/upload_data', methods=['GET', 'POST'])
-def upload_data():
-    if request.method == 'POST' and 'file' in request.files:
-        asset_id = request.args.get('record_id')
-        file = request.files['file']
-        bridgeimgname = 'asset_id=' + str(asset_id) + '.jpg'
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
-        flash("Success! File is uploaded", 'success')
-    return render_template("upload_data.html")
-
-=======
 @app.route('/project_components', methods=['GET', 'POST'])
 def project_components():
     # table
@@ -448,7 +432,18 @@ def project_components():
                            data=data,
                            title="Project Components",
                            project_id=project_id)
->>>>>>> master
+
+
+@app.route('/upload_data', methods=['GET', 'POST'])
+def upload_data():
+    if request.method == 'POST' and 'file' in request.files:
+        asset_id = request.args.get('record_id')
+        file = request.files['file']
+        bridgeimgname = 'asset_id=' + str(asset_id) + '.jpg'
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
+        flash("Success! File is uploaded", 'success')
+    return render_template("upload_data.html")
 
 # run the application
 if __name__ == '__main__':
