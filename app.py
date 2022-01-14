@@ -377,7 +377,7 @@ def project_overview():  # Provide forms for input
 
             return render_template("project_overview.html", msg=msg, projects_df=project_data)
         elif request.form['action'] == 'Show Details':  #check whether post is coming from 'show details'
-            return render_template("component_page.html")
+            return render_template("project_components.html")
 
     # Get possible construction and asset types from Asset database and convert it to a dataframe
     cursor.execute("select * from asset_overview")
@@ -417,6 +417,29 @@ def upload():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'],bridgeimgname))
         flash("Success! Profile photo uploaded successfully.", 'success')
     return render_template("upload.html")
+
+@app.route('/project_components', methods=['GET', 'POST'])
+def project_components():
+    # table
+    if request.method == 'POST':
+        record_id = int(request.form['asset_id'])
+        components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
+        components_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
+
+        # Fetch bridge specific data
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        record_id = str(record_id)
+        cursor.execute("select * from asset_overview WHERE Assetnumber= %s", [record_id])
+        bridge_dataset = cursor.fetchall()
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("select * from dummy_data_marketplace")
+        data = cursor.fetchall()
+
+        return render_template("project_components.html", column_names=components_dataset.columns.values,
+                               row_data=list(components_dataset.values.tolist()), bridge_dataset=bridge_dataset,
+                               zip=zip, title="Asset Components",
+                               # , user_image=img1, form=form
+                               record_id=record_id)
 
 # run the application
 if __name__ == '__main__':
