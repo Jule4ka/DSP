@@ -58,11 +58,9 @@ def marketplace():
             for getid in request.form.getlist('mycheckbox'):
                 cursor.execute("delete from components where component_id= %s", [getid])
                 mysql.connection.commit()
-                cursor.execute("select * from components")
-                data = cursor.fetchall()
                 msg = 'Successfully deleted'
             if (not msg): msg = "There is nothing to delete"
-            return render_template("marketplace.html", msg=msg, data=data)
+            return redirect(url_for('marketplace'))
 
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("marketplace.html", data=data)
@@ -125,8 +123,8 @@ def my_assets():
                 AssetName = request.form['AssetName']
                 AssetType = request.form['AssetType']
                 Maintanencestate = request.form['maintainancestate']
-                BuildYear = request.form['Builddate']
-                DestructionYear = request.form['Destructiondate']
+                BuildYear = str(request.form['Builddate'])
+                DestructionYear = str(request.form['Destructiondate'])
                 Maintainer = request.form['Maintainer']
                 Owner = session['companyname']
                 Width = request.form['Width']
@@ -153,7 +151,6 @@ def my_assets():
                 print(val)
                 cursor.execute(sql, val)
                 mysql.connection.commit()
-
                 print('Succesfull')
                 msg = "Asset succesfully added"
                 return redirect(url_for('my_assets'))
@@ -161,19 +158,6 @@ def my_assets():
                 msg = 'an error occurred'
                 print('failed')
 
-        if request.form['action'] == 'Delete All Selected':  # check whether post is coming from delete
-            msg = ''
-            for getid in request.form.getlist('mycheckbox'):
-                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-                cursor.execute("delete from asset_overview where assetid = %s", [getid])
-                mysql.connection.commit()
-                cursor.execute("select * from asset_overview where %s = userid", (session['email'],))
-                asset_data = cursor.fetchall()
-                msg = 'Successfully deleted'
-            if (not msg): msg = "There is nothing to delete"
-            return render_template("my_assets.html", msg=msg, asset_df=asset_data)
-        elif request.form['action'] == 'Show Details':  # check whether post is coming from 'show details'
-            return render_template("component_page.html")
 
     # reindex the dataframe and get the right information
     cursor.execute("select * from asset_overview")
@@ -383,12 +367,10 @@ def project_overview():  # Provide forms for input
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
                 cursor.execute("delete from projects where project_id= %s", [getid])
                 mysql.connection.commit()
-                cursor.execute("select * from projects where %s = user_id", (session['email'],))
-                project_data = cursor.fetchall()
                 msg = 'Successfully deleted'
             if (not msg): msg = "There is nothing to delete"
+            return redirect(url_for('project_overview'))
 
-            return render_template("project_overview.html", msg=msg, projects_df=project_data)
         elif request.form['action'] == 'Show Details':  # check whether post is coming from 'show details'
             return render_template("component_page.html")
 

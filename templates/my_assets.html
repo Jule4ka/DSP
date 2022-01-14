@@ -50,15 +50,15 @@
                 </div>
                 <div class="col-md-6">
                     <label for="title">Width of the bridge (in m)</label>
-                    <input type="text" name="Width" placeholder="Width in meters" required></input>
+                    <input type="number" name="Width" placeholder="Width in meters" required></input>
                 </div>
                 <div class="col-md-6">
                     <label for="title">Length of the bridge (in m)</label>
-                    <input type="text" name="Length" placeholder="Length in meters" required></input>
+                    <input type="number" name="Length" placeholder="Length in meters" required></input>
                 </div>
                 <div class="col-md-6">
                     <label for="title">Address of the bridge</label>
-                    <input type="text" name="address" placeholder="e.g.) Street 45" required></input>
+                    <input type="text" name="address" placeholder="e.g. Street 45" required></input>
                 </div>
                 <div class="col-md-6">
                     <label for="title">City</label>
@@ -87,8 +87,8 @@
                 <tr>
                     <th>Assetname</th>
                     <th>Assettype</th>
-                    <th>Buildyear</th>
-                    <th>Owner</th>
+                    <th>Build Year</th>
+                    <th>Destruction Year</th>
                     <th>Location</th>
                     <th>Asset details</th>
                 </tr>
@@ -99,8 +99,8 @@
 
                     <td>{{ asset.AssetName }}</td>
                     <td>{{ asset.AssetType }}</td>
-                    <td>{{ asset.Buildyear }}</td>
-                    <td>{{ asset.Owner }}</td>
+                    <td>{{ asset.buildyear }}</td>
+                    <td>{{ asset.destructionyear }}</td>
                     <td>{{ asset.Location }}</td>
                     <td>
                         <a  href= "{{ url_for('asset_components', record_id=2) }}">
