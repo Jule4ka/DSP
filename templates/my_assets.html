@@ -11,7 +11,7 @@
             <hr>
             <a>On this page you can see all the assets you own. An asset can be any type of civil work of art such as
                 bridges or viaducts. You can also add a new asset in case this asset is not
-               yet present on the assets page. </a>
+               yet present on the assets page.</a>
         </div>
         <div class="col-sm-7 offset-md-1 shadow p-3 mb-5 bg-white rounded">
             <h2>Add an asset</h2>
@@ -35,6 +35,14 @@
                 <div class="col-md-6">
                     <label for="title">When will the asset be replaced/destroyed?</label>
                     <input type="date" name="Destructiondate" placeholder="dd/mm/YYYY" min="da" required></input>
+                </div>
+                <div class="col-md-6">
+                    <label for="maintainancestate">How well is the bridge maintained?</label>
+                    <select name="maintainancestate" id="maintainancestate" required>
+                        {% for type in maintainance_type %}
+                            <option value= "{{ type }}" > {{ type }} </option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="col-md-6">
                     <label for="title">Who maintains the asset?</label>
@@ -74,7 +82,7 @@
     <div class="row">
         <div class="col-sm-12 shadow p-3 mb-5 bg-white rounded ">
             <h2>My Assets</h2>
-            <table id="projects" class="table table-striped">
+            <table id="my_assets" class="table table-striped">
             <thead>
                 <tr>
                     <th>Assetname</th>
@@ -86,14 +94,14 @@
                 </tr>
             </thead>
             <tbody>
-                {% for asset in asset_df %}
+                {% for asset in asset_data %}
                 <tr>
 
-                    <td>{{ asset.assetname }}</td>
-                    <td>{{ asset.assettype }}</td>
-                    <td>{{ asset.buildyear }}</td>
-                    <td>{{ asset.owner }}</td>
-                    <td>{{ asset.location }}</td>
+                    <td>{{ asset.AssetName }}</td>
+                    <td>{{ asset.AssetType }}</td>
+                    <td>{{ asset.Buildyear }}</td>
+                    <td>{{ asset.Owner }}</td>
+                    <td>{{ asset.Location }}</td>
                     <td>
                         <a  href= "{{ url_for('asset_components', record_id=2) }}">
                         <input type="submit" name="action" value="Show Details"rel="tooltip" class="btn btn-info">

@@ -9,12 +9,13 @@
     <div class="asset_details_container">
         <div align="left" class="header">Asset Components</div>
         <div class="content-large1">
-            <img src="{{url_for('static', filename='uploads/brug.jpg')}}" align="left"/>
-            <form action="/" method="POST" enctype="multipart/form-data">
-            {{ form.csrf_token }}
-            {{ form.image }}
-            <button type="submit">upload</button>
-    </form>
+            <img src="{{url_for('static', filename='uploads/asset_id='+ record_id+'.jpg')}}" align="left"/>
+
+         <form action= "{{ url_for('upload', record_id=record_id) }}" >
+                    <button type = "submit" name="asset_id" value={{record_id}}
+                        formmethod="post" class="btn btn-info">Upload image</button>
+                </form>
+
         </div>
         <div align="left" class="content-large2">
             <h1>Asset details</h1>
