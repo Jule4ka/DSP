@@ -377,7 +377,7 @@ def project_overview():  # Provide forms for input
 
             return render_template("project_overview.html", msg=msg, projects_df=project_data)
         elif request.form['action'] == 'Show Details':  #check whether post is coming from 'show details'
-            return render_template("component_page.html")
+            return render_template("project_components.html")
 
     # Get possible construction and asset types from Asset database and convert it to a dataframe
     cursor.execute("select * from asset_overview")
@@ -417,6 +417,21 @@ def upload():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'],bridgeimgname))
         flash("Success! Profile photo uploaded successfully.", 'success')
     return render_template("upload.html")
+
+@app.route('/project_components', methods=['GET', 'POST'])
+def project_components():
+    # table
+    project_id = str(request.args.get('project_id2'))
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    project_id = str(project_id)
+    cursor.execute("select * from project_components WHERE ProjectId= %s", [project_id])
+    data = cursor.fetchall()
+
+    return render_template("project_components.html",
+                           data=data,
+                           title="Project Components",
+                           project_id=project_id)
 
 # run the application
 if __name__ == '__main__':
