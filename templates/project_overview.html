@@ -84,7 +84,6 @@
                     <th>Startdate</th>
                     <th>Owner</th>
                     <th>Location</th>
-                    <th>Project overview</th>
                 </tr>
             </thead>
             <tbody>
@@ -98,7 +97,7 @@
                     <td>{{ project.location }}</td>
                     <td>
                         <a  href= "{{ url_for('asset_components', record_id=2) }}">
-                        <input name="action" value="Show Details"rel="tooltip" class="btn btn-info">
+                        <input name="action" value="Show Details"rel="tooltip" class="btn btn-info auto-width">
                         <i class="material-icons"></i></input></a>
                     </td>
                 </tr>
