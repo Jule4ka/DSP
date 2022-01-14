@@ -242,7 +242,6 @@ def asset_components():
     return render_template("asset_components.html", column_names=components_dataset.columns.values,
                                row_data=list(components_dataset.values.tolist()), bridge_dataset=bridge_dataset,
                                zip=zip, title="Asset Components",
-                               # , user_image=img1, form=form
                                record_id=record_id)
 
 
