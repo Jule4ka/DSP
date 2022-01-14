@@ -158,7 +158,6 @@ def my_assets():
                 msg = 'an error occurred'
                 print('failed')
 
-
     # reindex the dataframe and get the right information
     cursor.execute("select * from asset_overview")
     categories = cursor.fetchall()
@@ -227,21 +226,20 @@ def add_component():
 @app.route('/asset-components', methods=['GET', 'POST'])
 def asset_components():
     # table
-    if request.method == 'POST':
-        record_id = int(request.form['asset_id'])
-        components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
-        components_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
+    record_id = request.args.get("record_id")
+    components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
+    components_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
 
         # Fetch bridge specific data
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        record_id = str(record_id)
-        cursor.execute("select * from asset_overview WHERE Assetnumber= %s", [record_id])
-        bridge_dataset = cursor.fetchall()
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute("select * from dummy_data_marketplace")
-        data = cursor.fetchall()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    record_id = str(record_id)
+    cursor.execute("select * from asset_overview WHERE Assetnumber= %s", [record_id])
+    bridge_dataset = cursor.fetchall()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("select * from dummy_data_marketplace")
+    data = cursor.fetchall()
 
-        return render_template("asset_components.html", column_names=components_dataset.columns.values,
+    return render_template("asset_components.html", column_names=components_dataset.columns.values,
                                row_data=list(components_dataset.values.tolist()), bridge_dataset=bridge_dataset,
                                zip=zip, title="Asset Components",
                                # , user_image=img1, form=form
@@ -416,6 +414,18 @@ def upload():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
         flash("Success! Profile photo uploaded successfully.", 'success')
     return render_template("upload.html")
+
+
+@app.route('/upload_data', methods=['GET', 'POST'])
+def upload_data():
+    if request.method == 'POST' and 'file' in request.files:
+        asset_id = request.args.get('record_id')
+        file = request.files['file']
+        bridgeimgname = 'asset_id=' + str(asset_id) + '.jpg'
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
+        flash("Success! File is uploaded", 'success')
+    return render_template("upload_data.html")
 
 
 # run the application
