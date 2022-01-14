@@ -1,4 +1,4 @@
-<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='project_components.css') }}">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='asset_components.css') }}">
 {% extends "layout.html" %}
 {% block head %}
   {{ super() }}
@@ -7,60 +7,64 @@
 
 <div class="main-content">
     <div class="asset_details_container">
-        <div align="left" class="header">Asset Components</div>
+        <div align="left" class="header">Project Components</div>
         <div class="content-large1">
-            <img src="{{url_for('static', filename='uploads/asset_id='+ record_id+'.jpg')}}" align="left"/>
+            <img src="{{url_for('static', filename='uploads/asset_id=2.jpg')}}" align="left"/>
 
-         <form action= "{{ url_for('upload', record_id=record_id) }}" >
+         <form action= "{{ url_for('upload', record_id=2) }}" >
                     <button type = "submit" name="asset_id" value={{record_id}}
                         formmethod="post" class="btn btn-info">Upload image</button>
                 </form>
 
         </div>
         <div align="left" class="content-large2">
-            <h1>Asset details</h1>
-            <p>
-                {% for row in bridge_dataset %}
-                <b>Name:</b>  {{ row.AssetName }} <br>
-                <b>Type:</b>  {{ row.AssetType }} <br>
-                <b>Maintenance State:</b> {{ row.Maintainance_State }} <br>
-                <b>Build Year:</b> {{ row.Buildyear }} <br>
-                <b>Maintainer:</b> {{ row.Maintainer }} <br>
-                <b>Owner:</b> {{ row.Owner }} <br>
-                <b>Status:</b> {{ row.Status }} <br>
-                <b>Location:</b> {{ row.Location }} <br>
-                <b>City:</b> {{ row.City }} <br>
-                {% endfor %}
-            </p>
+            <h1>Project details</h1>
+<!--            <p>-->
+<!--                {% for row in bridge_dataset %}-->
+<!--                <b>Name:</b>  {{ row.AssetName }} <br>-->
+<!--                <b>Type:</b>  {{ row.AssetType }} <br>-->
+<!--                <b>Maintenance State:</b> {{ row.Maintainance_State }} <br>-->
+<!--                <b>Build Year:</b> {{ row.Buildyear }} <br>-->
+<!--                <b>Maintainer:</b> {{ row.Maintainer }} <br>-->
+<!--                <b>Owner:</b> {{ row.Owner }} <br>-->
+<!--                <b>Status:</b> {{ row.Status }} <br>-->
+<!--                <b>Location:</b> {{ row.Location }} <br>-->
+<!--                <b>City:</b> {{ row.City }} <br>-->
+<!--                {% endfor %}-->
+<!--            </p>-->
         </div>
 
-        <div align="middle" class="content-table-header">Components</div>
+        <div align="middle" class="content-table-header">Project Components</div>
+
         <div class="content-below">
-            <table id="asset-components" class="table table-striped">
+            <table id="project_components" class="table table-striped">
                 <thead>
                     <tr>
-                    <th>Assetnumber</th>
-                    <th>ComponentNumber</th>
-                    <th>ComponentName</th>
-                    <th>ComponentState</th>
-                    <th>ComponentVolume</th>
+                    <th>ProjectID</th>
+                    <th>ProjectComponentId</th>
+                    <th>ProjectComponentName</th>
+                    <th>ProjectComponentState</th>
+                    <th>ProjectComponentVolume</th>
                     <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for row in row_data %}
+                    {% for row in data %}
                     <tr>
-                        {% for col, row_ in zip(column_names, row) %}
-                        <td>{{row_}}</td>
-                        {% endfor %}
+                        <td>{{ row.ProjectID }}</td>
+                        <td>{{ row.ProjectComponentId }}</td>
+                        <td>{{ row.ProjectComponentName }}</td>
+                        <td>{{ row.ProjectComponentState }}</td>
+                        <td>{{ row.ProjectComponentVolume }}</td>
                         <td>
-                             <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
-                                <input name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
-                                <i class="material-icons"></i></input>
-                            </a>
+<!--                        <form action= "{{ url_for('components', project_id=row.ProjectComponentId) }}" >-->
+<!--                            <button type = "submit" name="project_id" value="{{row.ProjectComponentId}}"-->
+<!--                                formmethod="post" class="btn btn-info">See details</button>-->
+<!--                        </form>-->
                         </td>
                     </tr>
                     {% endfor %}
+
                 </tbody>
             </table>
         </div>
