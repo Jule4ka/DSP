@@ -1,0 +1,70 @@
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='asset_components.css') }}">
+{% extends "layout.html" %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+
+<div class="main-content">
+    <div class="asset_details_container">
+        <div align="left" class="header">Project Components</div>
+        <div class="content-large1">
+            <img src="{{url_for('static', filename='uploads/asset_id=2.jpg')}}" align="left"/>
+
+<!--         <form action= "{{ url_for('upload', record_id=2) }}" >-->
+<!--                    <button type = "submit" name="asset_id" value={{record_id}}-->
+<!--                        formmethod="post" class="btn btn-info">Upload image</button>-->
+<!--                </form>-->
+
+        </div>
+        <div align="left" class="content-large2">
+            <h1>Project details</h1>
+<!--            <p>-->
+<!--                {% for row in bridge_dataset %}-->
+<!--                <b>Name:</b>  {{ row.AssetName }} <br>-->
+<!--                <b>Type:</b>  {{ row.AssetType }} <br>-->
+<!--                <b>Maintenance State:</b> {{ row.Maintainance_State }} <br>-->
+<!--                <b>Build Year:</b> {{ row.Buildyear }} <br>-->
+<!--                <b>Maintainer:</b> {{ row.Maintainer }} <br>-->
+<!--                <b>Owner:</b> {{ row.Owner }} <br>-->
+<!--                <b>Status:</b> {{ row.Status }} <br>-->
+<!--                <b>Location:</b> {{ row.Location }} <br>-->
+<!--                <b>City:</b> {{ row.City }} <br>-->
+<!--                {% endfor %}-->
+<!--            </p>-->
+        </div>
+
+        <div align="middle" class="content-table-header">Project Components</div>
+
+        <div class="content-below">
+            <table id="project_components" class="table table-striped">
+                <thead>
+                    <tr>
+                    <th>ProjectID</th>
+                    <th>ProjectComponentId</th>
+                    <th>ProjectComponentName</th>
+                    <th>ProjectComponentState</th>
+                    <th>ProjectComponentVolume</th>
+                    <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data %}
+                    <tr>
+                        <td>{{ row.ProjectID }}</td>
+                        <td>{{ row.ProjectComponentId }}</td>
+                        <td>{{ row.ProjectComponentName }}</td>
+                        <td>{{ row.ProjectComponentState }}</td>
+                        <td>{{ row.ProjectComponentVolume }}</td>
+                        <td>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

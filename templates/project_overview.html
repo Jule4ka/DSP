@@ -42,15 +42,15 @@
                 </div>
                 <div class="col-md-6">
                     <label for="title">Width of the bridge (in m&sup2;)</label>
-                    <input type="number" name="Width" placeholder="Width in meters" required></input>
+                    <input type="text" name="Width" placeholder="Width in meters" required></input>
                 </div>
                 <div class="col-md-6">
                     <label for="title">Length of the bridge (in m&sup2;)</label>
-                    <input type="number" name="Length" placeholder="Length in meters" required></input>
+                    <input type="text" name="Length" placeholder="Length in meters" required></input>
                 </div>
                 <div class="col-md-6">
                     <label for="title">Address of the bridge</label>
-                    <input type="text" name="address" placeholder="e.g. Street 45" required></input>
+                    <input type="text" name="address" placeholder="e.g.) Street 45" required></input>
                 </div>
                 <div class="col-md-6">
                     <label for="title">City</label>
@@ -84,6 +84,7 @@
                     <th>Startdate</th>
                     <th>Owner</th>
                     <th>Location</th>
+                    <th>Project overview</th>
                 </tr>
             </thead>
             <tbody>
@@ -96,8 +97,13 @@
                     <td>{{ project.owner }}</td>
                     <td>{{ project.location }}</td>
                     <td>
-                        <a  href= "{{ url_for('asset_components', record_id=2) }}">
-                        <input name="action" value="Show Details"rel="tooltip" class="btn btn-info auto-width">
+<!--                        <form action= "{{ url_for('project_components', project_id=project.project_id) }}" >-->
+<!--                            <button type = "submit" name="project_id" value="{{project.project_id}}"-->
+<!--                                formmethod="post" class="btn btn-info">Show Details</button>-->
+<!--                        </form>-->
+
+                        <a  href= "{{ url_for('project_components', project_id2=project.project_id) }}">
+                        <input name="action" value="Show Details"rel="tooltip" class="btn btn-info">
                         <i class="material-icons"></i></input></a>
                     </td>
                 </tr>

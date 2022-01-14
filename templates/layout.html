@@ -22,6 +22,7 @@
                     <li><a href="{{url_for('assets_overview')}}">Assets</a></li>
                     {% if session.loggedin %}
                     <li><a href="{{url_for('project_overview')}}">My projects</a></li>
+                    <li><a href="{{url_for('project_components')}}">project components</a></li>
                     <li><a href="{{url_for('my_assets')}}">My assets</a></li>
                     <li><a href="{{url_for('project_overview')}}">My components</a></li>
                     {% endif %}

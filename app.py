@@ -368,8 +368,14 @@ def project_overview():  # Provide forms for input
             if (not msg): msg = "There is nothing to delete"
             return redirect(url_for('project_overview'))
 
+<<<<<<< HEAD
         elif request.form['action'] == 'Show Details':  # check whether post is coming from 'show details'
             return render_template("component_page.html")
+=======
+            return render_template("project_overview.html", msg=msg, projects_df=project_data)
+        elif request.form['action'] == 'Show Details':  #check whether post is coming from 'show details'
+            return render_template("project_components.html")
+>>>>>>> master
 
     # Get possible construction and asset types from Asset database and convert it to a dataframe
     cursor.execute("select * from asset_overview")
@@ -414,6 +420,7 @@ def upload():
         flash("Success! Profile photo uploaded successfully.", 'success')
     return render_template("upload.html")
 
+<<<<<<< HEAD
 
 @app.route('/upload_data', methods=['GET', 'POST'])
 def upload_data():
@@ -426,6 +433,22 @@ def upload_data():
         flash("Success! File is uploaded", 'success')
     return render_template("upload_data.html")
 
+=======
+@app.route('/project_components', methods=['GET', 'POST'])
+def project_components():
+    # table
+    project_id = str(request.args.get('project_id2'))
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    project_id = str(project_id)
+    cursor.execute("select * from project_components WHERE ProjectId= %s", [project_id])
+    data = cursor.fetchall()
+
+    return render_template("project_components.html",
+                           data=data,
+                           title="Project Components",
+                           project_id=project_id)
+>>>>>>> master
 
 # run the application
 if __name__ == '__main__':
