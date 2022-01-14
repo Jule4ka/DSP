@@ -20,12 +20,11 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'DSPB1111'
+app.config['MYSQL_PASSWORD'] = 'root'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
 mysql = MySQL(app)
-
 
 # Define dict for new projects
 projects = {'AssetName': [], 'StartDate': [], 'Maintainer': [],
@@ -54,7 +53,7 @@ def marketplace():
     # fetching all records from database
     data = cursor.fetchall()
     if request.method == "POST":
-        if request.form['action'] == 'Delete All Selected': #check whether form comes from delete
+        if request.form['action'] == 'Delete All Selected':  # check whether form comes from delete
             msg = ''
             for getid in request.form.getlist('mycheckbox'):
                 cursor.execute("delete from components where component_id= %s", [getid])
@@ -79,15 +78,17 @@ def component_page():
     component_data = cursor.fetchall()
 
     # Fetch user data
-    cursor.execute("select * from accounts WHERE email=(select owner_email from components WHERE component_id=%s)", [record_id])
+    cursor.execute("select * from accounts WHERE email=(select owner_email from components WHERE component_id=%s)",
+                   [record_id])
     user_data = cursor.fetchall()
 
     # Fetch similar components
-    cursor.execute("select * from components where category=%s and component_id<>%s", [component_data[0]['category'], record_id])
+    cursor.execute("select * from components where category=%s and component_id<>%s",
+                   [component_data[0]['category'], record_id])
     similar_components_data = cursor.fetchall()
-    return render_template("component_page.html",   component_data=component_data,
-                                                    similar_components_data=similar_components_data,
-                                                    user_data=user_data)
+    return render_template("component_page.html", component_data=component_data,
+                           similar_components_data=similar_components_data,
+                           user_data=user_data)
 
 
 @app.route('/assets_overview', methods=['GET', 'POST'])
@@ -101,6 +102,7 @@ def assets_overview():
 
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("assets_overview.html", data=data)
+
 
 @app.route('/my_assets', methods=['GET', 'POST'])
 def my_assets():
@@ -134,8 +136,19 @@ def my_assets():
 
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
-                sql = "INSERT INTO asset_overview (Assetnumber, AssetName, AssetType, ConstructionType,	Maintainance_State,	Buildyear, Maintainer, Owner, Status, Width, Length, Area, Location, Passage_road-width, Passage_road-height, Passage_sail-width, Passage_sail-height, Technical_lifespan_expires, OBJECT_GUID, Area_1, Connection_Type, Neighborhood, City, RD-X, RD-Y, Length_1, Area_2, circumference, user_id, Destructionyear) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, NULL, %s, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, %s, %s)"
-                val = (AssetId,	AssetName,	AssetType,	ConstructionType,	Maintanencestate,	BuildYear,	Maintainer,	Owner,	Width,	Length,	Location, UserId,	DestructionYear)
+                sql = "INSERT INTO asset_overview (Assetnumber, AssetName, AssetType, ConstructionType,	" \
+                      "Maintainance_State,	Buildyear, " \
+                      "Maintainer, Owner, Status, Width, Length, Area, Location, Passage_road_width, " \
+                      "Passage_road_height, Passage_sail_width, Passage_sail_height, " \
+                      "Technical_lifespan_expires, OBJECT_GUID, Area_1, Connection_Type, Neighborhood, City, RD_X, " \
+                      "RD_Y, Length_1, Area_2, " \
+                      "circumference, user_id, Destructionyear) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, " \
+                      "NULL, %s, NULL, NULL, NULL, " \
+                      "NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, %s, %s)"
+                val = (
+                    AssetId, AssetName, AssetType, ConstructionType, Maintanencestate, BuildYear, Maintainer, Owner,
+                    Width,
+                    Length, Location, UserId, DestructionYear)
 
                 print(val)
                 cursor.execute(sql, val)
@@ -162,7 +175,6 @@ def my_assets():
         elif request.form['action'] == 'Show Details':  # check whether post is coming from 'show details'
             return render_template("component_page.html")
 
-
     # reindex the dataframe and get the right information
     cursor.execute("select * from asset_overview")
     categories = cursor.fetchall()
@@ -171,7 +183,6 @@ def my_assets():
     construction_type = dataset['ConstructionType'].unique()
     asset_type = dataset['AssetType'].unique()
     maintainance_type = dataset['Maintainance_State'].unique()
-
 
     return render_template("my_assets.html",
                            asset_data=asset_data,
@@ -210,7 +221,8 @@ def add_component():
 
             sql = "INSERT INTO components (component_id, material, category, weight, component_condition, availability, availability_date, component_owner, owner_email, " \
                   "location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            val = (ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner, Owner_email, Location, Price,Description)
+            val = (ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner,
+                   Owner_email, Location, Price, Description)
 
             cursor.execute(sql, val)
             mysql.connection.commit()
@@ -352,8 +364,9 @@ def project_overview():  # Provide forms for input
 
                 sql = "INSERT INTO projects (user_id, project_id, assetname, assettype, startdate, enddate, maintainer, owner, width, length, location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 val = (
-                UserId, ProjectId, AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length, Location,
-                ConstructionType)
+                    UserId, ProjectId, AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length,
+                    Location,
+                    ConstructionType)
 
                 cursor.execute(sql, val)
                 mysql.connection.commit()
@@ -376,7 +389,7 @@ def project_overview():  # Provide forms for input
             if (not msg): msg = "There is nothing to delete"
 
             return render_template("project_overview.html", msg=msg, projects_df=project_data)
-        elif request.form['action'] == 'Show Details':  #check whether post is coming from 'show details'
+        elif request.form['action'] == 'Show Details':  # check whether post is coming from 'show details'
             return render_template("component_page.html")
 
     # Get possible construction and asset types from Asset database and convert it to a dataframe
@@ -393,19 +406,23 @@ def project_overview():  # Provide forms for input
                            construction_type=construction_type,
                            asset_type=asset_type)
 
+
 ## IMPORT image
 app.config['SECRET_KEY'] = 'thisisasecret'
 app.config['UPLOADED_IMAGES_DEST'] = 'static/uploads'
 images = UploadSet('images', IMAGES)
 configure_uploads(app, images)
 
+
 class MyForm(FlaskForm):
     image = FileField('image')
+
 
 # Upload Image
 UPLOAD_FOLDER = './static/uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -414,9 +431,10 @@ def upload():
         file = request.files['file']
         bridgeimgname = 'asset_id=' + str(asset_id) + '.jpg'
         filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'],bridgeimgname))
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
         flash("Success! Profile photo uploaded successfully.", 'success')
     return render_template("upload.html")
+
 
 # run the application
 if __name__ == '__main__':
