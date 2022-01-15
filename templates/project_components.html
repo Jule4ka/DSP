@@ -51,12 +51,16 @@
                 <tbody>
                     {% for row in data %}
                     <tr>
-                        <td>{{ row.ProjectID }}</td>
+                        <td>{{ row.ProjectId }}</td>
                         <td>{{ row.ProjectComponentId }}</td>
                         <td>{{ row.ProjectComponentName }}</td>
                         <td>{{ row.ProjectComponentState }}</td>
                         <td>{{ row.ProjectComponentVolume }}</td>
                         <td>
+                            <a href = "{{ url_for('delete_row', project_component_id = row.ProjectComponentId, project_id=row.ProjectId) }}">
+                                 <input name="edit_btn" value="Delete" rel="tooltip" class="btn btn-info">
+                                <i class="material-icons"></i></input>
+                            </a>
                         </td>
                     </tr>
                     {% endfor %}
