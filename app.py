@@ -11,6 +11,7 @@ from werkzeug.utils import secure_filename
 from wtforms import FileField
 import os
 import uuid
+from sqlalchemy import create_engine
 
 app = Flask(__name__, static_url_path='')
 nav = Navigation(app)
@@ -141,13 +142,13 @@ def my_assets():
                       "Passage_road_height, Passage_sail_width, Passage_sail_height, " \
                       "Technical_lifespan_expires, OBJECT_GUID, Area_1, Connection_Type, Neighborhood, City, RD_X, " \
                       "RD_Y, Length_1, Area_2, " \
-                      "circumference, user_id, Destructionyear) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, " \
+                      "circumference, user_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, " \
                       "NULL, %s, NULL, NULL, NULL, " \
-                      "NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, %s, %s)"
+                      "NULL, %s, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, %s)"
                 val = (
                     AssetId, AssetName, AssetType, ConstructionType, Maintanencestate, BuildYear, Maintainer, Owner,
                     Width,
-                    Length, Location, UserId, DestructionYear)
+                    Length, Location, DestructionYear, UserId)
 
                 print(val)
                 cursor.execute(sql, val)
@@ -177,7 +178,6 @@ def my_assets():
 
 @app.route('/add_component', methods=['GET', 'POST'])
 def add_component():
-
     msg = ''
     # check to see if user is logged in otherwise, redirect user to the login page
     if session.get('loggedin') == True:
@@ -190,7 +190,6 @@ def add_component():
     record_id = ''
     if request.method == 'GET':
         record_id = request.args.get("record_id")
-
 
     if request.method == 'POST':  # check to see if all data is filled in
         try:
@@ -218,20 +217,22 @@ def add_component():
             if AssetId == 'None':
                 sql = "INSERT INTO components (component_id, asset_id, material, category, weight, component_condition, " \
                       "availability, availability_date, component_owner, owner_email, " \
-                  "location, price, component_description) VALUES (%s, NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                val = (ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner,
-                   Owner_email, Location, Price, Description)
+                      "location, price, component_description) VALUES (%s, NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                val = (
+                ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner,
+                Owner_email, Location, Price, Description)
 
             else:
                 sql = "INSERT INTO components (component_id, asset_id, material, category, weight, component_condition, availability, " \
                       "availability_date, component_owner, owner_email, " \
-                  "location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                val = (ComponentID, AssetId, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner,
-                   Owner_email, Location, Price, Description)
+                      "location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                val = (
+                ComponentID, AssetId, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate,
+                Owner,
+                Owner_email, Location, Price, Description)
 
             cursor.execute(sql, val)
             mysql.connection.commit()
-
 
             print('Succesfull')
             flash("Component succesfully added")
@@ -249,8 +250,6 @@ def add_component():
 def asset_components():
     # table
     record_id = request.args.get("record_id")
-    components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
-    components_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
 
     # Fetch bridge specific data
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -261,8 +260,9 @@ def asset_components():
     cursor.execute("select * from components where asset_id = %s", [record_id])
     components_dataset = cursor.fetchall()
 
-    return render_template("asset_components.html",  bridge_dataset=bridge_dataset,
-                            components_dataset=components_dataset, zip=zip, title="Asset Components",  record_id=record_id)
+    return render_template("asset_components.html", bridge_dataset=bridge_dataset,
+                           components_dataset=components_dataset, zip=zip, title="Asset Components",
+                           record_id=record_id)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -389,9 +389,8 @@ def project_overview():  # Provide forms for input
             return redirect(url_for('project_overview'))
 
 
-        elif request.form['action'] == 'Show Details':  #check whether post is coming from 'show details'
+        elif request.form['action'] == 'Show Details':  # check whether post is coming from 'show details'
             return render_template("project_components.html")
-
 
     # Get possible construction and asset types from Asset database and convert it to a dataframe
     cursor.execute("select * from asset_overview")
@@ -449,16 +448,43 @@ def project_components():
                            title="Project Components",
                            project_id=project_id)
 
+
+# Upload Data
+UPLOAD_FOLDER_DATA = './data/uploads'
+app.config['UPLOAD_FOLDER_DATA'] = UPLOAD_FOLDER_DATA
+UPLOAD_DATA_FILENAME = "Asset_source_data.xlsx"
+app.config['UPLOAD_DATA_FILENAME'] = UPLOAD_DATA_FILENAME
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+
 @app.route('/upload_data', methods=['GET', 'POST'])
 def upload_data():
-    if request.method == 'POST' and 'file' in request.files:
-        asset_id = request.args.get('record_id')
-        file = request.files['file']
-        bridgeimgname = 'asset_id=' + str(asset_id) + '.jpg'
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
+    if request.method == 'POST' and 'data_file' in request.files:
+        # uploading the file
+        file = request.files['data_file']
+        location = os.path.join(app.config['UPLOAD_FOLDER_DATA'], app.config['UPLOAD_DATA_FILENAME'])
+        file.save(location)
         flash("Success! File is uploaded", 'success')
+
+        # populating the table
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        engine = create_engine("mysql+pymysql://{user}:{pw}@localhost/{db}"
+                               .format(user=app.config['MYSQL_USER'],
+                                       pw=app.config['MYSQL_PASSWORD'],
+                                       db=app.config['MYSQL_DB']))
+
+        assets_dataset = pd.read_excel(location)
+        assets_dataset.columns = [c.replace(' ', '_') for c in assets_dataset.columns]
+        assets_dataset.columns = [c.replace('-', '_') for c in assets_dataset.columns]
+        assets_dataset.columns = [c.replace('.', '_') for c in assets_dataset.columns]
+
+        assets_dataset = assets_dataset.reindex(columns=assets_dataset.columns.tolist() + ['user_id'])
+        assets_dataset['user_id'] = session['email']
+        assets_dataset['Assetnumber'] = uuid.uuid1()
+        assets_dataset.to_sql('asset_overview', engine, if_exists='append', index=False)
+        return redirect(url_for('my_assets'))
     return render_template("upload_data.html")
+
 
 @app.route('/delete_row', methods=['GET', 'POST'])
 def delete_row():
@@ -468,6 +494,7 @@ def delete_row():
     cursor.execute("delete from project_components where ProjectComponentId= %s", [project_component_id])
     mysql.connection.commit()
     return redirect(url_for('project_components', project_id2=project_id))
+
 
 # run the application
 if __name__ == '__main__':

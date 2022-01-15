@@ -8,3 +8,4 @@ flask-uploads
 Flask-Reuploaded
 flask-mysqldb
 mysql-connector
+sqlalchemy
