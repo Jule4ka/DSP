@@ -53,21 +53,22 @@
         <br>
 
                 </td>
-                <td>
-                    <form action="/push_to_project">
-                        <SELECT name="project_id" id="project_id">
-                            {% for c in project_list %}
-                                <OPTION value={{c.project_id}}>{{c.project_id}}</option>
-                            {% endfor %}
-                            </SELECT>
-                        <br><br>
-                        <input type="submit" value="Submit">
-                    </form>
-                </td>
+<!--                <td>-->
+<!--                    <form action="/push_to_project">-->
+<!--                        <SELECT name="project_id" id="project_id">-->
+<!--                            {% for c in project_list %}-->
+<!--                                <OPTION value={{c.project_id}}>{{c.project_id}}</option>-->
+<!--                            {% endfor %}-->
+<!--                            </SELECT>-->
+<!--                        <br><br>-->
+<!--                        <input type="submit" value="Submit">-->
+<!--                    </form>-->
+<!--                </td>-->
 
                 <td>
+                    {% if request.args.get('project_id') %}
                     <a href = "{{ url_for('push_to_project'
-                            , project_id=project_id
+                            , project_id=request.args.get('project_id')
                             , component_id = row.component_id
                             , category=row.category
                             , material=row.material
@@ -82,9 +83,11 @@
                             , owner_email=row.owner_email
                             , asset_id=row.asset_id
                             ) }}">
+
                          <input name="edit_btn" value="Push" rel="tooltip" class="btn btn-info">
                         <i class="material-icons"></i></input>
                     </a>
+                    {% endif %}
                 </td>
         </tr>
         {% endfor %}

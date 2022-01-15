@@ -48,11 +48,13 @@ def navpage():
 @app.route('/marketplace', methods=['GET', 'POST'])
 def marketplace():
     project_list = ''
+    project_id = ''
     try:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         # executing query
         cursor.execute("select project_id from projects where %s = user_id", (session['email'],))
         project_list = cursor.fetchall()
+        project_id = request.args.get("project_id")
     finally:
         # creating variable for connection
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -71,7 +73,7 @@ def marketplace():
                 return redirect(url_for('marketplace'))
 
         # returning back to projectlist.html with all records from MySQL which are stored in variable data
-        return render_template("marketplace.html", data=data, project_list=project_list)
+        return render_template("marketplace.html", data=data, project_list=project_list, project_id=project_id)
 
 
 @app.route('/component_page.html', methods=['GET', 'POST'])
@@ -480,7 +482,7 @@ def delete_row():
 @app.route('/push_to_project', methods=['GET', 'POST'])
 def push_to_project():
     #assign column
-    ProjectId=request.form.get('project_id')
+    ProjectId=request.args.get("project_id")
     ProjectComponentId = uuid.uuid1()
     component_id = request.args.get("component_id")
     category = request.args.get("category")
@@ -512,7 +514,7 @@ def push_to_project():
     print(val)
     cursor.execute(sql, val)
     mysql.connection.commit()
-    return redirect(url_for('marketplace'))
+    return redirect(url_for('marketplace',project_id=ProjectId))
 
 # run the application
 if __name__ == '__main__':

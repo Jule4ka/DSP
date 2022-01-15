@@ -32,6 +32,12 @@
 <!--                <b>City:</b> {{ row.City }} <br>-->
 <!--                {% endfor %}-->
 <!--            </p>-->
+            <a href = "{{ url_for('marketplace'
+            , project_id=request.args.get('project_id2')
+            ) }}">
+                                 <input name="edit_btn" value="Add components to project" rel="tooltip" class="btn btn-info">
+                                <i class="material-icons"></i></input>
+            </a>
         </div>
 
         <div align="middle" class="content-table-header">Project Components</div>
