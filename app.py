@@ -21,7 +21,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'DSPB1111'
+app.config['MYSQL_PASSWORD'] = 'root'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -177,6 +177,7 @@ def my_assets():
 
 @app.route('/add_component', methods=['GET', 'POST'])
 def add_component():
+
     msg = ''
     # check to see if user is logged in otherwise, redirect user to the login page
     if session.get('loggedin') == True:
@@ -185,9 +186,20 @@ def add_component():
         msg = 'You need to be logged in to add components'
         render_template('login.html')
         return redirect(url_for('login'))
+
+    record_id = ''
+    if request.method == 'GET':
+        record_id = request.args.get("record_id")
+
+
     if request.method == 'POST':  # check to see if all data is filled in
         try:
             # create unique id for the asset
+
+            if 'asset_id' in request.form:
+                record_id = request.form['asset_id']
+            else:
+                record_id = ''
             ComponentID = uuid.uuid1()
             ComponentMaterial = request.form['ComponentMaterial']
             Category = request.form['Category']
@@ -200,28 +212,37 @@ def add_component():
             Location = request.form['Location']
             Price = request.form['Price']
             Description = request.form['comment']
+            AssetId = record_id
 
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+            if AssetId == 'None':
+                sql = "INSERT INTO components (component_id, asset_id, material, category, weight, component_condition, " \
+                      "availability, availability_date, component_owner, owner_email, " \
+                  "location, price, component_description) VALUES (%s, NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                val = (ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner,
+                   Owner_email, Location, Price, Description)
 
-            sql = "INSERT INTO components (component_id, material, category, weight, component_condition, availability, availability_date, component_owner, owner_email, " \
-                  "location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            val = (ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner,
+            else:
+                sql = "INSERT INTO components (component_id, asset_id, material, category, weight, component_condition, availability, " \
+                      "availability_date, component_owner, owner_email, " \
+                  "location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                val = (ComponentID, AssetId, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner,
                    Owner_email, Location, Price, Description)
 
             cursor.execute(sql, val)
             mysql.connection.commit()
 
+
             print('Succesfull')
-            flash("Project succesfully added")
-            return (redirect(url_for('marketplace.html')))
+            flash("Component succesfully added")
+            if not AssetId:
+                return redirect(url_for('marketplace.html'))
+            else:
+                return redirect(url_for('asset_components'), record_id=AssetId)
         except:
             flash('an error occured')
 
-    # creating variable for connection
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    # executing query
-    cursor.execute("select * from components")
-    return render_template("add_component.html", title="Add Component")
+    return render_template("add_component.html", title="Add Component", asset_id=record_id)
 
 
 @app.route('/asset-components', methods=['GET', 'POST'])
@@ -231,19 +252,17 @@ def asset_components():
     components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
     components_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
 
-        # Fetch bridge specific data
+    # Fetch bridge specific data
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     record_id = str(record_id)
     cursor.execute("select * from asset_overview WHERE Assetnumber= %s", [record_id])
     bridge_dataset = cursor.fetchall()
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("select * from dummy_data_marketplace")
-    data = cursor.fetchall()
+    cursor.execute("select * from components where asset_id = %s", [record_id])
+    components_dataset = cursor.fetchall()
 
-    return render_template("asset_components.html", column_names=components_dataset.columns.values,
-                               row_data=list(components_dataset.values.tolist()), bridge_dataset=bridge_dataset,
-                               zip=zip, title="Asset Components",
-                               record_id=record_id)
+    return render_template("asset_components.html",  bridge_dataset=bridge_dataset,
+                            components_dataset=components_dataset, zip=zip, title="Asset Components",  record_id=record_id)
 
 
 @app.route('/register', methods=['GET', 'POST'])
