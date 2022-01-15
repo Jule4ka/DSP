@@ -96,7 +96,8 @@ def component_page():
     similar_components_data = cursor.fetchall()
     return render_template("component_page.html", component_data=component_data,
                            similar_components_data=similar_components_data,
-                           user_data=user_data)
+                           user_data=user_data
+                           , record_id=record_id)
 
 
 @app.route('/assets_overview', methods=['GET', 'POST'])
@@ -531,6 +532,17 @@ def upload_project_foto():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
         flash("Success! Profile photo uploaded successfully.", 'success')
     return render_template("upload_project_foto.html")
+
+@app.route('/upload_component_foto', methods=['GET', 'POST'])
+def upload_component_foto():
+    if request.method == 'POST' and 'file' in request.files:
+        record_id = request.args.get('record_id')
+        file = request.files['file']
+        bridgeimgname = 'component_id=' + str(record_id) + '.jpg'
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
+        flash("Success! Profile photo uploaded successfully.", 'success')
+    return render_template("upload_component_foto.html")
 
 # run the application
 if __name__ == '__main__':

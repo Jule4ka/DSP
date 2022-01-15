@@ -15,18 +15,13 @@
         </h3>
         </div>
         <div align="left" class="content-large1">
-            <h4>Component details</h4>
-            <p>
-                {% for row in component_data %}
-                <b>Material: </b> {{ row.material }} <br>
-                <b>Category:</b>  {{ row.category }} <br>
-                <b>Weight:</b> {{ row.weight }} kg <br>
-                <b>Condition:</b> {{ row.component_condition }} <br>
-                <b>Availability:</b> {{ row.availability }} <br>
-                <b> Availability date:</b> {{ row.availability_date }} <br>
-                <b>Description:</b> {{ row.component_description }} <br>
-                {% endfor %}
-            </p>
+
+            <img src="{{url_for('static', filename='uploads/component_id='+record_id+'.jpg')}}" align="left"/>
+
+            <form action= "{{ url_for('upload_component_foto', record_id=record_id) }}" >
+                    <button type = "submit" name="record_id" value={{record_id}}
+                        formmethod="post" class="btn btn-info">Upload image</button>
+                </form>
         </div>
 
         <div class="content-large2" align="left">
@@ -37,6 +32,19 @@
                 <b>Address:</b> {{ user.location }} <br>
                 <b>Email address:</b> {{ user.email }} <br>
                 <b>KvK number:</b> {{ user.kvknumber }} <br>
+                {% endfor %}
+            </p>
+
+            <h4>Component details</h4>
+            <p>
+                {% for row in component_data %}
+                <b>Material: </b> {{ row.material }} <br>
+                <b>Category:</b>  {{ row.category }} <br>
+                <b>Weight:</b> {{ row.weight }} kg <br>
+                <b>Condition:</b> {{ row.component_condition }} <br>
+                <b>Availability:</b> {{ row.availability }} <br>
+                <b> Availability date:</b> {{ row.availability_date }} <br>
+                <b>Description:</b> {{ row.component_description }} <br>
                 {% endfor %}
             </p>
         </div>
