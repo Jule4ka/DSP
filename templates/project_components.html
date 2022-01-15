@@ -19,19 +19,15 @@
         </div>
         <div align="left" class="content-large2">
             <h1>Project details</h1>
-<!--            <p>-->
-<!--                {% for row in bridge_dataset %}-->
-<!--                <b>Name:</b>  {{ row.AssetName }} <br>-->
-<!--                <b>Type:</b>  {{ row.AssetType }} <br>-->
-<!--                <b>Maintenance State:</b> {{ row.Maintainance_State }} <br>-->
-<!--                <b>Build Year:</b> {{ row.Buildyear }} <br>-->
-<!--                <b>Maintainer:</b> {{ row.Maintainer }} <br>-->
-<!--                <b>Owner:</b> {{ row.Owner }} <br>-->
-<!--                <b>Status:</b> {{ row.Status }} <br>-->
-<!--                <b>Location:</b> {{ row.Location }} <br>-->
-<!--                <b>City:</b> {{ row.City }} <br>-->
-<!--                {% endfor %}-->
-<!--            </p>-->
+            <p>
+                {% for row in project_data %}
+                <b>ProjectName:</b>  {{ row.assetname }} <br>
+                <b>ProjectType:</b>  {{ row.assettype }} <br>
+                <b>Startdate:</b> {{ row.startdate }} <br>
+                <b>Owner Year:</b> {{ row.owner }} <br>
+                <b>Location:</b> {{ row.location }} <br>
+                {% endfor %}
+            </p>
             <a href = "{{ url_for('marketplace'
             , project_id=request.args.get('project_id2')
             ) }}">

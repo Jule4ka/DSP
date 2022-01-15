@@ -453,10 +453,15 @@ def project_components():
     project_id = str(project_id)
     cursor.execute("select * from project_components WHERE ProjectId= %s", [project_id])
     data = cursor.fetchall()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("select * from projects WHERE project_id= %s", [project_id])
+    project_data = cursor.fetchall()
+
     return render_template("project_components.html",
                            data=data,
                            title="Project Components",
-                           project_id=project_id)
+                           project_id=project_id
+                           ,project_data=project_data)
 
 @app.route('/upload_data', methods=['GET', 'POST'])
 def upload_data():
