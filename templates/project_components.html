@@ -9,12 +9,12 @@
     <div class="asset_details_container">
         <div align="left" class="header">Project Components</div>
         <div class="content-large1">
-            <img src="{{url_for('static', filename='uploads/asset_id=2.jpg')}}" align="left"/>
+            <img src="{{url_for('static', filename='uploads/project_id='+ project_id+'.jpg')}}" align="left"/>
 
-<!--         <form action= "{{ url_for('upload', record_id=2) }}" >-->
-<!--                    <button type = "submit" name="asset_id" value={{record_id}}-->
-<!--                        formmethod="post" class="btn btn-info">Upload image</button>-->
-<!--                </form>-->
+            <form action= "{{ url_for('upload_project_foto', project_id=project_id) }}" >
+                    <button type = "submit" name="project_id" value={{project_id}}
+                        formmethod="post" class="btn btn-info">Upload image</button>
+                </form>
 
         </div>
         <div align="left" class="content-large2">

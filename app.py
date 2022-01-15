@@ -516,6 +516,17 @@ def push_to_project():
     mysql.connection.commit()
     return redirect(url_for('marketplace',project_id=ProjectId))
 
+@app.route('/upload_project_foto', methods=['GET', 'POST'])
+def upload_project_foto():
+    if request.method == 'POST' and 'file' in request.files:
+        project_id = request.args.get('project_id')
+        file = request.files['file']
+        bridgeimgname = 'project_id=' + str(project_id) + '.jpg'
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
+        flash("Success! Profile photo uploaded successfully.", 'success')
+    return render_template("upload_project_foto.html")
+
 # run the application
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
