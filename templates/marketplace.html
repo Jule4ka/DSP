@@ -54,11 +54,37 @@
 
                 </td>
                 <td>
-                    <SELECT name="projects">
-                        {% for c in project_list %}
-                            <OPTION value={{c.assetname}}>{{c.assetname}}</option>
-                        {% endfor %}
-                        </SELECT>
+                    <form action="/push_to_project">
+                        <SELECT name="project_id" id="project_id">
+                            {% for c in project_list %}
+                                <OPTION value={{c.project_id}}>{{c.project_id}}</option>
+                            {% endfor %}
+                            </SELECT>
+                        <br><br>
+                        <input type="submit" value="Submit">
+                    </form>
+                </td>
+
+                <td>
+                    <a href = "{{ url_for('push_to_project'
+                            , project_id=project_id
+                            , component_id = row.component_id
+                            , category=row.category
+                            , material=row.material
+                            , weight=row.weight
+                            , component_condition=row.component_condition
+                            , availability=row.availability
+                            , availability_date=row.availability_date
+                            , component_owner=row.component_owner
+                            , location=row.location
+                            , price=row.price
+                            , component_description=row.component_description
+                            , owner_email=row.owner_email
+                            , asset_id=row.asset_id
+                            ) }}">
+                         <input name="edit_btn" value="Push" rel="tooltip" class="btn btn-info">
+                        <i class="material-icons"></i></input>
+                    </a>
                 </td>
         </tr>
         {% endfor %}

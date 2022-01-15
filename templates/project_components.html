@@ -40,11 +40,18 @@
             <table id="project_components" class="table table-striped">
                 <thead>
                     <tr>
-                    <th>ProjectID</th>
+                    <th>ProjectId</th>
                     <th>ProjectComponentId</th>
-                    <th>ProjectComponentName</th>
-                    <th>ProjectComponentState</th>
-                    <th>ProjectComponentVolume</th>
+                    <th>category</th>
+                    <th>material</th>
+                    <th>weight</th>
+                    <th>component_condition</th>
+                    <th>availability</th>
+                    <th>availability_date</th>
+                    <th>component_owner</th>
+                    <th>location</th>
+                    <th>price</th>
+                    <th>owner_email</th>
                     <th></th>
                     </tr>
                 </thead>
@@ -53,9 +60,16 @@
                     <tr>
                         <td>{{ row.ProjectId }}</td>
                         <td>{{ row.ProjectComponentId }}</td>
-                        <td>{{ row.ProjectComponentName }}</td>
-                        <td>{{ row.ProjectComponentState }}</td>
-                        <td>{{ row.ProjectComponentVolume }}</td>
+                        <td>{{ row.category }}</td>
+                        <td>{{ row.material }}</td>
+                        <td>{{ row.weight }}</td>
+                        <td>{{ row.component_condition }}</td>
+                        <td>{{ row.availability }}</td>
+                        <td>{{ row.availability_date }}</td>
+                        <td>{{ row.component_owner }}</td>
+                        <td>{{ row.location }}</td>
+                        <td>{{ row.price }}</td>
+                        <td>{{ row.owner_email }}</td>
                         <td>
                             <a href = "{{ url_for('delete_row', project_component_id = row.ProjectComponentId, project_id=row.ProjectId) }}">
                                  <input name="edit_btn" value="Delete" rel="tooltip" class="btn btn-info">

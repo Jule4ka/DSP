@@ -51,13 +51,9 @@ def marketplace():
     try:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         # executing query
-        cursor.execute("select assetname from projects where %s = user_id", (session['email'],))
+        cursor.execute("select project_id from projects where %s = user_id", (session['email'],))
         project_list = cursor.fetchall()
     finally:
-        # if project_list == None:
-        #     project_list = None
-        # else:
-        #     project_list = project_list
         # creating variable for connection
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         # executing query
@@ -479,6 +475,44 @@ def delete_row():
     cursor.execute("delete from project_components where ProjectComponentId= %s", [project_component_id])
     mysql.connection.commit()
     return redirect(url_for('project_components', project_id2=project_id))
+
+
+@app.route('/push_to_project', methods=['GET', 'POST'])
+def push_to_project():
+    #assign column
+    ProjectId=request.form.get('project_id')
+    ProjectComponentId = uuid.uuid1()
+    component_id = request.args.get("component_id")
+    category = request.args.get("category")
+    material = request.args.get("material")
+    weight = request.args.get("weight")
+    component_condition = request.args.get("component_condition")
+    availability = request.args.get("availability")
+    availability_date = request.args.get("availability_date")
+    component_owner = request.args.get("component_owner")
+    location = request.args.get("location")
+    price = request.args.get("price")
+    component_description = request.args.get("component_description")
+    owner_email = request.args.get("owner_email")
+    user_id = session['email']
+    asset_id = request.args.get("asset_id")
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+
+    sql = "INSERT INTO project_components (ProjectId, ProjectComponentId, component_id, category, material,	" \
+          "weight,	component_condition, " \
+          "availability, availability_date, component_owner, location, price, component_description, owner_email, " \
+          " user_id, asset_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, " \
+          " %s, %s, %s, %s, %s , %s)"
+    val = (ProjectId, ProjectComponentId, component_id, category, material,
+          weight,	component_condition,
+          availability, availability_date, component_owner, location, price, component_description, owner_email,
+           user_id, asset_id)
+
+    print(val)
+    cursor.execute(sql, val)
+    mysql.connection.commit()
+    return redirect(url_for('marketplace'))
 
 # run the application
 if __name__ == '__main__':
