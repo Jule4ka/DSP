@@ -21,7 +21,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'DSPB1111'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -47,24 +47,35 @@ def navpage():
 
 @app.route('/marketplace', methods=['GET', 'POST'])
 def marketplace():
-    # creating variable for connection
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    # executing query
-    cursor.execute("select * from components")
-    # fetching all records from database
-    data = cursor.fetchall()
-    if request.method == "POST":
-        if request.form['action'] == 'Delete All Selected':  # check whether form comes from delete
-            msg = ''
-            for getid in request.form.getlist('mycheckbox'):
-                cursor.execute("delete from components where component_id= %s", [getid])
-                mysql.connection.commit()
-                msg = 'Successfully deleted'
-            if (not msg): msg = "There is nothing to delete"
-            return redirect(url_for('marketplace'))
+    project_list = ''
+    try:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # executing query
+        cursor.execute("select assetname from projects where %s = user_id", (session['email'],))
+        project_list = cursor.fetchall()
+    finally:
+        # if project_list == None:
+        #     project_list = None
+        # else:
+        #     project_list = project_list
+        # creating variable for connection
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # executing query
+        cursor.execute("select * from components")
+        # fetching all records from database
+        data = cursor.fetchall()
+        if request.method == "POST":
+            if request.form['action'] == 'Delete All Selected':  # check whether form comes from delete
+                msg = ''
+                for getid in request.form.getlist('mycheckbox'):
+                    cursor.execute("delete from components where component_id= %s", [getid])
+                    mysql.connection.commit()
+                    msg = 'Successfully deleted'
+                if (not msg): msg = "There is nothing to delete"
+                return redirect(url_for('marketplace'))
 
-    # returning back to projectlist.html with all records from MySQL which are stored in variable data
-    return render_template("marketplace.html", data=data)
+        # returning back to projectlist.html with all records from MySQL which are stored in variable data
+        return render_template("marketplace.html", data=data, project_list=project_list)
 
 
 @app.route('/component_page.html', methods=['GET', 'POST'])
