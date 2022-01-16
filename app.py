@@ -60,7 +60,7 @@ def marketplace():
         # creating variable for connection
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         # executing query
-        cursor.execute("select * from components")
+        cursor.execute("select * from components where status = 'Published'")
         # fetching all records from database
         data = cursor.fetchall()
         if request.method == "POST":
@@ -198,60 +198,61 @@ def add_component():
         return redirect(url_for('login'))
 
     record_id = ''
+
     if request.method == 'GET':
         record_id = request.args.get("record_id")
 
     if request.method == 'POST':  # check to see if all data is filled in
-        try:
-            # create unique id for the asset
 
-            if 'asset_id' in request.form:
-                record_id = request.form['asset_id']
-            else:
-                record_id = ''
-            ComponentID = uuid.uuid1()
-            ComponentMaterial = request.form['ComponentMaterial']
-            Category = request.form['Category']
-            Weight = request.form['ComponentWeight']
-            Condition = request.form['ComponentCondition']
-            Availability = request.form['Availability']
-            Owner = session['companyname']
-            Owner_email = session['email']
-            AvailabilityDate = request.form['AvailabilityDate']
-            Location = request.form['Location']
-            Price = request.form['Price']
-            Description = request.form['comment']
-            AssetId = record_id
+        if request.form['asset_id'] == 'None':
+           record_id = None
+           Status = 'Published'
+        else:
+            record_id = request.form['asset_id']
 
-            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
-            if AssetId == 'None':
+        ComponentID = uuid.uuid1()
+        ComponentMaterial = request.form['ComponentMaterial']
+        Category = request.form['Category']
+        Weight = request.form['ComponentWeight']
+        Condition = request.form['ComponentCondition']
+        Availability = request.form['Availability']
+        Owner = session['companyname']
+        Owner_email = session['email']
+        AvailabilityDate = request.form['AvailabilityDate']
+        Location = request.form['Location']
+        Price = request.form['Price']
+        Description = request.form['comment']
+        AssetId = record_id
+
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+        if AssetId is None:
                 sql = "INSERT INTO components (component_id, asset_id, material, category, weight, component_condition, " \
                       "availability, availability_date, component_owner, owner_email, " \
-                      "location, price, component_description) VALUES (%s, NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                      "location, price, component_description, status) VALUES (%s, NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 val = (
                 ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner,
-                Owner_email, Location, Price, Description)
+                Owner_email, Location, Price, Description, Status)
 
-            else:
+        else:
                 sql = "INSERT INTO components (component_id, asset_id, material, category, weight, component_condition, availability, " \
                       "availability_date, component_owner, owner_email, " \
-                      "location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                      "location, price, component_description, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NULL)"
                 val = (
                 ComponentID, AssetId, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate,
                 Owner,
                 Owner_email, Location, Price, Description)
 
-            cursor.execute(sql, val)
-            mysql.connection.commit()
+        cursor.execute(sql, val)
+        mysql.connection.commit()
 
-            print('Succesfull')
-            flash("Component succesfully added")
-            if not AssetId:
-                return redirect(url_for('marketplace.html'))
-            else:
-                return redirect(url_for('asset_components'), record_id=AssetId)
-        except:
-            flash('an error occured')
+        print('Succesfull')
+        flash("Component succesfully added")
+        if AssetId is None:
+            return redirect(url_for('marketplace'))
+        else:
+            return redirect(url_for('asset_components', record_id=AssetId, user_id=Owner_email))
+
+
 
     return render_template("add_component.html", title="Add Component", asset_id=record_id)
 
@@ -267,7 +268,7 @@ def asset_components():
     cursor.execute("select * from asset_overview WHERE Assetnumber= %s", [record_id])
     bridge_dataset = cursor.fetchall()
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("select * from components where asset_id = %s and (status <> 'Published' or status is null)", [record_id])
+    cursor.execute("select * from components where asset_id = %s", [record_id])
     components_dataset = cursor.fetchall()
 
     return render_template("asset_components.html", bridge_dataset=bridge_dataset,
@@ -579,8 +580,9 @@ def publish_to_marketplace():
     AssetId = request.args.get("record_id")
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
     cursor.execute("UPDATE components set status = 'Published' where component_id = %s ", [ComponentId])
+    user_id=session['email']
     mysql.connection.commit()
-    return redirect(url_for('asset_components', record_id=AssetId))
+    return redirect(url_for('asset_components', record_id=AssetId, user_id=user_id))
 
 
 

@@ -52,9 +52,9 @@
                         <th>Condition</th>
                         <th>Availability</th>
                         <th>Availability Date</th>
-                        <th>Owner/seller</th>
                         <th>Location</th>
                         <th>Price (€)</th>
+                        <th>Status</th>
                         <th></th>
                     <th></th>
                     </tr>
@@ -68,9 +68,9 @@
                         <td>{{ row.component_condition }}</td>
                         <td>{{ row.availability }}</td>
                         <td> {{ row.availability_date}}</td>
-                        <td>{{ row.component_owner }}</td>
                         <td>{{ row.location }}</td>
                         <td>{{ row.price }}</td>
+                        <td>{{ row.status}}</td>
                         <td>
                              <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
                                 <input name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
