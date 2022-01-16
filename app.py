@@ -547,7 +547,7 @@ def push_to_project():
     print(val)
     cursor.execute(sql, val)
     mysql.connection.commit()
-    return redirect(url_for('marketplace',project_id=ProjectId))
+    return redirect(url_for('marketplace', project_id=ProjectId))
 
 @app.route('/upload_project_foto', methods=['GET', 'POST'])
 def upload_project_foto():
@@ -610,6 +610,22 @@ def project_delete():
     cursor.execute("delete from projects where project_id = %s ", [ProjectId])
     mysql.connection.commit()
     return redirect(url_for('project_overview'))
+
+
+@app.route('/my_components', methods=['GET', 'POST'])
+def my_components():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("select * from components where %s = owner_email", (session['email'],))
+    components_data = cursor.fetchall()
+    return render_template('my_components.html', components_data=components_data)
+
+@app.route('/component_delete', methods=['GET', 'POST'])
+def component_delete():
+    ComponentId = request.args.get("component_id")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("delete from components where component_id = %s ", [ComponentId])
+    mysql.connection.commit()
+    return redirect(url_for('my_components'))
 
 
 # run the application

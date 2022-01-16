@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block content %}
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='assets_overview.css') }}">
+
+<div class="main-content">
+    <table id="assets" class="table table-striped">
+    <thead>
+        <tr>
+           <th>Component Material</th>
+           <th>Category</th>
+           <th>Weight (kg)</th>
+           <th>Condition</th>
+           <th>Availability</th>
+           <th>Availability Date</th>
+           <th>Location</th>
+           <th>Price (€)</th>
+           <th>Status</th>
+           <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in components_data %}
+        <tr>
+             <td>{{ row.material }}</td>
+             <td>{{ row.category }}</td>
+             <td>{{ row.weight }} </td>
+             <td>{{ row.component_condition }}</td>
+             <td>{{ row.availability }}</td>
+             <td> {{ row.availability_date}}</td>
+             <td>{{ row.location }}</td>
+             <td>{{ row.price }}</td>
+             <td>{{ row.status}}</td>
+             <td>
+                 <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
+                      <input name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+                      <i class="material-icons"></i></input>
+                 </a>
+             </td>
+             <td>
+                 <a href = "{{ url_for('component_delete', component_id = row.component_id) }}">
+                      <input name="edit_btn" value="Delete"rel="tooltip" class="btn btn-info">
+                      <i class="material-icons"></i></input>
+                 </a>
+             </td>
+
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+</div>
+
+{% endblock %}
+
+{% block footer %}
+    {{ super() }}
+{% endblock %}
