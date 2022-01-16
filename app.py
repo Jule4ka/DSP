@@ -22,7 +22,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_PASSWORD'] = 'DSPB1111'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -48,24 +48,33 @@ def navpage():
 
 @app.route('/marketplace', methods=['GET', 'POST'])
 def marketplace():
-    # creating variable for connection
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    # executing query
-    cursor.execute("select * from components")
-    # fetching all records from database
-    data = cursor.fetchall()
-    if request.method == "POST":
-        if request.form['action'] == 'Delete All Selected':  # check whether form comes from delete
-            msg = ''
-            for getid in request.form.getlist('mycheckbox'):
-                cursor.execute("delete from components where component_id= %s", [getid])
-                mysql.connection.commit()
-                msg = 'Successfully deleted'
-            if (not msg): msg = "There is nothing to delete"
-            return redirect(url_for('marketplace'))
+    project_list = ''
+    project_id = ''
+    try:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # executing query
+        cursor.execute("select project_id from projects where %s = user_id", (session['email'],))
+        project_list = cursor.fetchall()
+        project_id = request.args.get("project_id")
+    finally:
+        # creating variable for connection
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # executing query
+        cursor.execute("select * from components")
+        # fetching all records from database
+        data = cursor.fetchall()
+        if request.method == "POST":
+            if request.form['action'] == 'Delete All Selected':  # check whether form comes from delete
+                msg = ''
+                for getid in request.form.getlist('mycheckbox'):
+                    cursor.execute("delete from components where component_id= %s", [getid])
+                    mysql.connection.commit()
+                    msg = 'Successfully deleted'
+                if (not msg): msg = "There is nothing to delete"
+                return redirect(url_for('marketplace'))
 
-    # returning back to projectlist.html with all records from MySQL which are stored in variable data
-    return render_template("marketplace.html", data=data)
+        # returning back to projectlist.html with all records from MySQL which are stored in variable data
+        return render_template("marketplace.html", data=data, project_list=project_list, project_id=project_id)
 
 
 @app.route('/component_page.html', methods=['GET', 'POST'])
@@ -88,7 +97,8 @@ def component_page():
     similar_components_data = cursor.fetchall()
     return render_template("component_page.html", component_data=component_data,
                            similar_components_data=similar_components_data,
-                           user_data=user_data)
+                           user_data=user_data
+                           , record_id=record_id)
 
 
 @app.route('/assets_overview', methods=['GET', 'POST'])
@@ -443,10 +453,15 @@ def project_components():
     project_id = str(project_id)
     cursor.execute("select * from project_components WHERE ProjectId= %s", [project_id])
     data = cursor.fetchall()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("select * from projects WHERE project_id= %s", [project_id])
+    project_data = cursor.fetchall()
+
     return render_template("project_components.html",
                            data=data,
                            title="Project Components",
-                           project_id=project_id)
+                           project_id=project_id
+                           ,project_data=project_data)
 
 
 # Upload Data
@@ -494,6 +509,66 @@ def delete_row():
     cursor.execute("delete from project_components where ProjectComponentId= %s", [project_component_id])
     mysql.connection.commit()
     return redirect(url_for('project_components', project_id2=project_id))
+
+
+@app.route('/push_to_project', methods=['GET', 'POST'])
+def push_to_project():
+    #assign column
+    ProjectId=request.args.get("project_id")
+    ProjectComponentId = uuid.uuid1()
+    component_id = request.args.get("component_id")
+    category = request.args.get("category")
+    material = request.args.get("material")
+    weight = request.args.get("weight")
+    component_condition = request.args.get("component_condition")
+    availability = request.args.get("availability")
+    availability_date = request.args.get("availability_date")
+    component_owner = request.args.get("component_owner")
+    location = request.args.get("location")
+    price = request.args.get("price")
+    component_description = request.args.get("component_description")
+    owner_email = request.args.get("owner_email")
+    user_id = session['email']
+    asset_id = request.args.get("asset_id")
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+
+    sql = "INSERT INTO project_components (ProjectId, ProjectComponentId, component_id, category, material,	" \
+          "weight,	component_condition, " \
+          "availability, availability_date, component_owner, location, price, component_description, owner_email, " \
+          " user_id, asset_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, " \
+          " %s, %s, %s, %s, %s , %s)"
+    val = (ProjectId, ProjectComponentId, component_id, category, material,
+          weight,	component_condition,
+          availability, availability_date, component_owner, location, price, component_description, owner_email,
+           user_id, asset_id)
+
+    print(val)
+    cursor.execute(sql, val)
+    mysql.connection.commit()
+    return redirect(url_for('marketplace',project_id=ProjectId))
+
+@app.route('/upload_project_foto', methods=['GET', 'POST'])
+def upload_project_foto():
+    if request.method == 'POST' and 'file' in request.files:
+        project_id = request.args.get('project_id')
+        file = request.files['file']
+        bridgeimgname = 'project_id=' + str(project_id) + '.jpg'
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
+        flash("Success! Profile photo uploaded successfully.", 'success')
+    return render_template("upload_project_foto.html")
+
+@app.route('/upload_component_foto', methods=['GET', 'POST'])
+def upload_component_foto():
+    if request.method == 'POST' and 'file' in request.files:
+        record_id = request.args.get('record_id')
+        file = request.files['file']
+        bridgeimgname = 'component_id=' + str(record_id) + '.jpg'
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
+        flash("Success! Profile photo uploaded successfully.", 'success')
+    return render_template("upload_component_foto.html")
 
 
 # run the application
