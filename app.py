@@ -267,7 +267,7 @@ def asset_components():
     cursor.execute("select * from asset_overview WHERE Assetnumber= %s", [record_id])
     bridge_dataset = cursor.fetchall()
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("select * from components where asset_id = %s", [record_id])
+    cursor.execute("select * from components where asset_id = %s and (status <> 'Published' or status is null)", [record_id])
     components_dataset = cursor.fetchall()
 
     return render_template("asset_components.html", bridge_dataset=bridge_dataset,
@@ -559,6 +559,7 @@ def upload_project_foto():
         flash("Success! Profile photo uploaded successfully.", 'success')
     return render_template("upload_project_foto.html")
 
+
 @app.route('/upload_component_foto', methods=['GET', 'POST'])
 def upload_component_foto():
     if request.method == 'POST' and 'file' in request.files:
@@ -569,6 +570,18 @@ def upload_component_foto():
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
         flash("Success! Profile photo uploaded successfully.", 'success')
     return render_template("upload_component_foto.html")
+
+
+
+@app.route('/publish_to_marketplace', methods=['GET', 'POST'])
+def publish_to_marketplace():
+    ComponentId = request.args.get("component_id")
+    AssetId = request.args.get("record_id")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("UPDATE components set status = 'Published' where component_id = %s ", [ComponentId])
+    mysql.connection.commit()
+    return redirect(url_for('asset_components', record_id=AssetId))
+
 
 
 # run the application

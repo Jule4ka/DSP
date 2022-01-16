@@ -102,7 +102,7 @@
                     <td>{{ asset.destructionyear }}</td>
                     <td>{{ asset.Location }}</td>
                     <td>
-                        <a  href= "{{ url_for('asset_components', record_id= asset.Assetnumber) }}">
+                        <a  href= "{{ url_for('asset_components', record_id = asset.Assetnumber, user_id = asset.user_id) }}">
                         <input name="action" value="Show Details"rel="tooltip" class="btn btn-info">
                         <i class="material-icons"></i></input></a>
                     </td>

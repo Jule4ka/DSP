@@ -55,6 +55,7 @@
                         <th>Owner/seller</th>
                         <th>Location</th>
                         <th>Price (€)</th>
+                        <th></th>
                     <th></th>
                     </tr>
                 </thead>
@@ -76,6 +77,19 @@
                                 <i class="material-icons"></i></input>
                             </a>
                         </td>
+                         <td>
+                             {% if request.args.get('user_id') %}
+                            <a href = "{{ url_for('publish_to_marketplace'
+                            , component_id = row.component_id
+                            , user_id = row.user_id
+                            , record_id = record_id
+                            ) }}">
+
+                         <input name="edit_btn" value="Publish to Marketplace" rel="tooltip" class="btn btn-info" style="background-color:orange;border-color:orange">
+                        <i class="material-icons"></i></input>
+                    </a>
+                             {% endif %}
+                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
