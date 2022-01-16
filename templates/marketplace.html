@@ -9,17 +9,17 @@
 <div class="main-content">
         <h1>Welcome to the Material Marketplace</h1>
         <h5>Browse through the different materials to find the right material for your bridge.</h5>
+        {% if session.loggedin %}
         <div class="add_component">
             <a  href= "{{ url_for('add_component') }}">
             <input type="submit" name="edit_btn" value="Sell a loose component"rel="tooltip" class="btn btn-info">
             <i class="material-icons"></i></input></a>
         </div>
+        {% endif %}
     <br/>
-<form method="POST" action="/marketplace">
 <table id="marketplace" class="table table-striped">
     <thead>
         <tr>
-            {% if session.loggedin %} <th><input type="checkbox" id="checkall" /></th> {% endif %}
             <th>Component Material</th>
             <th>Category</th>
             <th>Weight (kg)</th>
@@ -29,13 +29,11 @@
             <th>Owner/seller</th>
             <th>Location</th>
             <th>Price (€)</th>
-
         </tr>
     </thead>
     <tbody>
         {% for row in data %}
         <tr>
-            {% if session.loggedin %} <td> <input type="checkbox" value={{row.component_id}} name="mycheckbox" class="checkthis"> </td> {% endif %}
                 <td>{{ row.material }}</td>
                 <td>{{ row.category }}</td>
                 <td>{{ row.weight }} </td>
@@ -51,8 +49,15 @@
                         <i class="material-icons"></i></input>
                     </a>
         <br>
-
                 </td>
+                {% if session.loggedin %}
+                <td>
+                        <a href = "{{ url_for('remove_from_marketplace', component_id = row.component_id) }}">
+                         <input name="edit_btn" value="Remove From Marketplace"rel="tooltip" class="btn btn-info">
+                        <i class="material-icons"></i></input>
+                    </a>
+                </td>
+                {% endif %}
 <!--                <td>-->
 <!--                    <form action="/push_to_project">-->
 <!--                        <SELECT name="project_id" id="project_id">-->
@@ -94,15 +99,6 @@
     </tbody>
 </table>
     <br/>
-    {% if session.loggedin %}
-    <input type = "submit" name = "action" value="Delete All Selected" class = "btn btn-info" class = "delete-button">
-    {% endif %}
-    <br/>
-    {% if msg %}
-    <p><div class="alert alert-danger" role="alert">{{msg}}</div></p>
-    {% endif %}
-</form>
-
 </div>
 
 {% endblock %}
