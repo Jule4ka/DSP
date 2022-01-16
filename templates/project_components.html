@@ -42,8 +42,6 @@
             <table id="project_components" class="table table-striped">
                 <thead>
                     <tr>
-                    <th>ProjectId</th>
-                    <th>ProjectComponentId</th>
                     <th>category</th>
                     <th>material</th>
                     <th>weight</th>
@@ -60,8 +58,6 @@
                 <tbody>
                     {% for row in data %}
                     <tr>
-                        <td>{{ row.ProjectId }}</td>
-                        <td>{{ row.ProjectComponentId }}</td>
                         <td>{{ row.category }}</td>
                         <td>{{ row.material }}</td>
                         <td>{{ row.weight }}</td>
