@@ -585,6 +585,32 @@ def publish_to_marketplace():
     return redirect(url_for('asset_components', record_id=AssetId, user_id=user_id))
 
 
+@app.route('/remove_from_marketplace', methods=['GET', 'POST'])
+def remove_from_marketplace():
+    ComponentId = request.args.get("component_id")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("UPDATE components set status = 'Not Published' where component_id = %s ", [ComponentId])
+    mysql.connection.commit()
+    return redirect(url_for('marketplace'))
+
+
+@app.route('/asset_delete', methods=['GET', 'POST'])
+def asset_delete():
+    AssetId = request.args.get("asset_id")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("delete from asset_overview where Assetnumber = %s ", [AssetId])
+    mysql.connection.commit()
+    return redirect(url_for('my_assets'))
+
+
+@app.route('/project_delete', methods=['GET', 'POST'])
+def project_delete():
+    ProjectId = request.args.get("project_id")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("delete from projects where project_id = %s ", [ProjectId])
+    mysql.connection.commit()
+    return redirect(url_for('project_overview'))
+
 
 # run the application
 if __name__ == '__main__':
