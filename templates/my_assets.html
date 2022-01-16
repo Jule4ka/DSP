@@ -10,8 +10,8 @@
             <h2>Asset overview</h2>
             <hr>
             <a>On this page you can see all the assets you own. An asset can be any type of civil work of art such as
-                bridges or viaducts. You can also add a new asset in case this asset is not
-               yet present on the assets page.</a>
+                bridges or viaducts. You can also add a new asset (in case this asset is not
+               yet present on the assets page) or upload assets from the file.</a>
         </div>
         <div class="col-sm-7 offset-md-1 shadow p-3 mb-5 bg-white rounded">
             <h2>Add an asset</h2>
@@ -50,15 +50,15 @@
                 </div>
                 <div class="col-md-6">
                     <label for="title">Width of the bridge (in m)</label>
-                    <input type="text" name="Width" placeholder="Width in meters" required></input>
+                    <input type="number" name="Width" placeholder="Width in meters" required></input>
                 </div>
                 <div class="col-md-6">
                     <label for="title">Length of the bridge (in m)</label>
-                    <input type="text" name="Length" placeholder="Length in meters" required></input>
+                    <input type="number" name="Length" placeholder="Length in meters" required></input>
                 </div>
                 <div class="col-md-6">
                     <label for="title">Address of the bridge</label>
-                    <input type="text" name="address" placeholder="e.g.) Street 45" required></input>
+                    <input type="text" name="address" placeholder="e.g. Street 45" required></input>
                 </div>
                 <div class="col-md-6">
                     <label for="title">City</label>
@@ -87,8 +87,8 @@
                 <tr>
                     <th>Assetname</th>
                     <th>Assettype</th>
-                    <th>Buildyear</th>
-                    <th>Owner</th>
+                    <th>Build Year</th>
+                    <th>Destruction Year</th>
                     <th>Location</th>
                     <th>Asset details</th>
                 </tr>
@@ -96,43 +96,38 @@
             <tbody>
                 {% for asset in asset_data %}
                 <tr>
-
                     <td>{{ asset.AssetName }}</td>
                     <td>{{ asset.AssetType }}</td>
-                    <td>{{ asset.Buildyear }}</td>
-                    <td>{{ asset.Owner }}</td>
+                    <td>{{ asset.buildyear }}</td>
+                    <td>{{ asset.destructionyear }}</td>
                     <td>{{ asset.Location }}</td>
                     <td>
-                        <a  href= "{{ url_for('asset_components', record_id=2) }}">
-                        <input type="submit" name="action" value="Show Details"rel="tooltip" class="btn btn-info">
+                        <a  href= "{{ url_for('asset_components', record_id = asset.Assetnumber, user_id = asset.user_id) }}">
+                        <input name="action" value="Show Details"rel="tooltip" class="btn btn-info">
+                        <i class="material-icons"></i></input></a>
+                    </td>
+                    <td>
+                        <a  href= "{{ url_for('asset_delete', asset_id = asset.Assetnumber) }}">
+                        <input name="action" value="Delete"rel="tooltip" class="btn btn-info">
                         <i class="material-icons"></i></input></a>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
             </table>
+                <br/>
+                <a href = "{{ url_for('upload_data') }}">
+                         <input name="edit_btn" value="Upload Data" rel="tooltip" class="btn btn-info auto-width">
+                        <i class="material-icons"></i></input>
+                    </a>
+                <br/>
+               {% if msg %}
+                    <p><div class="alert alert-danger" role="alert">{{msg}}</div></p>
+                {% endif %}
         </div>
     </div>
 </div>
 </div>
-
-    <!--<div class="row">
-              <div class="col-md-4"></div>
-              <div class="col-md-4">
-                  <form action="" method="post">
-                     <label for="ComponentType">Choose a main component type:</label>
-                      <div class="input_fields_wrap">
-                      <button class="add_field_button">Add More Fields</button>
-                      <input type="text" class="form-control mb-3" name="mytext[]" placeholder="Enter component">
-                      </div>
-                  </form>
-              </div>
-              <div class="col-md-4"></div>
-          </div>
-       </div>
-       <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-    -->
 
 
 {% endblock %}

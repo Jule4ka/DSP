@@ -1,0 +1,4 @@
+ALTER TABLE asset_overview add column destructionyear int after circumference;
+ 
+alter table asset_overview modify buildyear varchar(255);
+alter table asset_overview modify destructionyear varchar(255);

@@ -19,7 +19,6 @@
             <th>Status</th>
             <th>Location</th>
             <th>City</th>
-            <th>Open_Asset</th>
         </tr>
     </thead>
     <tbody>
@@ -36,10 +35,12 @@
                 <td>{{ row.Location }}</td>
                 <td>{{ row.City }}</td>
                 <td>
-                <form action= "{{ url_for('asset_components', record_id=row.Assetnumber) }}" >
-                    <button type = "submit" name="asset_id" value="{{row.Assetnumber}}"
-                        formmethod="post" class="btn btn-info">See details</button>
-                </form>
+
+                    <a href = "{{ url_for('asset_components', record_id = row.Assetnumber) }}">
+                         <input name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+                        <i class="material-icons"></i></input>
+                    </a>
+
                 </td>
         </tr>
         {% endfor %}

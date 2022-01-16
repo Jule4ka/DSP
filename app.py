@@ -6,10 +6,12 @@ import MySQLdb.cursors
 from flask_navigation.item import Item
 from flask_uploads import configure_uploads, IMAGES, UploadSet
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField
 from werkzeug.utils import secure_filename
 from wtforms import FileField
 import os
 import uuid
+from sqlalchemy import create_engine
 
 app = Flask(__name__, static_url_path='')
 nav = Navigation(app)
@@ -20,12 +22,11 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'DSPB1111'
+app.config['MYSQL_PASSWORD'] = 'root'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
 mysql = MySQL(app)
-
 
 # Define dict for new projects
 projects = {'AssetName': [], 'StartDate': [], 'Maintainer': [],
@@ -47,26 +48,33 @@ def navpage():
 
 @app.route('/marketplace', methods=['GET', 'POST'])
 def marketplace():
-    # creating variable for connection
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    # executing query
-    cursor.execute("select * from components")
-    # fetching all records from database
-    data = cursor.fetchall()
-    if request.method == "POST":
-        if request.form['action'] == 'Delete All Selected': #check whether form comes from delete
-            msg = ''
-            for getid in request.form.getlist('mycheckbox'):
-                cursor.execute("delete from components where component_id= %s", [getid])
-                mysql.connection.commit()
-                cursor.execute("select * from components")
-                data = cursor.fetchall()
-                msg = 'Successfully deleted'
-            if (not msg): msg = "There is nothing to delete"
-            return render_template("marketplace.html", msg=msg, data=data)
+    project_list = ''
+    project_id = ''
+    try:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # executing query
+        cursor.execute("select project_id from projects where %s = user_id", (session['email'],))
+        project_list = cursor.fetchall()
+        project_id = request.args.get("project_id")
+    finally:
+        # creating variable for connection
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        # executing query
+        cursor.execute("select * from components where status = 'Published'")
+        # fetching all records from database
+        data = cursor.fetchall()
+        if request.method == "POST":
+            if request.form['action'] == 'Delete All Selected':  # check whether form comes from delete
+                msg = ''
+                for getid in request.form.getlist('mycheckbox'):
+                    cursor.execute("delete from components where component_id= %s", [getid])
+                    mysql.connection.commit()
+                    msg = 'Successfully deleted'
+                if (not msg): msg = "There is nothing to delete"
+                return redirect(url_for('marketplace'))
 
-    # returning back to projectlist.html with all records from MySQL which are stored in variable data
-    return render_template("marketplace.html", data=data)
+        # returning back to projectlist.html with all records from MySQL which are stored in variable data
+        return render_template("marketplace.html", data=data, project_list=project_list, project_id=project_id)
 
 
 @app.route('/component_page.html', methods=['GET', 'POST'])
@@ -79,15 +87,18 @@ def component_page():
     component_data = cursor.fetchall()
 
     # Fetch user data
-    cursor.execute("select * from accounts WHERE email=(select owner_email from components WHERE component_id=%s)", [record_id])
+    cursor.execute("select * from accounts WHERE email=(select owner_email from components WHERE component_id=%s)",
+                   [record_id])
     user_data = cursor.fetchall()
 
     # Fetch similar components
-    cursor.execute("select * from components where category=%s and component_id<>%s", [component_data[0]['category'], record_id])
+    cursor.execute("select * from components where category=%s and component_id<>%s",
+                   [component_data[0]['category'], record_id])
     similar_components_data = cursor.fetchall()
-    return render_template("component_page.html",   component_data=component_data,
-                                                    similar_components_data=similar_components_data,
-                                                    user_data=user_data)
+    return render_template("component_page.html", component_data=component_data,
+                           similar_components_data=similar_components_data,
+                           user_data=user_data
+                           , record_id=record_id)
 
 
 @app.route('/assets_overview', methods=['GET', 'POST'])
@@ -101,6 +112,7 @@ def assets_overview():
 
     # returning back to projectlist.html with all records from MySQL which are stored in variable data
     return render_template("assets_overview.html", data=data)
+
 
 @app.route('/my_assets', methods=['GET', 'POST'])
 def my_assets():
@@ -123,8 +135,8 @@ def my_assets():
                 AssetName = request.form['AssetName']
                 AssetType = request.form['AssetType']
                 Maintanencestate = request.form['maintainancestate']
-                BuildYear = request.form['Builddate']
-                DestructionYear = request.form['Destructiondate']
+                BuildYear = str(request.form['Builddate'])
+                DestructionYear = str(request.form['Destructiondate'])
                 Maintainer = request.form['Maintainer']
                 Owner = session['companyname']
                 Width = request.form['Width']
@@ -134,34 +146,29 @@ def my_assets():
 
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
-                sql = "INSERT INTO asset_overview (Assetnumber, AssetName, AssetType, ConstructionType,	Maintainance_State,	Buildyear, Maintainer, Owner, Status, Width, Length, Area, Location, Passage_road-width, Passage_road-height, Passage_sail-width, Passage_sail-height, Technical_lifespan_expires, OBJECT_GUID, Area_1, Connection_Type, Neighborhood, City, RD-X, RD-Y, Length_1, Area_2, circumference, user_id, Destructionyear) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, NULL, %s, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, %s, %s)"
-                val = (AssetId,	AssetName,	AssetType,	ConstructionType,	Maintanencestate,	BuildYear,	Maintainer,	Owner,	Width,	Length,	Location, UserId,	DestructionYear)
+                sql = "INSERT INTO asset_overview (Assetnumber, AssetName, AssetType, ConstructionType,	" \
+                      "Maintainance_State,	Buildyear, " \
+                      "Maintainer, Owner, Status, Width, Length, Area, Location, Passage_road_width, " \
+                      "Passage_road_height, Passage_sail_width, Passage_sail_height, " \
+                      "Technical_lifespan_expires, OBJECT_GUID, Area_1, Connection_Type, Neighborhood, City, RD_X, " \
+                      "RD_Y, Length_1, Area_2, " \
+                      "circumference, user_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, " \
+                      "NULL, %s, NULL, NULL, NULL, " \
+                      "NULL, %s, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, %s)"
+                val = (
+                    AssetId, AssetName, AssetType, ConstructionType, Maintanencestate, BuildYear, Maintainer, Owner,
+                    Width,
+                    Length, Location, DestructionYear, UserId)
 
                 print(val)
                 cursor.execute(sql, val)
                 mysql.connection.commit()
-
                 print('Succesfull')
                 msg = "Asset succesfully added"
                 return redirect(url_for('my_assets'))
             except:
                 msg = 'an error occurred'
                 print('failed')
-
-        if request.form['action'] == 'Delete All Selected':  # check whether post is coming from delete
-            msg = ''
-            for getid in request.form.getlist('mycheckbox'):
-                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-                cursor.execute("delete from asset_overview where assetid = %s", [getid])
-                mysql.connection.commit()
-                cursor.execute("select * from asset_overview where %s = userid", (session['email'],))
-                asset_data = cursor.fetchall()
-                msg = 'Successfully deleted'
-            if (not msg): msg = "There is nothing to delete"
-            return render_template("my_assets.html", msg=msg, asset_df=asset_data)
-        elif request.form['action'] == 'Show Details':  # check whether post is coming from 'show details'
-            return render_template("component_page.html")
-
 
     # reindex the dataframe and get the right information
     cursor.execute("select * from asset_overview")
@@ -171,7 +178,6 @@ def my_assets():
     construction_type = dataset['ConstructionType'].unique()
     asset_type = dataset['AssetType'].unique()
     maintainance_type = dataset['Maintainance_State'].unique()
-
 
     return render_template("my_assets.html",
                            asset_data=asset_data,
@@ -190,66 +196,84 @@ def add_component():
         msg = 'You need to be logged in to add components'
         render_template('login.html')
         return redirect(url_for('login'))
+
+    record_id = ''
+
+    if request.method == 'GET':
+        record_id = request.args.get("record_id")
+
     if request.method == 'POST':  # check to see if all data is filled in
-        try:
-            # create unique id for the asset
-            ComponentID = uuid.uuid1()
-            ComponentMaterial = request.form['ComponentMaterial']
-            Category = request.form['Category']
-            Weight = request.form['ComponentWeight']
-            Condition = request.form['ComponentCondition']
-            Availability = request.form['Availability']
-            Owner = session['companyname']
-            Owner_email = session['email']
-            AvailabilityDate = request.form['AvailabilityDate']
-            Location = request.form['Location']
-            Price = request.form['Price']
-            Description = request.form['comment']
 
-            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+        if request.form['asset_id'] == 'None':
+           record_id = None
+           Status = 'Published'
+        else:
+            record_id = request.form['asset_id']
 
-            sql = "INSERT INTO components (component_id, material, category, weight, component_condition, availability, availability_date, component_owner, owner_email, " \
-                  "location, price, component_description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            val = (ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner, Owner_email, Location, Price,Description)
+        ComponentID = uuid.uuid1()
+        ComponentMaterial = request.form['ComponentMaterial']
+        Category = request.form['Category']
+        Weight = request.form['ComponentWeight']
+        Condition = request.form['ComponentCondition']
+        Availability = request.form['Availability']
+        Owner = session['companyname']
+        Owner_email = session['email']
+        AvailabilityDate = request.form['AvailabilityDate']
+        Location = request.form['Location']
+        Price = request.form['Price']
+        Description = request.form['comment']
+        AssetId = record_id
 
-            cursor.execute(sql, val)
-            mysql.connection.commit()
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+        if AssetId is None:
+                sql = "INSERT INTO components (component_id, asset_id, material, category, weight, component_condition, " \
+                      "availability, availability_date, component_owner, owner_email, " \
+                      "location, price, component_description, status) VALUES (%s, NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                val = (
+                ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner,
+                Owner_email, Location, Price, Description, Status)
 
-            print('Succesfull')
-            flash("Project succesfully added")
-            return (redirect(url_for('marketplace.html')))
-        except:
-            flash('an error occured')
+        else:
+                sql = "INSERT INTO components (component_id, asset_id, material, category, weight, component_condition, availability, " \
+                      "availability_date, component_owner, owner_email, " \
+                      "location, price, component_description, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NULL)"
+                val = (
+                ComponentID, AssetId, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate,
+                Owner,
+                Owner_email, Location, Price, Description)
 
-    # creating variable for connection
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    # executing query
-    cursor.execute("select * from components")
-    return render_template("add_component.html", title="Add Component")
+        cursor.execute(sql, val)
+        mysql.connection.commit()
+
+        print('Succesfull')
+        flash("Component succesfully added")
+        if AssetId is None:
+            return redirect(url_for('marketplace'))
+        else:
+            return redirect(url_for('asset_components', record_id=AssetId, user_id=Owner_email))
+
+
+
+    return render_template("add_component.html", title="Add Component", asset_id=record_id)
 
 
 @app.route('/asset-components', methods=['GET', 'POST'])
 def asset_components():
     # table
-    if request.method == 'POST':
-        record_id = int(request.form['asset_id'])
-        components_dataset = pd.read_excel("data/Gemeente Almere bruggen components dummy.xlsx")
-        components_dataset = components_dataset.loc[components_dataset['Assetnumber'] == record_id]
+    record_id = request.args.get("record_id")
 
-        # Fetch bridge specific data
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        record_id = str(record_id)
-        cursor.execute("select * from asset_overview WHERE Assetnumber= %s", [record_id])
-        bridge_dataset = cursor.fetchall()
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute("select * from dummy_data_marketplace")
-        data = cursor.fetchall()
+    # Fetch bridge specific data
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    record_id = str(record_id)
+    cursor.execute("select * from asset_overview WHERE Assetnumber= %s", [record_id])
+    bridge_dataset = cursor.fetchall()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("select * from components where asset_id = %s", [record_id])
+    components_dataset = cursor.fetchall()
 
-        return render_template("asset_components.html", column_names=components_dataset.columns.values,
-                               row_data=list(components_dataset.values.tolist()), bridge_dataset=bridge_dataset,
-                               zip=zip, title="Asset Components",
-                               # , user_image=img1, form=form
-                               record_id=record_id)
+    return render_template("asset_components.html", bridge_dataset=bridge_dataset,
+                           components_dataset=components_dataset, zip=zip, title="Asset Components",
+                           record_id=record_id)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -352,8 +376,9 @@ def project_overview():  # Provide forms for input
 
                 sql = "INSERT INTO projects (user_id, project_id, assetname, assettype, startdate, enddate, maintainer, owner, width, length, location, constructiontype) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 val = (
-                UserId, ProjectId, AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length, Location,
-                ConstructionType)
+                    UserId, ProjectId, AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length,
+                    Location,
+                    ConstructionType)
 
                 cursor.execute(sql, val)
                 mysql.connection.commit()
@@ -370,14 +395,13 @@ def project_overview():  # Provide forms for input
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
                 cursor.execute("delete from projects where project_id= %s", [getid])
                 mysql.connection.commit()
-                cursor.execute("select * from projects where %s = user_id", (session['email'],))
-                project_data = cursor.fetchall()
                 msg = 'Successfully deleted'
             if (not msg): msg = "There is nothing to delete"
+            return redirect(url_for('project_overview'))
 
-            return render_template("project_overview.html", msg=msg, projects_df=project_data)
-        elif request.form['action'] == 'Show Details':  #check whether post is coming from 'show details'
-            return render_template("component_page.html")
+
+        elif request.form['action'] == 'Show Details':  # check whether post is coming from 'show details'
+            return render_template("project_components.html")
 
     # Get possible construction and asset types from Asset database and convert it to a dataframe
     cursor.execute("select * from asset_overview")
@@ -393,19 +417,23 @@ def project_overview():  # Provide forms for input
                            construction_type=construction_type,
                            asset_type=asset_type)
 
+
 ## IMPORT image
 app.config['SECRET_KEY'] = 'thisisasecret'
 app.config['UPLOADED_IMAGES_DEST'] = 'static/uploads'
 images = UploadSet('images', IMAGES)
 configure_uploads(app, images)
 
+
 class MyForm(FlaskForm):
     image = FileField('image')
+
 
 # Upload Image
 UPLOAD_FOLDER = './static/uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -414,9 +442,191 @@ def upload():
         file = request.files['file']
         bridgeimgname = 'asset_id=' + str(asset_id) + '.jpg'
         filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'],bridgeimgname))
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
         flash("Success! Profile photo uploaded successfully.", 'success')
     return render_template("upload.html")
+
+
+@app.route('/project_components', methods=['GET', 'POST'])
+def project_components():
+    project_id = str(request.args.get('project_id2'))
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    project_id = str(project_id)
+    cursor.execute("select * from project_components WHERE ProjectId= %s", [project_id])
+    data = cursor.fetchall()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("select * from projects WHERE project_id= %s", [project_id])
+    project_data = cursor.fetchall()
+
+    return render_template("project_components.html",
+                           data=data,
+                           title="Project Components",
+                           project_id=project_id
+                           ,project_data=project_data)
+
+
+# Upload Data
+UPLOAD_FOLDER_DATA = './data/uploads'
+app.config['UPLOAD_FOLDER_DATA'] = UPLOAD_FOLDER_DATA
+UPLOAD_DATA_FILENAME = "Asset_source_data.xlsx"
+app.config['UPLOAD_DATA_FILENAME'] = UPLOAD_DATA_FILENAME
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+
+@app.route('/upload_data', methods=['GET', 'POST'])
+def upload_data():
+    if request.method == 'POST' and 'data_file' in request.files:
+        # uploading the file
+        file = request.files['data_file']
+        location = os.path.join(app.config['UPLOAD_FOLDER_DATA'], app.config['UPLOAD_DATA_FILENAME'])
+        file.save(location)
+        flash("Success! File is uploaded", 'success')
+
+        # populating the table
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        engine = create_engine("mysql+pymysql://{user}:{pw}@localhost/{db}"
+                               .format(user=app.config['MYSQL_USER'],
+                                       pw=app.config['MYSQL_PASSWORD'],
+                                       db=app.config['MYSQL_DB']))
+
+        assets_dataset = pd.read_excel(location)
+        assets_dataset.columns = [c.replace(' ', '_') for c in assets_dataset.columns]
+        assets_dataset.columns = [c.replace('-', '_') for c in assets_dataset.columns]
+        assets_dataset.columns = [c.replace('.', '_') for c in assets_dataset.columns]
+
+        assets_dataset = assets_dataset.reindex(columns=assets_dataset.columns.tolist() + ['user_id'])
+        assets_dataset['user_id'] = session['email']
+        assets_dataset['Assetnumber'] = uuid.uuid1()
+        assets_dataset.to_sql('asset_overview', engine, if_exists='append', index=False)
+        return redirect(url_for('my_assets'))
+    return render_template("upload_data.html")
+
+
+@app.route('/delete_row', methods=['GET', 'POST'])
+def delete_row():
+    project_id = request.args.get("project_id")
+    project_component_id = request.args.get("project_component_id")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("delete from project_components where ProjectComponentId= %s", [project_component_id])
+    mysql.connection.commit()
+    return redirect(url_for('project_components', project_id2=project_id))
+
+
+@app.route('/push_to_project', methods=['GET', 'POST'])
+def push_to_project():
+    #assign column
+    ProjectId=request.args.get("project_id")
+    ProjectComponentId = uuid.uuid1()
+    component_id = request.args.get("component_id")
+    category = request.args.get("category")
+    material = request.args.get("material")
+    weight = request.args.get("weight")
+    component_condition = request.args.get("component_condition")
+    availability = request.args.get("availability")
+    availability_date = request.args.get("availability_date")
+    component_owner = request.args.get("component_owner")
+    location = request.args.get("location")
+    price = request.args.get("price")
+    component_description = request.args.get("component_description")
+    owner_email = request.args.get("owner_email")
+    user_id = session['email']
+    asset_id = request.args.get("asset_id")
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+
+    sql = "INSERT INTO project_components (ProjectId, ProjectComponentId, component_id, category, material,	" \
+          "weight,	component_condition, " \
+          "availability, availability_date, component_owner, location, price, component_description, owner_email, " \
+          " user_id, asset_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, " \
+          " %s, %s, %s, %s, %s , %s)"
+    val = (ProjectId, ProjectComponentId, component_id, category, material,
+          weight,	component_condition,
+          availability, availability_date, component_owner, location, price, component_description, owner_email,
+           user_id, asset_id)
+
+    print(val)
+    cursor.execute(sql, val)
+    mysql.connection.commit()
+    return redirect(url_for('marketplace', project_id=ProjectId))
+
+@app.route('/upload_project_foto', methods=['GET', 'POST'])
+def upload_project_foto():
+    if request.method == 'POST' and 'file' in request.files:
+        project_id = request.args.get('project_id')
+        file = request.files['file']
+        bridgeimgname = 'project_id=' + str(project_id) + '.jpg'
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
+        flash("Success! Profile photo uploaded successfully.", 'success')
+    return render_template("upload_project_foto.html")
+
+
+@app.route('/upload_component_foto', methods=['GET', 'POST'])
+def upload_component_foto():
+    if request.method == 'POST' and 'file' in request.files:
+        record_id = request.args.get('record_id')
+        file = request.files['file']
+        bridgeimgname = 'component_id=' + str(record_id) + '.jpg'
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
+        flash("Success! Profile photo uploaded successfully.", 'success')
+    return render_template("upload_component_foto.html")
+
+
+
+@app.route('/publish_to_marketplace', methods=['GET', 'POST'])
+def publish_to_marketplace():
+    ComponentId = request.args.get("component_id")
+    AssetId = request.args.get("record_id")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("UPDATE components set status = 'Published' where component_id = %s ", [ComponentId])
+    user_id=session['email']
+    mysql.connection.commit()
+    return redirect(url_for('asset_components', record_id=AssetId, user_id=user_id))
+
+
+@app.route('/remove_from_marketplace', methods=['GET', 'POST'])
+def remove_from_marketplace():
+    ComponentId = request.args.get("component_id")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("UPDATE components set status = 'Not Published' where component_id = %s ", [ComponentId])
+    mysql.connection.commit()
+    return redirect(url_for('marketplace'))
+
+
+@app.route('/asset_delete', methods=['GET', 'POST'])
+def asset_delete():
+    AssetId = request.args.get("asset_id")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("delete from asset_overview where Assetnumber = %s ", [AssetId])
+    mysql.connection.commit()
+    return redirect(url_for('my_assets'))
+
+
+@app.route('/project_delete', methods=['GET', 'POST'])
+def project_delete():
+    ProjectId = request.args.get("project_id")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("delete from projects where project_id = %s ", [ProjectId])
+    mysql.connection.commit()
+    return redirect(url_for('project_overview'))
+
+
+@app.route('/my_components', methods=['GET', 'POST'])
+def my_components():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("select * from components where %s = owner_email", (session['email'],))
+    components_data = cursor.fetchall()
+    return render_template('my_components.html', components_data=components_data)
+
+@app.route('/component_delete', methods=['GET', 'POST'])
+def component_delete():
+    ComponentId = request.args.get("component_id")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("delete from components where component_id = %s ", [ComponentId])
+    mysql.connection.commit()
+    return redirect(url_for('my_components'))
+
 
 # run the application
 if __name__ == '__main__':

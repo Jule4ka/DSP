@@ -31,15 +31,15 @@ input[type=submit] {
   cursor: pointer;
 }
 
-/* Style delete all button */
-    .delete-button {
-    width: auto;
-    }
 
 hr {
     display: center;
     width:100%;
     size="3";
     color = black;
+}
+
+.auto-width{
+    width:auto;
 }
 
