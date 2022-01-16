@@ -9,3 +9,4 @@ Flask-Reuploaded
 flask-mysqldb
 mysql-connector
 sqlalchemy
+pymysql
