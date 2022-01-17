@@ -12,9 +12,15 @@
         </div>
         <div class="content-large1 shadow p-3 mb-5 bg-white rounded">
             <img src="{{url_for('static', filename='uploads/component_id='+record_id+'.jpg')}}"/>
-            <form action= "{{ url_for('upload_component_foto', record_id=record_id) }}" >
-                <button type = "submit" name="record_id" value={{record_id}} formmethod="post" class="bn632-hover bn26">Upload image</button>
-            </form>
+            {% for row in component_data %}
+                {% if session.loggedin %}
+                    {%  if row.owner_email == session['email']  %}
+                        <form action= "{{ url_for('upload_component_foto', record_id=record_id) }}" >
+                            <button type = "submit" name="record_id" value={{record_id}} formmethod="post" class="bn632-hover bn26">Upload image</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
         </div>
 
         <div class="content-large2 shadow p-3 mb-5 bg-white rounded">
