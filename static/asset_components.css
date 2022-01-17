@@ -48,6 +48,9 @@
     grid-row-end: 2;
     min-width: 700px;
     min-height: 400px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .content-large2 {
