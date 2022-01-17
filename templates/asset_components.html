@@ -6,18 +6,18 @@
 {% block content %}
 
 <div class="main-content">
-    <div class="asset_details_container">
-        <div align="left" class="header">Asset Components</div>
-        <div class="content-large1">
-            <img src="{{url_for('static', filename='uploads/asset_id='+ record_id+'.jpg')}}" align="left"/>
+    <div class="main_container">
+        <div class="header">Asset Overview of bridge  {% for row in bridge_dataset %} {{ row.AssetName }} {% endfor %}</div>
+        <div class="content-large1 shadow p-3 mb-5 bg-white rounded">
+            <img src="{{url_for('static', filename='uploads/asset_id='+ record_id+'.jpg')}}" />
 
          <form action= "{{ url_for('upload', record_id=record_id) }}" >
                     <button type = "submit" name="asset_id" value={{record_id}}
-                        formmethod="post" class="bn632-hover bn26">Upload image</button>
+                        formmethod="post" class="bn632-hover bn26">Add image</button>
                 </form>
 
         </div>
-        <div align="left" class="content-large2">
+        <div class="content-large2 shadow p-3 mb-5 bg-white rounded">
             <h1>Asset details</h1>
             <p>
                 {% for row in bridge_dataset %}
@@ -41,8 +41,8 @@
             </p>
         </div>
 
-        <div align="middle" class="content-table-header">Components</div>
-        <div class="content-below">
+        <div class="content-table-header">Components of  {% for row in bridge_dataset %} {{ row.AssetName }} {% endfor %}</div>
+        <div class="content-below shadow p-3 mb-5 bg-white rounded">
             <table id="asset-components" class="table table-striped">
                 <thead>
                     <tr>
