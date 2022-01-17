@@ -36,8 +36,7 @@
         </div>
 
         <div class="content-table-header">
-            <a>Components of  {% for row in bridge_dataset %} {{ row.AssetName }} {% endfor %}</a>
-            <div class="right_text">
+            <a>Components of  {% for row in bridge_dataset %} {{ row.AssetName }} {% endfor %}
             {% for row in bridge_dataset %}
                 {% if session.loggedin %}
                     {%  if row.user_id == session['email']  %}
@@ -47,7 +46,7 @@
                     {% endif %}
                 {% endif %}
             {% endfor %}
-            </div>
+            </a>
         </div>
 
         <div class="content-below shadow p-3 mb-5 bg-white rounded">

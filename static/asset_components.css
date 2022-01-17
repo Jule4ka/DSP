@@ -69,9 +69,6 @@
     font-size: 30px;
 }
 
-right_text {
-    margin-bottom: 50px;
-}
 
 
 .content-below {
@@ -80,7 +77,6 @@ right_text {
     grid-row-start: 4;
     grid-row-end: 4;
     padding: 10px;
-    margin-top: 50px;
 }
 
 img {

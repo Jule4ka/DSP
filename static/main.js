@@ -88,6 +88,27 @@ $(document).ready(function () {
 });
 
 
+function delete_clicked(e)
+{
+    if(!confirm('Are you sure you want to delete this component?')) {
+        e.preventDefault();
+    }
+}
+
+function publish_clicked(e)
+{
+    if(!confirm('Do you want to publish the component to the marketplace?')) {
+        e.preventDefault();
+    }
+}
+
+function remove_clicked(e)
+{
+    if(!confirm('Do you want to remove the component from the marketplace?')) {
+        e.preventDefault();
+    }
+}
+
 
 
 
