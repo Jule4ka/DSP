@@ -271,6 +271,7 @@ def asset_components():
     cursor.execute("select * from components where asset_id = %s", [record_id])
     components_dataset = cursor.fetchall()
 
+
     return render_template("asset_components.html", bridge_dataset=bridge_dataset,
                            components_dataset=components_dataset, zip=zip, title="Asset Components",
                            record_id=record_id)
@@ -581,27 +582,27 @@ def remove_publish_to_marketplace():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
     cursor.execute("SELECT status FROM components where component_id = %s ", [ComponentId])
     publish_status = cursor.fetchone().get('status')
+    print(AssetId)
     if publish_status == 'Not Published':
         cursor.execute("UPDATE components set status = 'Published' where component_id = %s ", [ComponentId])
         user_id=session['email']
         mysql.connection.commit()
         print('succefull publishing')
-        return redirect(url_for('my_components'))
+        if AssetId != None:
+            return redirect(url_for('asset_components', record_id=AssetId))
+        else:
+            return redirect(url_for('my_components'))
     if publish_status == 'Published':
         cursor.execute("UPDATE components set status = 'Not Published' where component_id = %s ", [ComponentId])
         user_id=session['email']
         mysql.connection.commit()
         print('succesfull deletion')
-        return redirect(url_for('my_components', record_id=AssetId, user_id=user_id))
+        if AssetId != None:
+            return redirect(url_for('asset_components', record_id=AssetId))
+        else:
+            return redirect(url_for('my_components'))
     return redirect(url_for('my_components'))
 
-@app.route('/remove_from_marketplace', methods=['GET', 'POST'])
-def remove_from_marketplace():
-    ComponentId = request.args.get("component_id")
-    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
-    cursor.execute("UPDATE components set status = 'Not Published' where component_id = %s ", [ComponentId])
-    mysql.connection.commit()
-    return redirect(url_for('marketplace'))
 
 
 @app.route('/asset_delete', methods=['GET', 'POST'])

@@ -40,9 +40,11 @@
             <div class="right_text">
             {% for row in bridge_dataset %}
                 {% if session.loggedin %}
-                    <a href= "{{ url_for('add_component', record_id = row.Assetnumber) }}">
-                        <input name="edit_btn" value="Add a component +"rel="tooltip" class="bn634-hover bn28">
-                    <i class="material-icons"></i></input></a>
+                    {%  if row.user_id == session['email']  %}
+                        <a href= "{{ url_for('add_component', record_id = row.Assetnumber) }}">
+                            <input name="edit_btn" value="Add a component +"rel="tooltip" class="bn634-hover bn28">
+                        <i class="material-icons"></i></input></a>
+                    {% endif %}
                 {% endif %}
             {% endfor %}
             </div>
@@ -83,19 +85,25 @@
                                 <i class="material-icons"></i></input>
                             </a>
                         </td>
-                         <td>
-                             {% if request.args.get('user_id') %}
-                            <a href = "{{ url_for('publish_to_marketplace'
-                            , component_id = row.component_id
-                            , user_id = row.user_id
-                            , record_id = record_id
-                            ) }}">
-
-                         <input name="edit_btn" value="Publish to Marketplace" rel="tooltip" class="bn634-hover bn28" style="background-color:orange;border-color:orange">
-                        <i class="material-icons"></i></input>
-                    </a>
-                             {% endif %}
-                         </td>
+                        {% if session.loggedin %}
+                            {%  if row.owner_email == session['email']  %}
+                                {% if row.status == 'Published' %}
+                                    <td>
+                                        <a href = "{{ url_for('remove_publish_to_marketplace', component_id = row.component_id, record_id = record_id)}}">
+                                        <input name="edit_btn" value="Remove From Marketplace"rel="tooltip" class="bn633-hover bn27">
+                                        <i class="material-icons"></i></input>
+                                        </a>
+                                    </td>
+                                {% elif row.status == 'Not Published' %}
+                                    <td>
+                                        <a href = "{{ url_for('remove_publish_to_marketplace', component_id = row.component_id, record_id = record_id) }}">
+                                        <input name="edit_btn" value="Publish to Marketplace"rel="tooltip" class="bn634-hover bn28">
+                                        <i class="material-icons"></i></input>
+                                        </a>
+                                    </td>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
