@@ -50,25 +50,6 @@
                     </a>
         <br>
                 </td>
-                {% if session.loggedin %}
-                <td>
-                        <a href = "{{ url_for('remove_from_marketplace', component_id = row.component_id) }}">
-                         <input name="edit_btn" value="Remove From Marketplace"rel="tooltip" class="bn633-hover bn27">
-                        <i class="material-icons"></i></input>
-                    </a>
-                </td>
-                {% endif %}
-<!--                <td>-->
-<!--                    <form action="/push_to_project">-->
-<!--                        <SELECT name="project_id" id="project_id">-->
-<!--                            {% for c in project_list %}-->
-<!--                                <OPTION value={{c.project_id}}>{{c.project_id}}</option>-->
-<!--                            {% endfor %}-->
-<!--                            </SELECT>-->
-<!--                        <br><br>-->
-<!--                        <input type="submit" value="Submit">-->
-<!--                    </form>-->
-<!--                </td>-->
 
                 <td>
                     {% if request.args.get('project_id') %}

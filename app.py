@@ -575,15 +575,25 @@ def upload_component_foto():
 
 
 @app.route('/publish_to_marketplace', methods=['GET', 'POST'])
-def publish_to_marketplace():
+def remove_publish_to_marketplace():
     ComponentId = request.args.get("component_id")
     AssetId = request.args.get("record_id")
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
-    cursor.execute("UPDATE components set status = 'Published' where component_id = %s ", [ComponentId])
-    user_id=session['email']
-    mysql.connection.commit()
-    return redirect(url_for('asset_components', record_id=AssetId, user_id=user_id))
-
+    cursor.execute("SELECT status FROM components where component_id = %s ", [ComponentId])
+    publish_status = cursor.fetchone().get('status')
+    if publish_status == 'Not Published':
+        cursor.execute("UPDATE components set status = 'Published' where component_id = %s ", [ComponentId])
+        user_id=session['email']
+        mysql.connection.commit()
+        print('succefull publishing')
+        return redirect(url_for('my_components'))
+    if publish_status == 'Published':
+        cursor.execute("UPDATE components set status = 'Not Published' where component_id = %s ", [ComponentId])
+        user_id=session['email']
+        mysql.connection.commit()
+        print('succesfull deletion')
+        return redirect(url_for('my_components', record_id=AssetId, user_id=user_id))
+    return redirect(url_for('my_components'))
 
 @app.route('/remove_from_marketplace', methods=['GET', 'POST'])
 def remove_from_marketplace():
@@ -617,6 +627,48 @@ def my_components():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("select * from components where %s = owner_email", (session['email'],))
     components_data = cursor.fetchall()
+
+
+    if request.method == 'POST':  # check to see if all data is filled in
+        try:
+            Status = 'Not Published'
+            ComponentID = uuid.uuid1()
+            ComponentMaterial = request.form['ComponentMaterial']
+            Category = request.form['Category']
+            Weight = request.form['ComponentWeight']
+            Condition = request.form['ComponentCondition']
+            Availability = request.form['Availability']
+            Owner = session['companyname']
+            Owner_email = session['email']
+            AvailabilityDate = request.form['AvailabilityDate']
+            Location = request.form['Location']
+            Price = request.form['Price']
+            Description = request.form['comment']
+
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+
+            sql = "INSERT INTO components (component_id, asset_id, material, category, weight, component_condition, " \
+                  "availability, availability_date, component_owner, owner_email, " \
+                  "location, price, component_description, status) VALUES (%s, NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (
+            ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner,
+            Owner_email, Location, Price, Description, Status)
+
+            cursor.execute(sql, val)
+            mysql.connection.commit()
+
+            print('Succesfull')
+
+            #collect the data again so the new component is added
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute("select * from components where %s = owner_email", (session['email'],))
+            components_data = cursor.fetchall()
+
+            return render_template('my_components.html', components_data=components_data)
+        except:
+            print('failed')
+
+
     return render_template('my_components.html', components_data=components_data)
 
 @app.route('/component_delete', methods=['GET', 'POST'])

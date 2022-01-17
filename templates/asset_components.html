@@ -37,13 +37,15 @@
 
         <div class="content-table-header">
             <a>Components of  {% for row in bridge_dataset %} {{ row.AssetName }} {% endfor %}</a>
+            <div class="right_text">
             {% for row in bridge_dataset %}
                 {% if session.loggedin %}
-                    <a class="right"  href= "{{ url_for('add_component', record_id = row.Assetnumber) }}">
-                    <input type="submit" name="edit_btn" value="Add a component +"rel="tooltip" class="bn632-hover bn26">
+                    <a href= "{{ url_for('add_component', record_id = row.Assetnumber) }}">
+                        <input name="edit_btn" value="Add a component +"rel="tooltip" class="bn634-hover bn28">
                     <i class="material-icons"></i></input></a>
                 {% endif %}
             {% endfor %}
+            </div>
         </div>
 
         <div class="content-below shadow p-3 mb-5 bg-white rounded">

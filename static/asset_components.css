@@ -69,10 +69,8 @@
     font-size: 30px;
 }
 
-right {
-    align: right;
-    align-items: right;
-    text-align: right;
+right_text {
+    margin-bottom: 50px;
 }
 
 
@@ -82,7 +80,7 @@ right {
     grid-row-start: 4;
     grid-row-end: 4;
     padding: 10px;
-
+    margin-top: 50px;
 }
 
 img {

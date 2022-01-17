@@ -76,6 +76,17 @@ $(document).ready(function () {
     });
 });
 
+$(document).ready(function () {
+      $('#my_components').DataTable({
+        columns: [
+            null,null,null,null,null,,null,null,null,null,
+            {orderable: false, searchable: false},
+            {orderable: false, searchable: false},
+            {orderable: false, searchable: false}
+        ],
+    });
+});
+
 
 
 

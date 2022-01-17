@@ -3,7 +3,6 @@
   padding-top: 100px;
   display: grid;
   place-items: center;
-
 }
 
 /*FORM STYLE */
@@ -43,3 +42,7 @@ hr {
     width:auto;
 }
 
+
+.component_table {
+    width: 100%;
+}

@@ -1,43 +1,116 @@
-{% extends "layout.html" %}
-{% block head %}
-    {{ super() }}
-{% endblock %}
+{% extends 'layout.html' %}
 {% block content %}
-<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='assets_overview.css') }}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='project_overview.css') }}">
 <div class="main-content">
-    <table id="assets" class="table table-striped">
-    <thead>
-        <tr>
-           <th>Component Material</th>
-           <th>Category</th>
-           <th>Weight (kg)</th>
-           <th>Condition</th>
-           <th>Availability</th>
-           <th>Availability Date</th>
-           <th>Location</th>
-           <th>Price (€)</th>
-           <th>Status</th>
-           <th></th>
-        </tr>
-    </thead>
-    <tbody>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4 shadow p-3 mb-5 bg-white rounded">
+            <h2>Component overview</h2>
+            <hr>
+            <a>On this page you can see, add, delete or edit your components. You may publish a component to the
+               marketplace when you want to sell a component that is already available. There is also the option to publish
+               components to the marketplace that are still in an asset or are not yet ready to be sold.
+               This way buyers can see which materials will be available in the future.</a>
+        </div>
+        <div class="col-sm-7 offset-md-1 shadow p-3 mb-5 bg-white rounded">
+            <h2>Add a new component</h2>
+            <form class="row g-3" action= "{{ url_for('my_components') }}"    method="post" id="component_form">
+                <div class="col-md-6">
+                    <label for="title">Material of component</label>
+                    <input type="text" name="ComponentMaterial" placeholder="Material of component" required></input>
+                </div>
+                <div class="col-md-6">
+                    <label for="title">Category</label>
+                    <select name="Category" id="Category" required>
+                        <option value= "Concrete" >Concrete</option>
+                        <option value= "Metal" >Steel</option>
+                        <option value= "Wood" >Wood</option>
+                        <option value= "Stone" >Stone</option>
+                        <option value= "Rubber" >Rubber</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="title">Weight</label>
+                    <input type="text" name="ComponentWeight" placeholder="Weight in kilograms" required></input>
+                </div>
+                <div class="col-md-6">
+                    <label for="title">Condition</label>
+                    <select name="ComponentCondition" id="ComponentCondition" required>
+                        <option value= "1. Perfect" >Perfect</option>
+                        <option value= "2. Good" >Good</option>
+                        <option value= "3. Reasonable" >Reasonable</option>
+                        <option value= "4. Moderate" >Moderate</option>
+                        <option value= "5. Poor" >Poor</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="title">Select the availibility status:</label>
+                    <select name="Availability" id="Availability" required>
+                        <option value= "Available">Available</option>
+                        <option value= "In process">In process</option>
+                        <option value= "In asset">In asset</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="title">Availability Date</label>
+                    <input type="date" name="AvailabilityDate" placeholder="dd/mm/YYYY" min="da" required></input>
+                </div>
+                <div class="col-md-6">
+                    <label for="title">Location</label>
+                    <input type="text" name="Location" placeholder="Location" required></input>
+                </div>
+                <div class="col-md-6">
+                    <label for="title">Price (€)</label>
+                    <input type="number" min="1" step="any" name="Price" placeholder="Price in euros" required></input>
+                </div>
+                <div class="col-md-12">
+                    <label for="title">Component description (max. 200 characters)</label>
+                    <textarea rows="4" cols="50" class="form-control" name="comment" form="component_form" maxlength="200"></textarea>
+                    <br>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>
+</div>
+
+<div class="component_table shadow p-3 mb-5 bg-white rounded">
+        <h2>My components</h2>
+        <table id="my_components" class="table table-striped">
+        <thead>
+            <tr>
+                <th>Component Material</th>
+                <th>Category</th>
+                <th>Weight (kg)</th>
+                <th>Condition</th>
+                <th>Availability</th>
+                <th>Availability Date</th>
+                <th>Location</th>
+                <th>Price (€)</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        </tbody>
         {% for row in components_data %}
         <tr>
-             <td>{{ row.material }}</td>
-             <td>{{ row.category }}</td>
-             <td>{{ row.weight }} </td>
-             <td>{{ row.component_condition }}</td>
-             <td>{{ row.availability }}</td>
-             <td> {{ row.availability_date}}</td>
-             <td>{{ row.location }}</td>
-             <td>{{ row.price }}</td>
-             <td>{{ row.status}}</td>
-             <td>
-                 <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
-                      <input name="edit_btn" value="Show Details"rel="tooltip" class="bn632-hover bn26">
-                      <i class="material-icons"></i></input>
-                 </a>
+            <td>{{ row.material }}</td>
+            <td>{{ row.category }}</td>
+            <td>{{ row.weight }} </td>
+            <td>{{ row.component_condition }}</td>
+            <td>{{ row.availability }}</td>
+            <td> {{ row.availability_date}}</td>
+            <td>{{ row.location }}</td>
+            <td>{{ row.price }}</td>
+            <td>{{ row.status}}</td>
+            <td>
+             <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
+                  <input name="edit_btn" value="Show Details"rel="tooltip" class="bn632-hover bn26">
+                  <i class="material-icons"></i></input>
+             </a>
              </td>
              <td>
                  <a href = "{{ url_for('component_delete', component_id = row.component_id) }}">
@@ -45,15 +118,30 @@
                       <i class="material-icons"></i></input>
                  </a>
              </td>
-
+            <td>
+            {% if session.loggedin %}
+                {% if row.status == 'Published' %}
+                    <td>
+                        <a href = "{{ url_for('remove_publish_to_marketplace', component_id = row.component_id) }}">
+                        <input name="edit_btn" value="Remove From Marketplace"rel="tooltip" class="bn633-hover bn27">
+                        <i class="material-icons"></i></input>
+                        </a>
+                    </td>
+                {% elif row.status == 'Not Published' %}
+                    <td>
+                        <a href = "{{ url_for('remove_publish_to_marketplace', component_id = row.component_id) }}">
+                        <input name="edit_btn" value="Publish to Marketplace"rel="tooltip" class="bn634-hover bn28">
+                        <i class="material-icons"></i></input>
+                        </a>
+                    </td>
+                {% endif %}
+            {% endif %}
+            </td>
         </tr>
         {% endfor %}
-    </tbody>
+        </tbody>
     </table>
 </div>
 
 {% endblock %}
 
-{% block footer %}
-    {{ super() }}
-{% endblock %}
