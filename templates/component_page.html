@@ -1,4 +1,4 @@
-<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='component_page.css') }}">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='asset_components.css') }}">
 {% extends "layout.html" %}
 {% block head %}
   {{ super() }}
@@ -6,52 +6,50 @@
 {% block content %}
 
 <div class="main-content">
-    <div class="component_details_container">
-        <div align="left" class="header">
-        <h3>
-        {% for row in component_data %}
-        {{ row.material }}, € {{ row.price }}
-        {% endfor %}
-        </h3>
+    <div class="main_container">
+        <div class="header">
+            <h3> {% for row in component_data %} {{ row.material }} €{{ row.price }}{% endfor %}</h3>
         </div>
-        <div align="left" class="content-large1">
-
-            <img src="{{url_for('static', filename='uploads/component_id='+record_id+'.jpg')}}" align="left"/>
-
+        <div class="content-large1 shadow p-3 mb-5 bg-white rounded">
+            <img src="{{url_for('static', filename='uploads/component_id='+record_id+'.jpg')}}"/>
             <form action= "{{ url_for('upload_component_foto', record_id=record_id) }}" >
-                    <button type = "submit" name="record_id" value={{record_id}}
-                        formmethod="post" class="bn632-hover bn26">Upload image</button>
-                </form>
+                <button type = "submit" name="record_id" value={{record_id}} formmethod="post" class="bn632-hover bn26">Upload image</button>
+            </form>
         </div>
 
-        <div class="content-large2" align="left">
+        <div class="content-large2 shadow p-3 mb-5 bg-white rounded">
             <h4>Contact details seller</h4>
             <p>
-                {% for user in user_data %}
+            {% for user in user_data %}
                 <b>Name:</b>  {{ user.companyname }} <br>
                 <b>Address:</b> {{ user.location }} <br>
                 <b>Email address:</b> {{ user.email }} <br>
                 <b>KvK number:</b> {{ user.kvknumber }} <br>
-                {% endfor %}
+            {% endfor %}
             </p>
 
             <h4>Component details</h4>
             <p>
-                {% for row in component_data %}
+            {% for row in component_data %}
                 <b>Material: </b> {{ row.material }} <br>
                 <b>Category:</b>  {{ row.category }} <br>
                 <b>Weight:</b> {{ row.weight }} kg <br>
                 <b>Condition:</b> {{ row.component_condition }} <br>
                 <b>Availability:</b> {{ row.availability }} <br>
                 <b> Availability date:</b> {{ row.availability_date }} <br>
-                <b>Description:</b> {{ row.component_description }} <br>
-                {% endfor %}
+            {% endfor %}
             </p>
+
+
+            {% for row in component_data %}
+                <b>Description:</b> {{ row.component_description }} <br>
+            {% endfor %}
         </div>
+
         
 
-        <div align="middle" class="content-table-header">Similar components</div>
-        <div class="content-below">
+        <div class="content-table-header">Similar components</div>
+        <div class="content-below shadow p-3 mb-5 bg-white rounded">
             <table id="similar-components" class="table table-striped">
                 <thead>
                     <tr>
@@ -69,23 +67,21 @@
                 <tbody>
         {% for row in similar_components_data%}
         <tr>
-                <td>{{ row.material }}</td>
-                <td>{{ row.category }}</td>
-                <td>{{ row.weight }} </td>
-                <td>{{ row.component_condition }}</td>
-                <td>{{ row.availability }}</td>
-                <td> {{ row.availability_date }}</td>
-                <td>{{ row.component_owner }}</td>
-                <td>{{ row.location }}</td>
-                <td>{{ row.price }}</td>
-                <td>
-                    <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
-                         <input name="edit_btn" value="Show Details"rel="tooltip" class="bn632-hover bn26">
-                        <i class="material-icons"></i></input>
-                    </a>
-        <br>
-
-                </td>
+            <td>{{ row.material }}</td>
+            <td>{{ row.category }}</td>
+            <td>{{ row.weight }} </td>
+            <td>{{ row.component_condition }}</td>
+            <td>{{ row.availability }}</td>
+            <td> {{ row.availability_date }}</td>
+            <td>{{ row.component_owner }}</td>
+            <td>{{ row.location }}</td>
+            <td>{{ row.price }}</td>
+            <td>
+                <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
+                    <input name="edit_btn" value="Show Details"rel="tooltip" class="bn632-hover bn26">
+                    <i class="material-icons"></i></input>
+                </a>
+            </td>
         </tr>
         {% endfor %}
                 </tbody>

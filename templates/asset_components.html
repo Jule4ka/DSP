@@ -11,10 +11,9 @@
         <div class="content-large1 shadow p-3 mb-5 bg-white rounded">
             <img src="{{url_for('static', filename='uploads/asset_id='+ record_id+'.jpg')}}" />
 
-         <form action= "{{ url_for('upload', record_id=record_id) }}" >
-                    <button type = "submit" name="asset_id" value={{record_id}}
-                        formmethod="post" class="bn632-hover bn26">Add image</button>
-                </form>
+            <form action= "{{ url_for('upload', record_id=record_id) }}" >
+                <button type = "submit" name="asset_id" value={{record_id}} formmethod="post" class="bn632-hover bn26 ">Add image</button>
+            </form>
 
         </div>
         <div class="content-large2 shadow p-3 mb-5 bg-white rounded">
@@ -31,17 +30,22 @@
                 <b>Location:</b> {{ row.Location }} <br>
                 <b>City:</b> {{ row.City }} <br>
                 <br>
-                {% if session.loggedin %}
-                <a  href= "{{ url_for('add_component', record_id = row.Assetnumber) }}">
-                <input type="submit" name="edit_btn" value="Add a component"rel="tooltip" class="bn632-hover bn26">
-                <i class="material-icons"></i></input></a>
-                {% endif %}
 
                 {% endfor %}
             </p>
         </div>
 
-        <div class="content-table-header">Components of  {% for row in bridge_dataset %} {{ row.AssetName }} {% endfor %}</div>
+        <div class="content-table-header">
+            <a>Components of  {% for row in bridge_dataset %} {{ row.AssetName }} {% endfor %}</a>
+            {% for row in bridge_dataset %}
+                {% if session.loggedin %}
+                    <a class="right"  href= "{{ url_for('add_component', record_id = row.Assetnumber) }}">
+                    <input type="submit" name="edit_btn" value="Add a component +"rel="tooltip" class="bn632-hover bn26">
+                    <i class="material-icons"></i></input></a>
+                {% endif %}
+            {% endfor %}
+        </div>
+
         <div class="content-below shadow p-3 mb-5 bg-white rounded">
             <table id="asset-components" class="table table-striped">
                 <thead>
@@ -85,7 +89,7 @@
                             , record_id = record_id
                             ) }}">
 
-                         <input name="edit_btn" value="Publish to Marketplace" rel="tooltip" class="bn632-hover bn26" style="background-color:orange;border-color:orange">
+                         <input name="edit_btn" value="Publish to Marketplace" rel="tooltip" class="bn634-hover bn28" style="background-color:orange;border-color:orange">
                         <i class="material-icons"></i></input>
                     </a>
                              {% endif %}

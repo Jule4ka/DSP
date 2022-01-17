@@ -514,5 +514,84 @@ input[type=checkbox]{
     #04befe,
     #3f86ed
   );
-  box-shadow: 0 4px 15px 0 rgba(65, 132, 234, 0.75);
+}
+
+
+
+
+.bn633-hover {
+  color: #fff;
+  cursor: pointer;
+  height: 40px;
+  width: 100%;
+  max-width: 300px;
+  text-align:center;
+  border: none;
+  background-size: 300% 100%;
+  border-radius: 5px;
+  moz-transition: all .4s ease-in-out;
+  -o-transition: all .4s ease-in-out;
+  -webkit-transition: all .4s ease-in-out;
+  transition: all .4s ease-in-out;
+}
+
+.bn633-hover:hover {
+  background-position: 100% 0;
+  moz-transition: all .4s ease-in-out;
+  -o-transition: all .4s ease-in-out;
+  -webkit-transition: all .4s ease-in-out;
+  transition: all .4s ease-in-out;
+}
+
+.bn633-hover:focus {
+  outline: none;
+}
+
+.bn633-hover.bn27 {
+  background-image: linear-gradient(
+    to right,
+    #e7560b,
+    #e20606,
+    #f66f3e,
+    #de0839
+  );
+}
+
+
+.bn634-hover {
+  color: #fff;
+  cursor: pointer;
+  height: 40px;
+  width: 100%;
+  max-width: 300px;
+  text-align:center;
+  border: none;
+  background-size: 300% 100%;
+  border-radius: 5px;
+  moz-transition: all .4s ease-in-out;
+  -o-transition: all .4s ease-in-out;
+  -webkit-transition: all .4s ease-in-out;
+  transition: all .4s ease-in-out;
+}
+
+.bn634-hover:hover {
+  background-position: 100% 0;
+  moz-transition: all .4s ease-in-out;
+  -o-transition: all .4s ease-in-out;
+  -webkit-transition: all .4s ease-in-out;
+  transition: all .4s ease-in-out;
+}
+
+.bn634-hover:focus {
+  outline: none;
+}
+
+.bn634-hover.bn28 {
+  background-image: linear-gradient(
+    to right,
+    #0dc73b,
+    #088628,
+    #1fa10c,
+    #088628
+  );
 }

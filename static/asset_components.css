@@ -65,9 +65,16 @@
     grid-row-start: 3;
     grid-row-end: 3;
     text-align: left;
-    font-size: 30px;
     font-weight: bold;
+    font-size: 30px;
 }
+
+right {
+    align: right;
+    align-items: right;
+    text-align: right;
+}
+
 
 .content-below {
     grid-column-start: 1;

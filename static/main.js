@@ -67,6 +67,14 @@ $("#checkall").click(function () {
     $("[data-toggle=tooltip]").tooltip();
 });
 
+$(document).ready(function () {
+      $('#similar-components').DataTable({
+        columns: [
+          null,null,null,null,null,
+          {orderable: false, searchable: false}
+        ],
+    });
+});
 
 
 
