@@ -13,7 +13,7 @@
 
          <form action= "{{ url_for('upload', record_id=record_id) }}" >
                     <button type = "submit" name="asset_id" value={{record_id}}
-                        formmethod="post" class="btn btn-info">Upload image</button>
+                        formmethod="post" class="bn632-hover bn26">Upload image</button>
                 </form>
 
         </div>
@@ -33,7 +33,7 @@
                 <br>
                 {% if session.loggedin %}
                 <a  href= "{{ url_for('add_component', record_id = row.Assetnumber) }}">
-                <input type="submit" name="edit_btn" value="Add a component"rel="tooltip" class="btn btn-info">
+                <input type="submit" name="edit_btn" value="Add a component"rel="tooltip" class="bn632-hover bn26">
                 <i class="material-icons"></i></input></a>
                 {% endif %}
 
@@ -73,7 +73,7 @@
                         <td>{{ row.status}}</td>
                         <td>
                              <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
-                                <input name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+                                <input name="edit_btn" value="Show Details"rel="tooltip" class="bn632-hover bn26">
                                 <i class="material-icons"></i></input>
                             </a>
                         </td>
@@ -85,7 +85,7 @@
                             , record_id = record_id
                             ) }}">
 
-                         <input name="edit_btn" value="Publish to Marketplace" rel="tooltip" class="btn btn-info" style="background-color:orange;border-color:orange">
+                         <input name="edit_btn" value="Publish to Marketplace" rel="tooltip" class="bn632-hover bn26" style="background-color:orange;border-color:orange">
                         <i class="material-icons"></i></input>
                     </a>
                              {% endif %}

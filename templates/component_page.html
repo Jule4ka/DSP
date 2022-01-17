@@ -20,7 +20,7 @@
 
             <form action= "{{ url_for('upload_component_foto', record_id=record_id) }}" >
                     <button type = "submit" name="record_id" value={{record_id}}
-                        formmethod="post" class="btn btn-info">Upload image</button>
+                        formmethod="post" class="bn632-hover bn26">Upload image</button>
                 </form>
         </div>
 
@@ -80,7 +80,7 @@
                 <td>{{ row.price }}</td>
                 <td>
                     <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
-                         <input name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+                         <input name="edit_btn" value="Show Details"rel="tooltip" class="bn632-hover bn26">
                         <i class="material-icons"></i></input>
                     </a>
         <br>

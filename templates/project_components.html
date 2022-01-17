@@ -9,11 +9,11 @@
     <div class="asset_details_container">
         <div align="left" class="header">Project Components</div>
         <div class="content-large1">
-            <img src="{{url_for('static', filename='uploads/project_id='+ project_id+'.jpg')}}" align="left"/>
+            <img src="{{url_for('static', filename='uploads/project_id='+ project_id+'.jpg')}}"/>
 
             <form action= "{{ url_for('upload_project_foto', project_id=project_id) }}" >
                     <button type = "submit" name="project_id" value={{project_id}}
-                        formmethod="post" class="btn btn-info">Upload image</button>
+                        formmethod="post" class="bn632-hover bn26">Upload image</button>
                 </form>
 
         </div>
@@ -31,7 +31,7 @@
             <a href = "{{ url_for('marketplace'
             , project_id=request.args.get('project_id2')
             ) }}">
-                                 <input name="edit_btn" value="Add components to project" rel="tooltip" class="btn btn-info">
+                                 <input name="edit_btn" value="Add components to project" rel="tooltip" class="bn632-hover bn26">
                                 <i class="material-icons"></i></input>
             </a>
         </div>

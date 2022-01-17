@@ -103,12 +103,12 @@
                     <td>{{ asset.Location }}</td>
                     <td>
                         <a  href= "{{ url_for('asset_components', record_id = asset.Assetnumber, user_id = asset.user_id) }}">
-                        <input name="action" value="Show Details"rel="tooltip" class="btn btn-info">
+                        <input name="action" value="Show Details"rel="tooltip" class="bn632-hover bn26">
                         <i class="material-icons"></i></input></a>
                     </td>
                     <td>
                         <a  href= "{{ url_for('asset_delete', asset_id = asset.Assetnumber) }}">
-                        <input name="action" value="Delete"rel="tooltip" class="btn btn-info">
+                        <input name="action" value="Delete"rel="tooltip" class="bn632-hover bn26">
                         <i class="material-icons"></i></input></a>
                     </td>
                 </tr>
@@ -117,7 +117,7 @@
             </table>
                 <br/>
                 <a href = "{{ url_for('upload_data') }}">
-                         <input name="edit_btn" value="Upload Data" rel="tooltip" class="btn btn-info auto-width">
+                         <input name="edit_btn" value="Upload Data" rel="tooltip" class="bn632-hover bn26">
                         <i class="material-icons"></i></input>
                     </a>
                 <br/>

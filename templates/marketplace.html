@@ -12,7 +12,7 @@
         {% if session.loggedin %}
         <div class="add_component">
             <a  href= "{{ url_for('add_component') }}">
-            <input type="submit" name="edit_btn" value="Sell a loose component"rel="tooltip" class="btn btn-info">
+            <input type="submit" name="edit_btn" value="Sell a loose component"rel="tooltip" class="bn632-hover bn26">
             <i class="material-icons"></i></input></a>
         </div>
         {% endif %}
@@ -45,7 +45,7 @@
                 <td>{{ row.price }}</td>
                 <td>
                     <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
-                         <input name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
+                         <input name="edit_btn" value="Show Details"rel="tooltip" class="bn632-hover bn26">
                         <i class="material-icons"></i></input>
                     </a>
         <br>
@@ -53,7 +53,7 @@
                 {% if session.loggedin %}
                 <td>
                         <a href = "{{ url_for('remove_from_marketplace', component_id = row.component_id) }}">
-                         <input name="edit_btn" value="Remove From Marketplace"rel="tooltip" class="btn btn-info">
+                         <input name="edit_btn" value="Remove From Marketplace"rel="tooltip" class="bn632-hover bn26">
                         <i class="material-icons"></i></input>
                     </a>
                 </td>
