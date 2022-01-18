@@ -482,8 +482,7 @@ input[type=checkbox]{
   color: #fff;
   cursor: pointer;
   height: 40px;
-  width: 100%;
-  max-width: 300px;
+  max-width: 170px;
   text-align:center;
   border: none;
   background-size: 300% 100%;
@@ -521,13 +520,17 @@ input[type=checkbox]{
     max-width: 100px;
 }
 
+.more_width_button {
+    min-width: 300px;
+    max-width: 300px;
+}
+
 
 .bn633-hover {
   color: #fff;
   cursor: pointer;
   height: 40px;
-  width: 100%;
-  max-width: 300px;
+  max-width: 170px;
   text-align:center;
   border: none;
   background-size: 300% 100%;
@@ -565,8 +568,7 @@ input[type=checkbox]{
   color: #fff;
   cursor: pointer;
   height: 40px;
-  width: 100%;
-  max-width: 300px;
+  max-width: 170px;
   text-align:center;
   border: none;
   background-size: 300% 100%;

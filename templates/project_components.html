@@ -30,7 +30,7 @@
             <a href = "{{ url_for('marketplace'
             , project_id=request.args.get('project_id2')
             ) }}">
-                                 <input name="edit_btn" value="Add components to project" rel="tooltip" class="bn632-hover bn26">
+                                 <input name="edit_btn" value="Add components to project" rel="tooltip" class="bn632-hover bn26 more_width_button">
                                 <i class="material-icons"></i></input>
             </a>
         </div>
@@ -40,7 +40,7 @@
             {% if session.loggedin %}
                 {%  if row.user_id == session['email']  %}
                     <a href= "{{ url_for('marketplace') }}">
-                        <input name="edit_btn" value="Plan component +" rel="tooltip" class="bn634-hover bn28">
+                        <input name="edit_btn" value="Plan component +" rel="tooltip" class="bn634-hover bn28 more_width_button">
                     <i class="material-icons"></i></input></a>
                 {% endif %}
             {% endif %}
@@ -77,7 +77,7 @@
                         <td>{{ row.price }}</td>
                         <td>{{ row.owner_email }}</td>
                         <td>
-                            <a href = "{{ url_for('delete_row', project_component_id = row.ProjectComponentId, project_id=row.ProjectId) }}">
+                            <a href = "{{ url_for('delete_row', project_component_id = row.ProjectComponentId, project_id=row.ProjectId) }}" onclick="delete_clicked(event)">
                                  <input name="edit_btn" value="Delete" rel="tooltip" class="bn633-hover bn27">
                                 <i class="material-icons"></i></input>
                             </a>

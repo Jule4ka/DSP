@@ -107,7 +107,7 @@
                         <i class="material-icons"></i></input></a>
                     </td>
                     <td>
-                        <a  href= "{{ url_for('asset_delete', asset_id = asset.Assetnumber) }}">
+                        <a  href= "{{ url_for('asset_delete', asset_id = asset.Assetnumber) }}" onclick="delete_clicked(event)">
                         <input name="action" value="Delete"rel="tooltip" class="bn633-hover bn27">
                         <i class="material-icons"></i></input></a>
                     </td>

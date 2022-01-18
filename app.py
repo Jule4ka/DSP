@@ -144,6 +144,7 @@ def my_assets():
                 Length = request.form['Length']
                 Location = str(request.form['address'] + request.form['city'])
                 ConstructionType = request.form['ConstructionType']
+                Status = 'Existing'
 
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
@@ -153,13 +154,12 @@ def my_assets():
                       "Passage_road_height, Passage_sail_width, Passage_sail_height, " \
                       "Technical_lifespan_expires, OBJECT_GUID, Area_1, Connection_Type, Neighborhood, City, RD_X, " \
                       "RD_Y, Length_1, Area_2, " \
-                      "circumference, user_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, " \
+                      "circumference, user_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, " \
                       "NULL, %s, NULL, NULL, NULL, " \
                       "NULL, %s, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, %s)"
                 val = (
                     AssetId, AssetName, AssetType, ConstructionType, Maintanencestate, BuildYear, Maintainer, Owner,
-                    Width,
-                    Length, Location, DestructionYear, UserId)
+                    Status, Width, Length, Location, DestructionYear, UserId)
 
                 print(val)
                 cursor.execute(sql, val)
@@ -204,13 +204,12 @@ def add_component():
         record_id = request.args.get("record_id")
 
     if request.method == 'POST':  # check to see if all data is filled in
-
         if request.form['asset_id'] == 'None':
            record_id = None
-           Status = 'Published'
         else:
             record_id = request.form['asset_id']
 
+        Status = 'Not Published'
         ComponentID = uuid.uuid1()
         ComponentMaterial = request.form['ComponentMaterial']
         Category = request.form['Category']
@@ -237,11 +236,10 @@ def add_component():
         else:
                 sql = "INSERT INTO components (component_id, asset_id, material, category, weight, component_condition, availability, " \
                       "availability_date, component_owner, owner_email, " \
-                      "location, price, component_description, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NULL)"
+                      "location, price, component_description, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 val = (
                 ComponentID, AssetId, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate,
-                Owner,
-                Owner_email, Location, Price, Description)
+                Owner, Owner_email, Location, Price, Description, Status)
 
         cursor.execute(sql, val)
         mysql.connection.commit()
@@ -272,7 +270,7 @@ def asset_components():
     cursor.execute("select * from components where asset_id = %s", [record_id])
     components_dataset = cursor.fetchall()
 
-
+    print(bridge_dataset)
     return render_template("asset_components.html", bridge_dataset=bridge_dataset,
                            components_dataset=components_dataset, zip=zip, title="Asset Components",
                            record_id=record_id)
