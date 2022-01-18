@@ -390,16 +390,6 @@ def project_overview():  # Provide forms for input
             except:
                 msg = 'an error occurred'
 
-        elif request.form['action'] == 'Delete All Selected':  # check whether post is coming from delete
-            msg = ''
-            for getid in request.form.getlist('mycheckbox'):
-                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-                cursor.execute("delete from projects where project_id= %s", [getid])
-                mysql.connection.commit()
-                msg = 'Successfully deleted'
-            if (not msg): msg = "There is nothing to delete"
-            return redirect(url_for('project_overview'))
-
 
         elif request.form['action'] == 'Show Details':  # check whether post is coming from 'show details'
             return render_template("project_components.html")
@@ -451,6 +441,7 @@ def upload():
 
 @app.route('/project_components', methods=['GET', 'POST'])
 def project_components():
+
     project_id = str(request.args.get('project_id'))
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     project_id = str(project_id)
@@ -460,11 +451,57 @@ def project_components():
     cursor.execute("select * from projects WHERE project_id= %s", [project_id])
     project_data = cursor.fetchall()
 
+    cursor.execute("select * from asset_overview")
+    categories = cursor.fetchall()
+    asset_cat = pd.DataFrame(categories)
+    dataset = asset_cat.reindex(columns=asset_cat.columns.tolist() + ['Open_Asset'])
+    construction_type = dataset['ConstructionType'].unique()
+    asset_type = dataset['AssetType'].unique()
+    maintainance_type = dataset['Maintainance_State'].unique()
+
+    if request.method == 'POST':  # check to see if all data is filled in
+        if request.form['action'] == 'submit':  # check whether post is coming from insert
+            try:
+                # create unique id for the asset
+                UserId = session['email']
+                ProjectId = str(request.args.get('project_id'))
+                AssetName = request.form['AssetName']
+                AssetType = request.form['AssetType']
+                StartDate = request.form['start_date']
+                EndDate = request.form['end_date']
+                Maintainer = request.form['Maintainer']
+                Owner = session['companyname']
+                Width = request.form['Width']
+                Length = request.form['Length']
+                Location = str(request.form['address'] + request.form['city'])
+                ConstructionType = request.form['ConstructionType']
+
+                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+
+                sql = "UPDATE projects SET user_id = %s, project_id = %s, assetname = %s, assettype = %s, " \
+                      "startdate = %s, enddate = %s, maintainer = %s, owner = %s, width = %s, length = %s, " \
+                      "location = %s, constructiontype = %s WHERE project_id = %s"
+                val = (
+                    UserId, ProjectId, AssetName, AssetType, StartDate, EndDate, Maintainer, Owner, Width, Length,
+                    Location,
+                    ConstructionType, ProjectId)
+
+                cursor.execute(sql, val)
+                mysql.connection.commit()
+                print('Succesfull')
+                msg = "Project succesfully added"
+                return redirect(url_for('project_components',project_id=ProjectId))
+            except:
+                msg = 'an error occurred'
+
     return render_template("project_components.html",
                            data=data,
                            title="Project Components",
-                           project_id=project_id
-                           ,project_data=project_data)
+                           project_id=project_id,
+                           project_data=project_data,
+                           construction_type=construction_type,
+                           asset_type=asset_type,
+                           maintainance_type=maintainance_type)
 
 
 # Upload Data
