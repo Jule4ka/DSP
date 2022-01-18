@@ -131,8 +131,14 @@
                         <td>{{ row.price }}</td>
                         <td>{{ row.owner_email }}</td>
                         <td>
+                             <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
+                                <input name="edit_btn" value="Show Details"rel="tooltip" class="bn632-hover bn26">
+                                <i class="material-icons"></i></input>
+                            </a>
+                        </td>
+                        <td>
                             <a href = "{{ url_for('delete_row', project_component_id = row.ProjectComponentId, project_id=row.ProjectId) }}" onclick="delete_clicked(event)">
-                                 <input name="edit_btn" value="Delete" rel="tooltip" class="bn633-hover bn27">
+                                 <input name="edit_btn" value="Remove From Project" rel="tooltip" class="bn633-hover bn27">
                                 <i class="material-icons"></i></input>
                             </a>
                         </td>
