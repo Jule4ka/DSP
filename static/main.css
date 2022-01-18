@@ -516,7 +516,10 @@ input[type=checkbox]{
   );
 }
 
-
+.less_width_button {
+    min-width: 100px;
+    max-width: 100px;
+}
 
 
 .bn633-hover {

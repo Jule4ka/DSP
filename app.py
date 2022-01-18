@@ -53,9 +53,10 @@ def marketplace():
     try:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         # executing query
-        cursor.execute("select project_id from projects where %s = user_id", (session['email'],))
-        project_list = cursor.fetchall()
+        cursor.execute("select assetname, project_id from projects where %s = user_id", (session['email'],))
+        project_names = cursor.fetchall()
         project_id = request.args.get("project_id")
+
     finally:
         # creating variable for connection
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -74,7 +75,7 @@ def marketplace():
                 return redirect(url_for('marketplace'))
 
         # returning back to projectlist.html with all records from MySQL which are stored in variable data
-        return render_template("marketplace.html", data=data, project_list=project_list, project_id=project_id)
+        return render_template("marketplace.html", data=data, project_names=project_names, project_id=project_id)
 
 
 @app.route('/component_page.html', methods=['GET', 'POST'])
@@ -445,15 +446,16 @@ def upload():
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
         flash("Success! Profile photo uploaded successfully.", 'success')
+        return redirect(url_for("asset_components",record_id=asset_id))
     return render_template("upload.html")
 
 
 @app.route('/project_components', methods=['GET', 'POST'])
 def project_components():
-    project_id = str(request.args.get('project_id2'))
+    project_id = str(request.args.get('project_id'))
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     project_id = str(project_id)
-    cursor.execute("select * from project_components WHERE ProjectId= %s", [project_id])
+    cursor.execute("select DISTINCT * from project_components WHERE ProjectId= %s", [project_id])
     data = cursor.fetchall()
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("select * from projects WHERE project_id= %s", [project_id])
@@ -510,15 +512,15 @@ def delete_row():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("delete from project_components where ProjectComponentId= %s", [project_component_id])
     mysql.connection.commit()
-    return redirect(url_for('project_components', project_id2=project_id))
+    return redirect(url_for('project_components', project_id=project_id))
 
 
 @app.route('/push_to_project', methods=['GET', 'POST'])
 def push_to_project():
     #assign column
-    ProjectId=request.args.get("project_id")
-    ProjectComponentId = uuid.uuid1()
+    ProjectId = request.form['project']
     component_id = request.args.get("component_id")
+    ProjectComponentId = str(ProjectId + component_id)
     category = request.args.get("category")
     material = request.args.get("material")
     weight = request.args.get("weight")
@@ -559,6 +561,7 @@ def upload_project_foto():
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
         flash("Success! Profile photo uploaded successfully.", 'success')
+        return redirect(url_for("project_components", project_id=project_id))
     return render_template("upload_project_foto.html")
 
 
@@ -571,6 +574,7 @@ def upload_component_foto():
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
         flash("Success! Profile photo uploaded successfully.", 'success')
+        return redirect(url_for("component_page",record_id=record_id))
     return render_template("upload_component_foto.html")
 
 
