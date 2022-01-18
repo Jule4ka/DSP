@@ -22,7 +22,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_PASSWORD'] = 'DSPB1111'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -532,18 +532,19 @@ def push_to_project():
     owner_email = request.args.get("owner_email")
     user_id = session['email']
     asset_id = request.args.get("asset_id")
+    Rvalue = request.form["dropdown"]
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
     sql = "INSERT INTO project_components (ProjectId, ProjectComponentId, component_id, category, material,	" \
           "weight,	component_condition, " \
           "availability, availability_date, component_owner, location, price, component_description, owner_email, " \
-          " user_id, asset_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, " \
-          " %s, %s, %s, %s, %s , %s)"
+          " user_id, asset_id, Rvalue) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, " \
+          " %s, %s, %s, %s, %s , %s, %s)"
     val = (ProjectId, ProjectComponentId, component_id, category, material,
           weight,	component_condition,
           availability, availability_date, component_owner, location, price, component_description, owner_email,
-           user_id, asset_id)
+           user_id, asset_id, Rvalue)
 
     print(val)
     cursor.execute(sql, val)
