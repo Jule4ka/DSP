@@ -49,6 +49,7 @@
                     <i class="material-icons"></i></input>
                 </a>
             </td>
+            {% if session.loggedin %}
             <td>
             <form class="row g-3" action= "{{ url_for('push_to_project'
                             , component_id = row.component_id
@@ -80,6 +81,7 @@
             </div>
             </form>
             </td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>

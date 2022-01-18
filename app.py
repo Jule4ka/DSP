@@ -50,6 +50,7 @@ def navpage():
 def marketplace():
     project_list = ''
     project_id = ''
+    project_names = None
     try:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         # executing query
