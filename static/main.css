@@ -595,3 +595,8 @@ input[type=checkbox]{
     #088628
   );
 }
+
+.alert {
+  display:inline-block;
+  padding: 5px;
+}

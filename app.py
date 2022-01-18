@@ -22,7 +22,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_PASSWORD'] = 'root'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -141,8 +141,13 @@ def my_assets():
                 Owner = session['companyname']
                 Width = request.form['Width']
                 Length = request.form['Length']
-                Location = str(request.form['address'] + request.form['city'])
+                Location = str(request.form['address'])
+                City = str(request.form['city'])
                 ConstructionType = request.form['ConstructionType']
+                if Maintanencestate == '5. Poor':
+                    Alert = 'Yes'
+                else:
+                    Alert = 'No'
 
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
@@ -152,13 +157,13 @@ def my_assets():
                       "Passage_road_height, Passage_sail_width, Passage_sail_height, " \
                       "Technical_lifespan_expires, OBJECT_GUID, Area_1, Connection_Type, Neighborhood, City, RD_X, " \
                       "RD_Y, Length_1, Area_2, " \
-                      "circumference, user_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, " \
+                      "circumference, user_id, Alert) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, " \
                       "NULL, %s, NULL, NULL, NULL, " \
-                      "NULL, %s, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, %s)"
+                      "NULL, %s, NULL, NULL, NULL, NULL, %s, NULL, NULL, NULL, NULL, NULL, %s, %s)"
                 val = (
                     AssetId, AssetName, AssetType, ConstructionType, Maintanencestate, BuildYear, Maintainer, Owner,
                     Width,
-                    Length, Location, DestructionYear, UserId)
+                    Length, Location, DestructionYear, City, UserId, Alert)
 
                 print(val)
                 cursor.execute(sql, val)
@@ -496,11 +501,19 @@ def upload_data():
         assets_dataset.columns = [c.replace('.', '_') for c in assets_dataset.columns]
 
         assets_dataset = assets_dataset.reindex(columns=assets_dataset.columns.tolist() + ['user_id'])
+        assets_dataset = assets_dataset.reindex(columns=assets_dataset.columns.tolist() + ['alert'])
         assets_dataset['user_id'] = session['email']
+        assets_dataset['alert'] = assets_dataset.apply(lambda row: label_alert(row), axis=1)
         assets_dataset['Assetnumber'] = uuid.uuid1()
         assets_dataset.to_sql('asset_overview', engine, if_exists='append', index=False)
         return redirect(url_for('my_assets'))
     return render_template("upload_data.html")
+
+
+def label_alert (row):
+    if row['Maintainance_State'] == '5. Poor':
+        return 'Yes'
+    return 'No'
 
 
 @app.route('/delete_row', methods=['GET', 'POST'])
