@@ -214,6 +214,7 @@ def add_component():
            Status = 'Published'
         else:
             record_id = request.form['asset_id']
+            Status = 'Not Published'
 
         ComponentID = uuid.uuid1()
         ComponentMaterial = request.form['ComponentMaterial']
@@ -241,11 +242,11 @@ def add_component():
         else:
                 sql = "INSERT INTO components (component_id, asset_id, material, category, weight, component_condition, availability, " \
                       "availability_date, component_owner, owner_email, " \
-                      "location, price, component_description, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NULL)"
+                      "location, price, component_description, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 val = (
                 ComponentID, AssetId, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate,
                 Owner,
-                Owner_email, Location, Price, Description)
+                Owner_email, Location, Price, Description, Status)
 
         cursor.execute(sql, val)
         mysql.connection.commit()
@@ -266,7 +267,6 @@ def add_component():
 def asset_components():
     # table
     record_id = request.args.get("record_id")
-
     # Fetch bridge specific data
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     record_id = str(record_id)
@@ -275,7 +275,14 @@ def asset_components():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("select * from components where asset_id = %s", [record_id])
     components_dataset = cursor.fetchall()
-
+    # update alert state of asset if 80% of components are in poor state
+    calculate_percentage_poor_components(components_dataset, record_id)
+    # requery the database if the data was changed
+    cursor.execute("select * from asset_overview WHERE Assetnumber= %s", [record_id])
+    bridge_dataset = cursor.fetchall()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("select * from components where asset_id = %s", [record_id])
+    components_dataset = cursor.fetchall()
 
     return render_template("asset_components.html", bridge_dataset=bridge_dataset,
                            components_dataset=components_dataset, zip=zip, title="Asset Components",
@@ -598,7 +605,7 @@ def remove_publish_to_marketplace():
     print(AssetId)
     if publish_status == 'Not Published':
         cursor.execute("UPDATE components set status = 'Published' where component_id = %s ", [ComponentId])
-        user_id=session['email']
+        user_id = session['email']
         mysql.connection.commit()
         print('succefull publishing')
         if AssetId != None:
@@ -607,7 +614,7 @@ def remove_publish_to_marketplace():
             return redirect(url_for('my_components'))
     if publish_status == 'Published':
         cursor.execute("UPDATE components set status = 'Not Published' where component_id = %s ", [ComponentId])
-        user_id=session['email']
+        user_id = session['email']
         mysql.connection.commit()
         print('succesfull deletion')
         if AssetId != None:
@@ -689,9 +696,48 @@ def my_components():
 def component_delete():
     ComponentId = request.args.get("component_id")
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("select asset_id from components where component_id = %s", [ComponentId])
+    AssetId = cursor.fetchall()[0]['asset_id']
     cursor.execute("delete from components where component_id = %s ", [ComponentId])
     mysql.connection.commit()
+
+    if AssetId != None:
+        cursor.execute("select * from components where asset_id = %s", [AssetId])
+        components_dataset = cursor.fetchall()
+        if components_dataset:
+            calculate_percentage_poor_components(components_dataset=components_dataset, record_id=AssetId)
+
     return redirect(url_for('my_components'))
+
+
+def calculate_percentage_poor_components(components_dataset, record_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    overall_weight = 0
+    weight_poor = 0
+    if components_dataset:
+        for i in components_dataset:
+            overall_weight = overall_weight + float(i['weight'])
+            if i['component_condition'] == '5. Poor':
+                weight_poor = weight_poor + float(i['weight'])
+        percentage_poor = weight_poor/overall_weight*100
+        if percentage_poor >= 80:
+            cursor.execute("update asset_overview set alert = 'Yes' where  Assetnumber = %s", [record_id])
+        else:
+            cursor.execute("update asset_overview set alert = 'No' where  Assetnumber = %s", [record_id])
+        mysql.connection.commit()
+
+
+@app.route('/remove_from_asset', methods=['GET', 'POST'])
+def remove_from_asset():
+    ComponentId = request.args.get("component_id")
+    AssetId = request.args.get("record_id")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("UPDATE components set asset_id = NULL where component_id = %s ", [ComponentId])
+    mysql.connection.commit()
+    cursor.execute("select * from components where asset_id = %s", [AssetId])
+    components_dataset = cursor.fetchall()
+    calculate_percentage_poor_components(components_dataset=components_dataset, record_id=AssetId)
+    return redirect(url_for('asset_components', record_id=AssetId))
 
 
 # run the application

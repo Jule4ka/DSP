@@ -95,7 +95,6 @@
                         <th>Availability Date</th>
                         <th>Location</th>
                         <th>Price (€)</th>
-                        <th>Status</th>
                         <th></th>
                     <th></th>
                     </tr>
@@ -111,7 +110,6 @@
                         <td> {{ row.availability_date}}</td>
                         <td>{{ row.location }}</td>
                         <td>{{ row.price }}</td>
-                        <td>{{ row.status}}</td>
                         <td>
                              <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
                                 <input name="edit_btn" value="Show Details"rel="tooltip" class="bn632-hover bn26">
@@ -120,6 +118,13 @@
                         </td>
                         {% if session.loggedin %}
                             {%  if row.owner_email == session['email']  %}
+                            <td>
+                                        <a href = "{{ url_for('remove_from_asset', component_id = row.component_id, record_id = record_id) }}">
+                                        <input name="edit_btn" value="Remove From Asset"rel="tooltip" class="bn634-hover bn28">
+                                        <i class="material-icons"></i></input>
+                                        </a>
+                                    </td>
+
                                 {% if row.status == 'Published' %}
                                     <td>
                                         <a href = "{{ url_for('remove_publish_to_marketplace', component_id = row.component_id, record_id = record_id)}}">
