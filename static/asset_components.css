@@ -105,15 +105,28 @@ input {
     text-align: right;
     margin-top: -220px;
 }
-
 .edit_button button{
     outline: none;
     border: none;
     background: white;
 }
 
+.edit_button_assets{
+    text-align: right;
+    margin-top: -300px;
+}
+.edit_button_assets button{
+    outline: none;
+    border: none;
+    background: white;
+}
+
+
+
 .edit_form {
     margin-left: 500px;
     margin-right: 200px;
     display: none;
+    font-size: 14px;
 }
+

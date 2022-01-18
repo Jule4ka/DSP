@@ -115,6 +115,11 @@ $(document).ready(function(){
     });
 });
 
+$(document).ready(function(){
+    $(".edit_button_assets").click(function(){
+        $(".edit_form").toggle();
+    });
+});
 
 
 var check = function() {

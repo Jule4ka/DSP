@@ -271,10 +271,65 @@ def asset_components():
     cursor.execute("select * from components where asset_id = %s", [record_id])
     components_dataset = cursor.fetchall()
 
-    print(bridge_dataset)
+    cursor.execute("select * from asset_overview")
+    categories = cursor.fetchall()
+    asset_cat = pd.DataFrame(categories)
+    dataset = asset_cat.reindex(columns=asset_cat.columns.tolist() + ['Open_Asset'])
+    construction_type = dataset['ConstructionType'].unique()
+    asset_type = dataset['AssetType'].unique()
+    maintainance_type = dataset['Maintainance_State'].unique()
+
+    if request.method == 'POST':  # check to see if all data is filled in
+        if request.form['action'] == 'submit':  # check whether post is coming from insert
+            try:
+                # create unique id for the asset
+                UserId = session['email']
+                AssetId = record_id
+                AssetName = request.form['AssetName']
+                AssetType = request.form['AssetType']
+                Maintanencestate = request.form['maintainancestate']
+                BuildYear = request.form['Builddate']
+                DestructionYear = request.form['Destructiondate']
+                Maintainer = request.form['Maintainer']
+                Owner = session['companyname']
+                Width = request.form['Width']
+                Length = request.form['Length']
+                Location = str(request.form['address'] + request.form['city'])
+                ConstructionType = request.form['ConstructionType']
+                Status = 'Existing'
+
+
+                cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+
+                sql = "UPDATE asset_overview SET Assetnumber = %s, AssetName = %s, AssetType = %s, ConstructionType = %s,	" \
+                      "Maintainance_State = %s,	Buildyear = %s, " \
+                      "Maintainer = %s, Owner = %s, Status = %s, Width = %s, Length = %s, Area = NULL, Location = %s, Passage_road_width = NULL, " \
+                      "Passage_road_height = NULL, Passage_sail_width = NULL, Passage_sail_height = NULL, " \
+                      "Technical_lifespan_expires = %s, OBJECT_GUID = NULL, Area_1 = NULL, Connection_Type = NULL, Neighborhood = NULL, City = NULL, RD_X = NULL, " \
+                      "RD_Y = NULL, Length_1 = NULL, Area_2 = NULL, " \
+                      "circumference = NULL, user_id = %s WHERE Assetnumber = %s"
+                val = (
+                    AssetId, AssetName, AssetType, ConstructionType, Maintanencestate, BuildYear, Maintainer, Owner,
+                    Status, Width, Length, Location, DestructionYear, UserId, AssetId)
+
+
+                cursor.execute(sql, val)
+                mysql.connection.commit()
+                print('Succesfull')
+                msg = "Asset succesfully added"
+                return redirect(url_for('asset_components',record_id=AssetId))
+            except:
+                msg = 'an error occurred'
+                print('failed')
+
+
     return render_template("asset_components.html", bridge_dataset=bridge_dataset,
-                           components_dataset=components_dataset, zip=zip, title="Asset Components",
-                           record_id=record_id)
+                           components_dataset=components_dataset,
+                           title="Asset Components",
+                           record_id=record_id,
+                           construction_type=construction_type,
+                           asset_type=asset_type,
+                           maintainance_type=maintainance_type)
 
 
 @app.route('/register', methods=['GET', 'POST'])
