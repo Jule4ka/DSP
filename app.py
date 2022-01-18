@@ -50,12 +50,14 @@ def navpage():
 def marketplace():
     project_list = ''
     project_id = ''
+    project_names = None
     try:
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
         # executing query
-        cursor.execute("select project_id from projects where %s = user_id", (session['email'],))
-        project_list = cursor.fetchall()
+        cursor.execute("select assetname, project_id from projects where %s = user_id", (session['email'],))
+        project_names = cursor.fetchall()
         project_id = request.args.get("project_id")
+
     finally:
         # creating variable for connection
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -74,7 +76,7 @@ def marketplace():
                 return redirect(url_for('marketplace'))
 
         # returning back to projectlist.html with all records from MySQL which are stored in variable data
-        return render_template("marketplace.html", data=data, project_list=project_list, project_id=project_id)
+        return render_template("marketplace.html", data=data, project_names=project_names, project_id=project_id)
 
 
 @app.route('/component_page.html', methods=['GET', 'POST'])
@@ -148,7 +150,7 @@ def my_assets():
                     Alert = 'Yes'
                 else:
                     Alert = 'No'
-
+                Status = 'Existing'
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
                 sql = "INSERT INTO asset_overview (Assetnumber, AssetName, AssetType, ConstructionType,	" \
@@ -162,8 +164,7 @@ def my_assets():
                       "NULL, %s, NULL, NULL, NULL, NULL, %s, NULL, NULL, NULL, NULL, NULL, %s, %s)"
                 val = (
                     AssetId, AssetName, AssetType, ConstructionType, Maintanencestate, BuildYear, Maintainer, Owner,
-                    Width,
-                    Length, Location, DestructionYear, City, UserId, Alert)
+                    Status, Width, Length, Location, DestructionYear, UserId)
 
                 print(val)
                 cursor.execute(sql, val)
@@ -208,14 +209,13 @@ def add_component():
         record_id = request.args.get("record_id")
 
     if request.method == 'POST':  # check to see if all data is filled in
-
         if request.form['asset_id'] == 'None':
            record_id = None
-           Status = 'Published'
         else:
             record_id = request.form['asset_id']
             Status = 'Not Published'
 
+        Status = 'Not Published'
         ComponentID = uuid.uuid1()
         ComponentMaterial = request.form['ComponentMaterial']
         Category = request.form['Category']
@@ -248,6 +248,7 @@ def add_component():
                 Owner,
                 Owner_email, Location, Price, Description, Status)
 
+
         cursor.execute(sql, val)
         mysql.connection.commit()
 
@@ -275,6 +276,7 @@ def asset_components():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("select * from components where asset_id = %s", [record_id])
     components_dataset = cursor.fetchall()
+
     # update alert state of asset if 80% of components are in poor state
     calculate_percentage_poor_components(components_dataset, record_id)
     # requery the database if the data was changed
@@ -283,6 +285,8 @@ def asset_components():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("select * from components where asset_id = %s", [record_id])
     components_dataset = cursor.fetchall()
+
+    print(bridge_dataset)
 
     return render_template("asset_components.html", bridge_dataset=bridge_dataset,
                            components_dataset=components_dataset, zip=zip, title="Asset Components",
@@ -457,15 +461,16 @@ def upload():
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
         flash("Success! Profile photo uploaded successfully.", 'success')
+        return redirect(url_for("asset_components",record_id=asset_id))
     return render_template("upload.html")
 
 
 @app.route('/project_components', methods=['GET', 'POST'])
 def project_components():
-    project_id = str(request.args.get('project_id2'))
+    project_id = str(request.args.get('project_id'))
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     project_id = str(project_id)
-    cursor.execute("select * from project_components WHERE ProjectId= %s", [project_id])
+    cursor.execute("select DISTINCT * from project_components WHERE ProjectId= %s", [project_id])
     data = cursor.fetchall()
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("select * from projects WHERE project_id= %s", [project_id])
@@ -530,15 +535,15 @@ def delete_row():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("delete from project_components where ProjectComponentId= %s", [project_component_id])
     mysql.connection.commit()
-    return redirect(url_for('project_components', project_id2=project_id))
+    return redirect(url_for('project_components', project_id=project_id))
 
 
 @app.route('/push_to_project', methods=['GET', 'POST'])
 def push_to_project():
     #assign column
-    ProjectId=request.args.get("project_id")
-    ProjectComponentId = uuid.uuid1()
+    ProjectId = request.form['project']
     component_id = request.args.get("component_id")
+    ProjectComponentId = str(ProjectId + component_id)
     category = request.args.get("category")
     material = request.args.get("material")
     weight = request.args.get("weight")
@@ -579,6 +584,7 @@ def upload_project_foto():
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
         flash("Success! Profile photo uploaded successfully.", 'success')
+        return redirect(url_for("project_components", project_id=project_id))
     return render_template("upload_project_foto.html")
 
 
@@ -591,6 +597,7 @@ def upload_component_foto():
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
         flash("Success! Profile photo uploaded successfully.", 'success')
+        return redirect(url_for("component_page",record_id=record_id))
     return render_template("upload_component_foto.html")
 
 

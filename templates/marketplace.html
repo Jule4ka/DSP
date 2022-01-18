@@ -12,7 +12,7 @@
         {% if session.loggedin %}
         <div class="add_component">
             <a  href= "{{ url_for('add_component') }}">
-            <input type="submit" name="edit_btn" value="Sell a loose component"rel="tooltip" class="bn632-hover bn26">
+            <input type="submit" name="edit_btn" value="Sell a loose component"rel="tooltip" class="bn632-hover bn26 more_width_button">
             <i class="material-icons"></i></input></a>
         </div>
         {% endif %}
@@ -34,27 +34,24 @@
     <tbody>
         {% for row in data %}
         <tr>
-                <td>{{ row.material }}</td>
-                <td>{{ row.category }}</td>
-                <td>{{ row.weight }} </td>
-                <td>{{ row.component_condition }}</td>
-                <td>{{ row.availability }}</td>
-                <td> {{ row.availability_date}}</td>
-                <td>{{ row.component_owner }}</td>
-                <td>{{ row.location }}</td>
-                <td>{{ row.price }}</td>
-                <td>
-                    <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
-                         <input name="edit_btn" value="Show Details"rel="tooltip" class="bn632-hover bn26">
-                        <i class="material-icons"></i></input>
-                    </a>
-        <br>
-                </td>
-
-                <td>
-                    {% if request.args.get('project_id') %}
-                    <a href = "{{ url_for('push_to_project'
-                            , project_id=request.args.get('project_id')
+            <td>{{ row.material }}</td>
+            <td>{{ row.category }}</td>
+            <td>{{ row.weight }} </td>
+            <td>{{ row.component_condition }}</td>
+            <td>{{ row.availability }}</td>
+            <td> {{ row.availability_date}}</td>
+            <td>{{ row.component_owner }}</td>
+            <td>{{ row.location }}</td>
+            <td>{{ row.price }}</td>
+            <td>
+                <a href = "{{ url_for('component_page', record_id = row.component_id) }}">
+                     <input name="edit_btn" value="Show Details"rel="tooltip" class="bn632-hover bn26">
+                    <i class="material-icons"></i></input>
+                </a>
+            </td>
+            {% if session.loggedin %}
+            <td>
+            <form class="row g-3" action= "{{ url_for('push_to_project'
                             , component_id = row.component_id
                             , category=row.category
                             , material=row.material
@@ -68,13 +65,23 @@
                             , component_description=row.component_description
                             , owner_email=row.owner_email
                             , asset_id=row.asset_id
-                            ) }}">
+                            ) }}"    method="post">
+            <div class="input-group">
+                <select name="project" class="form-control" required>
+                <option value="">Add to project</option>
+                {%  for project in project_names %}
+                    <option value={{ project.project_id }}>{{ project.assetname }}</option>
+                {% endfor %}
+                </select>
 
-                         <input name="edit_btn" value="Add to Project" rel="tooltip" class="btn btn-info" style="background-color:orange;border-color:orange">
-                        <i class="material-icons"></i></input>
+                <span class="input-group bn632-hover bn26 less_width_button">
+                    <button type="submit" class="bn632-hover bn26 less_width_button" name="action" value="submit">Add</button>
                     </a>
-                    {% endif %}
-                </td>
+                </span>
+            </div>
+            </form>
+            </td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>

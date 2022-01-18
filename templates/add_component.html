@@ -3,38 +3,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <div class="main-content">
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='project_overview.css') }}">
-<!--
-    <table id="projects" class="table table-striped">
-    <thead>
-        <tr>
-            <th>Assetname</th>
-            <th>Assettype</th>
-            <th>Startdate</th>
-            <th>Enddate</th>
-            <th>Owner</th>
-            <th>Location</th>
-            <th>Project overview</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for project in projects_df %}
-        <tr>
-                <td>{{ project.assetname }}</td>
-                <td>{{ project.assettype }}</td>
-                <td>{{ project.startdate }}</td>
-                <td>{{ project.enddate }}</td>
-                <td>{{ project.owner }}</td>
-                <td>{{ project.location }}</td>
-                <td>
-                    <a  href= "{{ url_for('asset_components', record_id=2) }}">
-                    <input type="submit" name="edit_btn" value="Show Details"rel="tooltip" class="btn btn-info">
-                    <i class="material-icons"></i></input></a>
-                </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-    </table>
--->
+
 <div class="col-sm-4 shadow p-3 mb-5 bg-white rounded">
     <h2>Add a new component</h2>
     <br>
@@ -80,7 +49,7 @@
         <label for="title">Component description (max. 200 characters)</label>
         <textarea rows="4" cols="50" class="form-control" name="comment" form="component_form" maxlength="200"></textarea>
         <br>
-        <button type="submit" class="btn btn-primary" value = {{asset_id}} name="asset_id">Submit</button>
+        <button type="submit" class="btn btn-primary" value = {{ asset_id }} name = "asset_id" >Submit</button>
 
     </form>
     </div>

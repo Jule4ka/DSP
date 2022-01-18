@@ -41,11 +41,11 @@
                     <input type="text" name="Maintainer" placeholder="Maintainer" required></input>
                 </div>
                 <div class="col-md-6">
-                    <label for="title">Width of the bridge (in m&sup2;)</label>
+                    <label for="title">Width of the bridge (in meters)</label>
                     <input type="text" name="Width" placeholder="Width in meters" required></input>
                 </div>
                 <div class="col-md-6">
-                    <label for="title">Length of the bridge (in m&sup2;)</label>
+                    <label for="title">Length of the bridge (in meters)</label>
                     <input type="text" name="Length" placeholder="Length in meters" required></input>
                 </div>
                 <div class="col-md-6">
@@ -94,12 +94,12 @@
                     <td>{{ project.owner }}</td>
                     <td>{{ project.location }}</td>
                     <td>
-                        <a  href= "{{ url_for('project_components', project_id2=project.project_id) }}">
+                        <a  href= "{{ url_for('project_components', project_id = project.project_id) }}">
                         <input name="action" value="Show Details"rel="tooltip" class="bn632-hover bn26">
                         <i class="material-icons"></i></input></a>
                     </td>
                     <td>
-                        <a  href= "{{ url_for('project_delete', project_id = project.project_id) }}">
+                        <a  href= "{{ url_for('project_delete', project_id = project.project_id) }}" onclick="delete_clicked(event)">
                         <input name="action" value="Delete"rel="tooltip" class="bn633-hover bn27">
                         <i class="material-icons"></i></input></a>
                     </td>
@@ -111,24 +111,6 @@
     </div>
 </div>
 </div>
-
-    <!--<div class="row">
-              <div class="col-md-4"></div>
-              <div class="col-md-4">
-                  <form action="" method="post">
-                     <label for="ComponentType">Choose a main component type:</label>
-                      <div class="input_fields_wrap">
-                      <button class="add_field_button">Add More Fields</button>
-                      <input type="text" class="form-control mb-3" name="mytext[]" placeholder="Enter component">
-                      </div>
-                  </form>
-              </div>
-              <div class="col-md-4"></div>
-          </div>
-       </div>
-       <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-    -->
 
 
 {% endblock %}

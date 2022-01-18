@@ -62,8 +62,6 @@
                 <b>Owner:</b> {{ row.Owner }} <br>
                 <b>Status:</b> {{ row.Status }} <br>
                 <b>Location:</b> {{ row.Location }} <br>
-                <b>City:</b> {{ row.City }} <br>
-                <br>
 
                 {% endfor %}
             </p>
@@ -75,7 +73,7 @@
                 {% if session.loggedin %}
                     {%  if row.user_id == session['email']  %}
                         <a href= "{{ url_for('add_component', record_id = row.Assetnumber) }}">
-                            <input name="edit_btn" value="Add a component +" rel="tooltip" class="bn634-hover bn28">
+                            <input name="edit_btn" value="Add a component +" rel="tooltip" class="bn634-hover bn28 more_width_button">
                         <i class="material-icons"></i></input></a>
                     {% endif %}
                 {% endif %}
@@ -127,15 +125,15 @@
 
                                 {% if row.status == 'Published' %}
                                     <td>
-                                        <a href = "{{ url_for('remove_publish_to_marketplace', component_id = row.component_id, record_id = record_id)}}">
-                                        <input name="edit_btn" value="Remove From Marketplace"rel="tooltip" class="bn633-hover bn27">
+                                        <a href = "{{ url_for('remove_publish_to_marketplace', component_id = row.component_id, record_id = record_id)}}" onclick="delete_clicked(event)">
+                                        <input name="edit_btn" value="Remove From Marketplace"rel="tooltip" class="bn633-hover bn27 more_width_button">
                                         <i class="material-icons"></i></input>
                                         </a>
                                     </td>
                                 {% elif row.status == 'Not Published' %}
                                     <td>
-                                        <a href = "{{ url_for('remove_publish_to_marketplace', component_id = row.component_id, record_id = record_id) }}">
-                                        <input name="edit_btn" value="Publish to Marketplace"rel="tooltip" class="bn634-hover bn28">
+                                        <a href = "{{ url_for('remove_publish_to_marketplace', component_id = row.component_id, record_id = record_id) }}" onclick="publish_clicked(event)">
+                                        <input name="edit_btn" value="Publish to Marketplace"rel="tooltip" class="bn634-hover bn28 more_width_button">
                                         <i class="material-icons"></i></input>
                                         </a>
                                     </td>
