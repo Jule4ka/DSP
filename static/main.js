@@ -109,6 +109,11 @@ function remove_clicked(e)
     }
 }
 
+$(document).ready(function(){
+    $(".edit_button").click(function(){
+        $(".edit_form").toggle();
+    });
+});
 
 
 
