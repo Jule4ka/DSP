@@ -1,7 +1,10 @@
 /* Fixes the positioning */
 .main-content {
     padding-top: 100px;
+    padding-right: 25%;
+    padding-left: 25%;
     position: relative;
     top: 25%;
     bottom: 25%;
+
 }
