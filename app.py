@@ -22,7 +22,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_PASSWORD'] = 'root'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -143,10 +143,14 @@ def my_assets():
                 Owner = session['companyname']
                 Width = request.form['Width']
                 Length = request.form['Length']
-                Location = str(request.form['address'] + request.form['city'])
+                Location = str(request.form['address'])
+                City = str(request.form['city'])
                 ConstructionType = request.form['ConstructionType']
+                if Maintanencestate == '5. Poor':
+                    Alert = 'Yes'
+                else:
+                    Alert = 'No'
                 Status = 'Existing'
-
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
                 sql = "INSERT INTO asset_overview (Assetnumber, AssetName, AssetType, ConstructionType,	" \
@@ -155,9 +159,9 @@ def my_assets():
                       "Passage_road_height, Passage_sail_width, Passage_sail_height, " \
                       "Technical_lifespan_expires, OBJECT_GUID, Area_1, Connection_Type, Neighborhood, City, RD_X, " \
                       "RD_Y, Length_1, Area_2, " \
-                      "circumference, user_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, " \
+                      "circumference, user_id, Alert) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, " \
                       "NULL, %s, NULL, NULL, NULL, " \
-                      "NULL, %s, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, %s)"
+                      "NULL, %s, NULL, NULL, NULL, NULL, %s, NULL, NULL, NULL, NULL, NULL, %s, %s)"
                 val = (
                     AssetId, AssetName, AssetType, ConstructionType, Maintanencestate, BuildYear, Maintainer, Owner,
                     Status, Width, Length, Location, DestructionYear, UserId)
@@ -209,6 +213,7 @@ def add_component():
            record_id = None
         else:
             record_id = request.form['asset_id']
+            Status = 'Not Published'
 
         Status = 'Not Published'
         ComponentID = uuid.uuid1()
@@ -240,7 +245,9 @@ def add_component():
                       "location, price, component_description, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                 val = (
                 ComponentID, AssetId, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate,
-                Owner, Owner_email, Location, Price, Description, Status)
+                Owner,
+                Owner_email, Location, Price, Description, Status)
+
 
         cursor.execute(sql, val)
         mysql.connection.commit()
@@ -261,7 +268,6 @@ def add_component():
 def asset_components():
     # table
     record_id = request.args.get("record_id")
-
     # Fetch bridge specific data
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     record_id = str(record_id)
@@ -271,7 +277,17 @@ def asset_components():
     cursor.execute("select * from components where asset_id = %s", [record_id])
     components_dataset = cursor.fetchall()
 
+    # update alert state of asset if 80% of components are in poor state
+    calculate_percentage_poor_components(components_dataset, record_id)
+    # requery the database if the data was changed
+    cursor.execute("select * from asset_overview WHERE Assetnumber= %s", [record_id])
+    bridge_dataset = cursor.fetchall()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("select * from components where asset_id = %s", [record_id])
+    components_dataset = cursor.fetchall()
+
     print(bridge_dataset)
+
     return render_template("asset_components.html", bridge_dataset=bridge_dataset,
                            components_dataset=components_dataset, zip=zip, title="Asset Components",
                            record_id=record_id)
@@ -534,11 +550,19 @@ def upload_data():
         assets_dataset.columns = [c.replace('.', '_') for c in assets_dataset.columns]
 
         assets_dataset = assets_dataset.reindex(columns=assets_dataset.columns.tolist() + ['user_id'])
+        assets_dataset = assets_dataset.reindex(columns=assets_dataset.columns.tolist() + ['alert'])
         assets_dataset['user_id'] = session['email']
+        assets_dataset['alert'] = assets_dataset.apply(lambda row: label_alert(row), axis=1)
         assets_dataset['Assetnumber'] = uuid.uuid1()
         assets_dataset.to_sql('asset_overview', engine, if_exists='append', index=False)
         return redirect(url_for('my_assets'))
     return render_template("upload_data.html")
+
+
+def label_alert (row):
+    if row['Maintainance_State'] == '5. Poor':
+        return 'Yes'
+    return 'No'
 
 
 @app.route('/delete_row', methods=['GET', 'POST'])
@@ -625,7 +649,7 @@ def remove_publish_to_marketplace():
     print(AssetId)
     if publish_status == 'Not Published':
         cursor.execute("UPDATE components set status = 'Published' where component_id = %s ", [ComponentId])
-        user_id=session['email']
+        user_id = session['email']
         mysql.connection.commit()
         print('succefull publishing')
         if AssetId != None:
@@ -634,7 +658,7 @@ def remove_publish_to_marketplace():
             return redirect(url_for('my_components'))
     if publish_status == 'Published':
         cursor.execute("UPDATE components set status = 'Not Published' where component_id = %s ", [ComponentId])
-        user_id=session['email']
+        user_id = session['email']
         mysql.connection.commit()
         print('succesfull deletion')
         if AssetId != None:
@@ -716,9 +740,48 @@ def my_components():
 def component_delete():
     ComponentId = request.args.get("component_id")
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("select asset_id from components where component_id = %s", [ComponentId])
+    AssetId = cursor.fetchall()[0]['asset_id']
     cursor.execute("delete from components where component_id = %s ", [ComponentId])
     mysql.connection.commit()
+
+    if AssetId != None:
+        cursor.execute("select * from components where asset_id = %s", [AssetId])
+        components_dataset = cursor.fetchall()
+        if components_dataset:
+            calculate_percentage_poor_components(components_dataset=components_dataset, record_id=AssetId)
+
     return redirect(url_for('my_components'))
+
+
+def calculate_percentage_poor_components(components_dataset, record_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    overall_weight = 0
+    weight_poor = 0
+    if components_dataset:
+        for i in components_dataset:
+            overall_weight = overall_weight + float(i['weight'])
+            if i['component_condition'] == '5. Poor':
+                weight_poor = weight_poor + float(i['weight'])
+        percentage_poor = weight_poor/overall_weight*100
+        if percentage_poor >= 80:
+            cursor.execute("update asset_overview set alert = 'Yes' where  Assetnumber = %s", [record_id])
+        else:
+            cursor.execute("update asset_overview set alert = 'No' where  Assetnumber = %s", [record_id])
+        mysql.connection.commit()
+
+
+@app.route('/remove_from_asset', methods=['GET', 'POST'])
+def remove_from_asset():
+    ComponentId = request.args.get("component_id")
+    AssetId = request.args.get("record_id")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("UPDATE components set asset_id = NULL where component_id = %s ", [ComponentId])
+    mysql.connection.commit()
+    cursor.execute("select * from components where asset_id = %s", [AssetId])
+    components_dataset = cursor.fetchall()
+    calculate_percentage_poor_components(components_dataset=components_dataset, record_id=AssetId)
+    return redirect(url_for('asset_components', record_id=AssetId))
 
 
 # run the application
