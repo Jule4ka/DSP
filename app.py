@@ -12,6 +12,9 @@ from wtforms import FileField
 import os
 import uuid
 from sqlalchemy import create_engine
+import pygal
+from pygal.style import Style
+import numpy
 
 app = Flask(__name__, static_url_path='')
 nav = Navigation(app)
@@ -459,11 +462,63 @@ def project_components():
     cursor.execute("select * from projects WHERE project_id= %s", [project_id])
     project_data = cursor.fetchall()
 
+    ##BARCHART
+    #Get data
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("""
+                    select 
+                         score 
+                         , CASE WHEN Rvalue IS NULL THEN 0.001 ELSE
+                            COUNT(*) / total_count END as distribution
+                    FROM(
+                        SELECT 'R3' score
+                        UNION ALL
+                        SELECT 'R4' score
+                        UNION ALL
+                        SELECT 'R5' score
+                        UNION ALL
+                        SELECT 'R6' score
+                        UNION ALL
+                        SELECT 'R7' score
+                        UNION ALL
+                        SELECT 'R8' score
+                        UNION ALL
+                        SELECT 'R9'score
+                        ) rvalues 
+                    LEFT JOIN project_components pc ON pc.Rvalue = rvalues.score
+                            AND ProjectId= %s
+                    LEFT JOIN (
+                         SELECT 
+                             COUNT(*) as total_count 
+                         from project_components
+                         WHERE ProjectId= %s) as total ON 1=1
+                    GROUP BY 1 """, (project_id, project_id))
+    chart_data = cursor.fetchall()
+    #Create chart
+
+    background = 'transparent'
+    plot_background = 'transparent'
+    custom_style=Style(
+  background='transparent',
+  plot_background='transparent'
+    )
+    bar_chart = pygal.HorizontalBar(show_tooltip=False,
+        style=custom_style,
+                                    height=150,width=300,
+                                    range = (0,1),show_x_labels=True, show_y_labels=True, show_legend=False)  # instance of Bar class
+    # bar_chart.title = 'Project R-Score Distribution'  # title of bar chart
+    bar_chart.x_labels = ['R3','R4','R5','R6','R7','R8','R9']
+    value_list = []
+    for row in chart_data:
+        value_list.append(row['distribution'])
+    bar_chart.add('line', value_list, color="blue")
+    chart = bar_chart.render_data_uri()  # render bar chart
     return render_template("project_components.html",
                            data=data,
                            title="Project Components",
                            project_id=project_id
-                           ,project_data=project_data)
+                           ,project_data=project_data
+                           , chart=chart)
 
 
 # Upload Data
@@ -682,7 +737,6 @@ def component_delete():
     cursor.execute("delete from components where component_id = %s ", [ComponentId])
     mysql.connection.commit()
     return redirect(url_for('my_components'))
-
 
 # run the application
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='asset_components.css') }}">
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='project_components.css') }}">
 {% extends "layout.html" %}
 {% block head %}
   {{ super() }}
@@ -33,6 +33,11 @@
                                  <input name="edit_btn" value="Add components to project" rel="tooltip" class="bn632-hover bn26 more_width_button">
                                 <i class="material-icons"></i></input>
             </a>
+
+        </div>
+        <div class="content-large3 shadow p-3 mb-5 bg-white rounded">
+            <h1>R-Score</h1>
+            <div><embed src={{ chart|safe }} /></div>
         </div>
 
         <div class="content-table-header">Planned components for project  {% for row in project_data %} {{ row.assetname }} {% endfor %}
@@ -60,6 +65,7 @@
                     <th>location</th>
                     <th>price</th>
                     <th>owner_email</th>
+                    <th>R Score</th>
                     <th></th>
                     </tr>
                 </thead>
@@ -76,6 +82,7 @@
                         <td>{{ row.location }}</td>
                         <td>{{ row.price }}</td>
                         <td>{{ row.owner_email }}</td>
+                        <td>{{ row.Rvalue }}</td>
                         <td>
                             <a href = "{{ url_for('delete_row', project_component_id = row.ProjectComponentId, project_id=row.ProjectId) }}" onclick="delete_clicked(event)">
                                  <input name="edit_btn" value="Delete" rel="tooltip" class="bn633-hover bn27">
