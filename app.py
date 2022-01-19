@@ -177,16 +177,17 @@ def my_assets():
     cursor.execute("select * from asset_overview")
     categories = cursor.fetchall()
     asset_cat = pd.DataFrame(categories)
+
     dataset = asset_cat.reindex(columns=asset_cat.columns.tolist() + ['Open_Asset'])
-    construction_type = dataset['ConstructionType'].unique()
-    asset_type = dataset['AssetType'].unique()
-    maintainance_type = dataset['Maintainance_State'].unique()
+    #construction_type = dataset['ConstructionType'].unique()
+    #asset_type = dataset['AssetType'].unique()
+    #maintainance_type = dataset['Maintainance_State'].unique()
 
     return render_template("my_assets.html",
-                           asset_data=asset_data,
-                           construction_type=construction_type,
-                           asset_type=asset_type,
-                           maintainance_type=maintainance_type)
+                           asset_data=asset_data)
+                           #construction_type=construction_type,
+                           #asset_type=asset_type,
+                           #maintainance_type=maintainance_type)
 
 
 @app.route('/add_component', methods=['GET', 'POST'])
@@ -451,13 +452,13 @@ def project_overview():  # Provide forms for input
 
     # reindex the dataframe and get the right information
     dataset = asset_data.reindex(columns=asset_data.columns.tolist() + ['Open_Asset'])
-    construction_type = dataset['ConstructionType'].unique()
-    asset_type = dataset['AssetType'].unique()
+    #construction_type = dataset['ConstructionType'].unique()
+    #asset_type = dataset['AssetType'].unique()
 
     return render_template("project_overview.html",
-                           projects_df=project_data,
-                           construction_type=construction_type,
-                           asset_type=asset_type)
+                           projects_df=project_data)
+                           #construction_type=construction_type,
+                           #asset_type=asset_type)
 
 
 ## IMPORT image
@@ -585,7 +586,8 @@ def upload_data():
 
         assets_dataset = assets_dataset.reindex(columns=assets_dataset.columns.tolist() + ['user_id'])
         assets_dataset['user_id'] = session['email']
-        assets_dataset['Assetnumber'] = uuid.uuid1()
+        if session['email'] != 'gemeente@almere.nl':
+            assets_dataset['Assetnumber'] = [uuid.uuid1() for _ in range(len(assets_dataset.index))]
         assets_dataset.to_sql('asset_overview', engine, if_exists='append', index=False)
         return redirect(url_for('my_assets'))
     return render_template("upload_data.html")
@@ -809,13 +811,15 @@ def upload_components_data():
         comp_dummy_dataset['component_id'] = [uuid.uuid1() for _ in range(len(comp_dummy_dataset.index))]
         comp_dummy_dataset['status'] = 'Not Published'
         comp_dummy_dataset['availability'] = 'In Asset'
+        comp_dummy_dataset['owner_email'] = session['email']
 
         # adding random weight and price (optional)
         comp_dummy_dataset['weight'] = [roundup(rand.randint(100, 9999), 100) for _ in range(len(comp_dummy_dataset.index))]
         comp_dummy_dataset['price'] = [roundup(rand.randint(10, 999), 10) for _ in range(len(comp_dummy_dataset.index))]
 
         # assign randomly to assets
-        assets_dataset = pd.read_sql("select Assetnumber from asset_overview where user_id is null  ", con=engine)
+        query = 'select Assetnumber from asset_overview where user_id=%s'
+        assets_dataset = pd.read_sql(query, con=engine, params=(session['email'],))
         assets_dataset = assets_dataset.head(25)    # take only first 25 rows for assets
 
         # randomly assign asset number
