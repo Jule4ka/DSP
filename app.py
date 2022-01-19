@@ -1,17 +1,18 @@
+import random as rand
+
 from flask import Flask, render_template, request, url_for, flash, redirect, session, Response
 import pandas as pd
 from flask_navigation import Navigation
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
-from flask_navigation.item import Item
 from flask_uploads import configure_uploads, IMAGES, UploadSet
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField
 from werkzeug.utils import secure_filename
 from wtforms import FileField
 import os
 import uuid
 from sqlalchemy import create_engine
+import math
 
 app = Flask(__name__, static_url_path='')
 nav = Navigation(app)
@@ -22,7 +23,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_PASSWORD'] = 'root'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -206,7 +207,7 @@ def add_component():
 
     if request.method == 'POST':  # check to see if all data is filled in
         if request.form['asset_id'] == 'None':
-           record_id = None
+            record_id = None
         else:
             record_id = request.form['asset_id']
 
@@ -227,18 +228,18 @@ def add_component():
 
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
         if AssetId is None:
-                sql = "INSERT INTO components (component_id, asset_id, material, category, weight, component_condition, " \
-                      "availability, availability_date, component_owner, owner_email, " \
-                      "location, price, component_description, status) VALUES (%s, NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                val = (
+            sql = "INSERT INTO components (component_id, asset_id, material, category, weight, component_condition, " \
+                  "availability, availability_date, component_owner, owner_email, " \
+                  "location, price, component_description, status) VALUES (%s, NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (
                 ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner,
                 Owner_email, Location, Price, Description, Status)
 
         else:
-                sql = "INSERT INTO components (component_id, asset_id, material, category, weight, component_condition, availability, " \
-                      "availability_date, component_owner, owner_email, " \
-                      "location, price, component_description, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                val = (
+            sql = "INSERT INTO components (component_id, asset_id, material, category, weight, component_condition, availability, " \
+                  "availability_date, component_owner, owner_email, " \
+                  "location, price, component_description, status) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (
                 ComponentID, AssetId, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate,
                 Owner, Owner_email, Location, Price, Description, Status)
 
@@ -251,8 +252,6 @@ def add_component():
             return redirect(url_for('marketplace'))
         else:
             return redirect(url_for('asset_components', record_id=AssetId, user_id=Owner_email))
-
-
 
     return render_template("add_component.html", title="Add Component", asset_id=record_id)
 
@@ -298,7 +297,6 @@ def asset_components():
                 ConstructionType = request.form['ConstructionType']
                 Status = 'Existing'
 
-
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
                 sql = "UPDATE asset_overview SET Assetnumber = %s, AssetName = %s, AssetType = %s, ConstructionType = %s,	" \
@@ -312,16 +310,14 @@ def asset_components():
                     AssetId, AssetName, AssetType, ConstructionType, Maintanencestate, BuildYear, Maintainer, Owner,
                     Status, Width, Length, Location, DestructionYear, UserId, AssetId)
 
-
                 cursor.execute(sql, val)
                 mysql.connection.commit()
                 print('Succesfull')
                 msg = "Asset succesfully added"
-                return redirect(url_for('asset_components',record_id=AssetId))
+                return redirect(url_for('asset_components', record_id=AssetId))
             except:
                 msg = 'an error occurred'
                 print('failed')
-
 
     return render_template("asset_components.html", bridge_dataset=bridge_dataset,
                            components_dataset=components_dataset,
@@ -490,13 +486,12 @@ def upload():
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
         flash("Success! Profile photo uploaded successfully.", 'success')
-        return redirect(url_for("asset_components",record_id=asset_id))
+        return redirect(url_for("asset_components", record_id=asset_id))
     return render_template("upload.html")
 
 
 @app.route('/project_components', methods=['GET', 'POST'])
 def project_components():
-
     project_id = str(request.args.get('project_id'))
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     project_id = str(project_id)
@@ -545,7 +540,7 @@ def project_components():
                 mysql.connection.commit()
                 print('Succesfull')
                 msg = "Project succesfully added"
-                return redirect(url_for('project_components',project_id=ProjectId))
+                return redirect(url_for('project_components', project_id=ProjectId))
             except:
                 msg = 'an error occurred'
 
@@ -608,7 +603,7 @@ def delete_row():
 
 @app.route('/push_to_project', methods=['GET', 'POST'])
 def push_to_project():
-    #assign column
+    # assign column
     ProjectId = request.form['project']
     component_id = request.args.get("component_id")
     ProjectComponentId = str(ProjectId + component_id)
@@ -634,14 +629,15 @@ def push_to_project():
           " user_id, asset_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, " \
           " %s, %s, %s, %s, %s , %s)"
     val = (ProjectId, ProjectComponentId, component_id, category, material,
-          weight,	component_condition,
-          availability, availability_date, component_owner, location, price, component_description, owner_email,
+           weight, component_condition,
+           availability, availability_date, component_owner, location, price, component_description, owner_email,
            user_id, asset_id)
 
     print(val)
     cursor.execute(sql, val)
     mysql.connection.commit()
     return redirect(url_for('marketplace', project_id=ProjectId))
+
 
 @app.route('/upload_project_foto', methods=['GET', 'POST'])
 def upload_project_foto():
@@ -665,9 +661,8 @@ def upload_component_foto():
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], bridgeimgname))
         flash("Success! Profile photo uploaded successfully.", 'success')
-        return redirect(url_for("component_page",record_id=record_id))
+        return redirect(url_for("component_page", record_id=record_id))
     return render_template("upload_component_foto.html")
-
 
 
 @app.route('/publish_to_marketplace', methods=['GET', 'POST'])
@@ -680,7 +675,7 @@ def remove_publish_to_marketplace():
     print(AssetId)
     if publish_status == 'Not Published':
         cursor.execute("UPDATE components set status = 'Published' where component_id = %s ", [ComponentId])
-        user_id=session['email']
+        user_id = session['email']
         mysql.connection.commit()
         print('succefull publishing')
         if AssetId != None:
@@ -689,7 +684,7 @@ def remove_publish_to_marketplace():
             return redirect(url_for('my_components'))
     if publish_status == 'Published':
         cursor.execute("UPDATE components set status = 'Not Published' where component_id = %s ", [ComponentId])
-        user_id=session['email']
+        user_id = session['email']
         mysql.connection.commit()
         print('succesfull deletion')
         if AssetId != None:
@@ -697,7 +692,6 @@ def remove_publish_to_marketplace():
         else:
             return redirect(url_for('my_components'))
     return redirect(url_for('my_components'))
-
 
 
 @app.route('/asset_delete', methods=['GET', 'POST'])
@@ -724,7 +718,6 @@ def my_components():
     cursor.execute("select * from components where %s = owner_email", (session['email'],))
     components_data = cursor.fetchall()
 
-
     if request.method == 'POST':  # check to see if all data is filled in
         try:
             Status = 'Not Published'
@@ -747,15 +740,15 @@ def my_components():
                   "availability, availability_date, component_owner, owner_email, " \
                   "location, price, component_description, status) VALUES (%s, NULL, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
             val = (
-            ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner,
-            Owner_email, Location, Price, Description, Status)
+                ComponentID, ComponentMaterial, Category, Weight, Condition, Availability, AvailabilityDate, Owner,
+                Owner_email, Location, Price, Description, Status)
 
             cursor.execute(sql, val)
             mysql.connection.commit()
 
             print('Succesfull')
 
-            #collect the data again so the new component is added
+            # collect the data again so the new component is added
             cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
             cursor.execute("select * from components where %s = owner_email", (session['email'],))
             components_data = cursor.fetchall()
@@ -764,8 +757,8 @@ def my_components():
         except:
             print('failed')
 
-
     return render_template('my_components.html', components_data=components_data)
+
 
 @app.route('/component_delete', methods=['GET', 'POST'])
 def component_delete():
@@ -774,6 +767,73 @@ def component_delete():
     cursor.execute("delete from components where component_id = %s ", [ComponentId])
     mysql.connection.commit()
     return redirect(url_for('my_components'))
+
+
+def roundup(x,y):
+    return int(math.ceil(x / y)) * y
+
+# Upload Components Data
+UPLOAD_COMP_DATA_FILENAME = "Components_dummy_data.xlsx"
+app.config['UPLOAD_COMP_DATA_FILENAME'] = UPLOAD_COMP_DATA_FILENAME
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+
+@app.route('/upload_components_data', methods=['GET', 'POST'])
+def upload_components_data():
+    if request.method == 'POST' and 'data_file' in request.files:
+        # uploading the file
+        file = request.files['data_file']
+        location = os.path.join(app.config['UPLOAD_FOLDER_DATA'], app.config['UPLOAD_COMP_DATA_FILENAME'])
+        file.save(location)
+        flash("Success! File is uploaded", 'success')
+
+        # populating the table
+        engine = create_engine("mysql+pymysql://{user}:{pw}@localhost/{db}"
+                               .format(user=app.config['MYSQL_USER'],
+                                       pw=app.config['MYSQL_PASSWORD'],
+                                       db=app.config['MYSQL_DB']))
+
+        # read excel + multiply data * 5 to populate the dataframe
+        comp_dummy_dataset = pd.read_excel(location)
+        df2 = comp_dummy_dataset.copy()
+        df3 = comp_dummy_dataset.copy()
+        df4 = comp_dummy_dataset.copy()
+        df5 = comp_dummy_dataset.copy()
+        comp_dummy_dataset = comp_dummy_dataset.append([df2, df3, df4, df5], ignore_index=True)
+
+        comp_dummy_dataset = comp_dummy_dataset.reindex(columns=comp_dummy_dataset.columns.tolist()
+                                                            + ['component_id'] + ['asset_id']
+                                                            + ['status'] + ['availability'] + ['availability_date']
+                                                            + ['component_owner'] + ['owner_email'] + ['location'])
+
+        comp_dummy_dataset['component_id'] = [uuid.uuid1() for _ in range(len(comp_dummy_dataset.index))]
+        comp_dummy_dataset['status'] = 'Not Published'
+        comp_dummy_dataset['availability'] = 'In Asset'
+
+        # adding random weight and price (optional)
+        comp_dummy_dataset['weight'] = [roundup(rand.randint(100, 9999), 100) for _ in range(len(comp_dummy_dataset.index))]
+        comp_dummy_dataset['price'] = [roundup(rand.randint(10, 999), 10) for _ in range(len(comp_dummy_dataset.index))]
+
+        # assign randomly to assets
+        assets_dataset = pd.read_sql("select Assetnumber from asset_overview where user_id is null  ", con=engine)
+        assets_dataset = assets_dataset.head(25)    # take only first 25 rows for assets
+
+        # randomly assign asset number
+        for i, row in comp_dummy_dataset.iterrows():
+            # one way to randomize
+            # sample_asset = assets_dataset.sample()
+            # comp_dummy_dataset.at[i, 'asset_id'] = sample_asset.iat[0, 0]
+
+            # another way to randomize
+            chosen_idx = rand.randint(0, 24)
+            sample_asset = assets_dataset.iloc[chosen_idx]
+            # update the asset_id
+            comp_dummy_dataset.at[i, 'asset_id'] = sample_asset[0]
+
+        # populate the components table
+        comp_dummy_dataset.to_sql('components', engine, if_exists='append', index=False)
+        return redirect(url_for('my_components'))
+    return render_template("upload_comp_data.html")
 
 
 # run the application
