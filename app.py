@@ -317,6 +317,10 @@ def asset_components():
                 Location = str(request.form['address'] + request.form['city'])
                 ConstructionType = request.form['ConstructionType']
                 Status = 'Existing'
+                if Maintanencestate == '5. Poor':
+                    Alert = 'Yes'
+                else:
+                    Alert = 'No'
 
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
@@ -326,10 +330,10 @@ def asset_components():
                       "Passage_road_height = NULL, Passage_sail_width = NULL, Passage_sail_height = NULL, " \
                       "Technical_lifespan_expires = %s, OBJECT_GUID = NULL, Area_1 = NULL, Connection_Type = NULL, Neighborhood = NULL, City = NULL, RD_X = NULL, " \
                       "RD_Y = NULL, Length_1 = NULL, Area_2 = NULL, " \
-                      "circumference = NULL, user_id = %s WHERE Assetnumber = %s"
+                      "circumference = NULL, user_id = %s, alert = %s WHERE Assetnumber = %s"
                 val = (
                     AssetId, AssetName, AssetType, ConstructionType, Maintanencestate, BuildYear, Maintainer, Owner,
-                    Status, Width, Length, Location, DestructionYear, UserId, AssetId)
+                    Status, Width, Length, Location, DestructionYear, UserId, Alert, AssetId)
 
                 cursor.execute(sql, val)
                 mysql.connection.commit()
@@ -951,18 +955,22 @@ def label_alert (row):
 
 def calculate_percentage_poor_components(components_dataset, record_id):
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    overall_weight = 0
+    cursor.execute("select Maintainance_State from asset_overview where Assetnumber= %s", [record_id])
+    current_state = cursor.fetchall()
+
     weight_poor = 0
-    if components_dataset:
-        for i in components_dataset:
-            overall_weight = overall_weight + float(i['weight'])
-            if i['component_condition'] == '5. Poor':
-                weight_poor = weight_poor + float(i['weight'])
-        percentage_poor = weight_poor/overall_weight*100
-        if percentage_poor >= 80:
-            cursor.execute("update asset_overview set alert = 'Yes' where  Assetnumber = %s", [record_id])
-        else:
-            cursor.execute("update asset_overview set alert = 'No' where  Assetnumber = %s", [record_id])
+    overall_weight = 0
+    if current_state[0]['Maintainance_State'] != '5. Poor':
+        if components_dataset:
+            for i in components_dataset:
+                overall_weight = overall_weight + float(i['weight'])
+                if i['component_condition'] == '5. Poor':
+                    weight_poor = weight_poor + float(i['weight'])
+            percentage_poor = weight_poor/overall_weight*100
+            if percentage_poor >= 80:
+                cursor.execute("update asset_overview set alert = 'Yes' where  Assetnumber = %s", [record_id])
+            else:
+                cursor.execute("update asset_overview set alert = 'No' where  Assetnumber = %s", [record_id])
         mysql.connection.commit()
 
 
