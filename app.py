@@ -16,6 +16,7 @@ import pygal
 from pygal.style import Style
 import numpy
 import math
+import random as rand
 
 app = Flask(__name__, static_url_path='')
 nav = Navigation(app)
@@ -26,7 +27,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'DSPB1111'
+app.config['MYSQL_PASSWORD'] = 'root'
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -150,7 +151,10 @@ def my_assets():
                 Location = str(request.form['address'] + request.form['city'])
                 ConstructionType = request.form['ConstructionType']
                 Status = 'Existing'
-
+                if Maintanencestate == '5. Poor':
+                    Alert = 'Yes'
+                else:
+                    Alert = 'No'
                 cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
                 sql = "INSERT INTO asset_overview (Assetnumber, AssetName, AssetType, ConstructionType,	" \
@@ -159,9 +163,9 @@ def my_assets():
                       "Passage_road_height, Passage_sail_width, Passage_sail_height, " \
                       "Technical_lifespan_expires, OBJECT_GUID, Area_1, Connection_Type, Neighborhood, City, RD_X, " \
                       "RD_Y, Length_1, Area_2, " \
-                      "circumference, user_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, " \
+                      "circumference, user_id, Alert) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NULL, %s, %s, " \
                       "NULL, %s, NULL, NULL, NULL, " \
-                      "NULL, %s, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, %s)"
+                      "NULL, %s, NULL, NULL, NULL, NULL, %s, NULL, NULL, NULL, NULL, NULL, %s, %s)"
                 val = (
                     AssetId, AssetName, AssetType, ConstructionType, Maintanencestate, BuildYear, Maintainer, Owner,
                     Status, Width, Length, Location, DestructionYear, UserId)
@@ -212,10 +216,11 @@ def add_component():
     if request.method == 'POST':  # check to see if all data is filled in
         if request.form['asset_id'] == 'None':
             record_id = None
+            Status = 'Published'
         else:
             record_id = request.form['asset_id']
+            Status = 'Not Published'
 
-        Status = 'Not Published'
         ComponentID = uuid.uuid1()
         ComponentMaterial = request.form['ComponentMaterial']
         Category = request.form['Category']
@@ -275,6 +280,16 @@ def asset_components():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("select * from components where asset_id = %s", [record_id])
     components_dataset = cursor.fetchall()
+
+    # update alert state of asset if 80% of components are in poor state
+    calculate_percentage_poor_components(components_dataset, record_id)
+    # requery the database if the data was changed
+    cursor.execute("select * from asset_overview WHERE Assetnumber= %s", [record_id])
+    bridge_dataset = cursor.fetchall()
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("select * from components where asset_id = %s", [record_id])
+    components_dataset = cursor.fetchall()
+
 
     cursor.execute("select * from asset_overview")
     categories = cursor.fetchall()
@@ -642,9 +657,16 @@ def upload_data():
         assets_dataset.columns = [c.replace('.', '_') for c in assets_dataset.columns]
 
         assets_dataset = assets_dataset.reindex(columns=assets_dataset.columns.tolist() + ['user_id'])
+        assets_dataset = assets_dataset.reindex(columns=assets_dataset.columns.tolist() + ['alert'])
+
         assets_dataset['user_id'] = session['email']
+
+
+        assets_dataset['alert'] = assets_dataset.apply(lambda row: label_alert(row), axis=1)
         if session['email'] != 'gemeente@almere.nl':
             assets_dataset['Assetnumber'] = [uuid.uuid1() for _ in range(len(assets_dataset.index))]
+
+
         assets_dataset.to_sql('asset_overview', engine, if_exists='append', index=False)
         return redirect(url_for('my_assets'))
     return render_template("upload_data.html")
@@ -824,9 +846,33 @@ def my_components():
 def component_delete():
     ComponentId = request.args.get("component_id")
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("select asset_id from components where component_id = %s", [ComponentId])
+    AssetId = cursor.fetchall()[0]['asset_id']
     cursor.execute("delete from components where component_id = %s ", [ComponentId])
     mysql.connection.commit()
+
+    if AssetId != None:
+        cursor.execute("select * from components where asset_id = %s", [AssetId])
+        components_dataset = cursor.fetchall()
+        if components_dataset:
+            calculate_percentage_poor_components(components_dataset=components_dataset, record_id=AssetId)
+
+
     return redirect(url_for('my_components'))
+
+
+@app.route('/remove_from_asset', methods=['GET', 'POST'])
+def remove_from_asset():
+    ComponentId = request.args.get("component_id")
+    AssetId = request.args.get("record_id")
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
+    cursor.execute("UPDATE components set asset_id = NULL where component_id = %s ", [ComponentId])
+    mysql.connection.commit()
+    cursor.execute("select * from components where asset_id = %s", [AssetId])
+    components_dataset = cursor.fetchall()
+    calculate_percentage_poor_components(components_dataset=components_dataset, record_id=AssetId)
+    return redirect(url_for('asset_components', record_id=AssetId))
+
 
 
 def roundup(x,y):
@@ -896,6 +942,29 @@ def upload_components_data():
         comp_dummy_dataset.to_sql('components', engine, if_exists='append', index=False)
         return redirect(url_for('my_components'))
     return render_template("upload_comp_data.html")
+
+
+def label_alert (row):
+    if row['Maintainance_State'] == '5. Poor':
+        return 'Yes'
+    return 'No'
+
+def calculate_percentage_poor_components(components_dataset, record_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    overall_weight = 0
+    weight_poor = 0
+    if components_dataset:
+        for i in components_dataset:
+            overall_weight = overall_weight + float(i['weight'])
+            if i['component_condition'] == '5. Poor':
+                weight_poor = weight_poor + float(i['weight'])
+        percentage_poor = weight_poor/overall_weight*100
+        if percentage_poor >= 80:
+            cursor.execute("update asset_overview set alert = 'Yes' where  Assetnumber = %s", [record_id])
+        else:
+            cursor.execute("update asset_overview set alert = 'No' where  Assetnumber = %s", [record_id])
+        mysql.connection.commit()
+
 
 # run the application
 if __name__ == '__main__':
