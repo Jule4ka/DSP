@@ -1,18 +1,22 @@
-import random as rand
-
 from flask import Flask, render_template, request, url_for, flash, redirect, session, Response
 import pandas as pd
 from flask_navigation import Navigation
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
+from flask_navigation.item import Item
 from flask_uploads import configure_uploads, IMAGES, UploadSet
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField
 from werkzeug.utils import secure_filename
 from wtforms import FileField
 import os
 import uuid
 from sqlalchemy import create_engine
+import pygal
+from pygal.style import Style
+import numpy
 import math
+import random as rand
 
 app = Flask(__name__, static_url_path='')
 nav = Navigation(app)
@@ -180,16 +184,17 @@ def my_assets():
     cursor.execute("select * from asset_overview")
     categories = cursor.fetchall()
     asset_cat = pd.DataFrame(categories)
+
     dataset = asset_cat.reindex(columns=asset_cat.columns.tolist() + ['Open_Asset'])
-    construction_type = dataset['ConstructionType'].unique()
-    asset_type = dataset['AssetType'].unique()
-    maintainance_type = dataset['Maintainance_State'].unique()
+    #construction_type = dataset['ConstructionType'].unique()
+    #asset_type = dataset['AssetType'].unique()
+    #maintainance_type = dataset['Maintainance_State'].unique()
 
     return render_template("my_assets.html",
-                           asset_data=asset_data,
-                           construction_type=construction_type,
-                           asset_type=asset_type,
-                           maintainance_type=maintainance_type)
+                           asset_data=asset_data)
+                           #construction_type=construction_type,
+                           #asset_type=asset_type,
+                           #maintainance_type=maintainance_type)
 
 
 @app.route('/add_component', methods=['GET', 'POST'])
@@ -256,6 +261,8 @@ def add_component():
             return redirect(url_for('marketplace'))
         else:
             return redirect(url_for('asset_components', record_id=AssetId, user_id=Owner_email))
+
+
 
     return render_template("add_component.html", title="Add Component", asset_id=record_id)
 
@@ -465,13 +472,13 @@ def project_overview():  # Provide forms for input
 
     # reindex the dataframe and get the right information
     dataset = asset_data.reindex(columns=asset_data.columns.tolist() + ['Open_Asset'])
-    construction_type = dataset['ConstructionType'].unique()
-    asset_type = dataset['AssetType'].unique()
+    #construction_type = dataset['ConstructionType'].unique()
+    #asset_type = dataset['AssetType'].unique()
 
     return render_template("project_overview.html",
-                           projects_df=project_data,
-                           construction_type=construction_type,
-                           asset_type=asset_type)
+                           projects_df=project_data)
+                           #construction_type=construction_type,
+                           #asset_type=asset_type)
 
 
 ## IMPORT image
@@ -558,6 +565,57 @@ def project_components():
             except:
                 msg = 'an error occurred'
 
+    ##BARCHART
+    #Get data
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("""
+                    select 
+                         score 
+                         , CASE WHEN Rvalue IS NULL THEN 0.001 ELSE
+                            COUNT(*) / total_count END as distribution
+                    FROM(
+                        SELECT 'R3' score
+                        UNION ALL
+                        SELECT 'R4' score
+                        UNION ALL
+                        SELECT 'R5' score
+                        UNION ALL
+                        SELECT 'R6' score
+                        UNION ALL
+                        SELECT 'R7' score
+                        UNION ALL
+                        SELECT 'R8' score
+                        UNION ALL
+                        SELECT 'R9'score
+                        ) rvalues 
+                    LEFT JOIN project_components pc ON pc.Rvalue = rvalues.score
+                            AND ProjectId= %s
+                    LEFT JOIN (
+                         SELECT 
+                             COUNT(*) as total_count 
+                         from project_components
+                         WHERE ProjectId= %s) as total ON 1=1
+                    GROUP BY 1 """, (project_id, project_id))
+    chart_data = cursor.fetchall()
+    #Create chart
+
+    background = 'transparent'
+    plot_background = 'transparent'
+    custom_style=Style(
+  background='transparent',
+  plot_background='transparent'
+    )
+    bar_chart = pygal.HorizontalBar(show_tooltip=False,
+        style=custom_style,
+                                    height=150,width=300,
+                                    range = (0,1),show_x_labels=True, show_y_labels=True, show_legend=False)  # instance of Bar class
+    # bar_chart.title = 'Project R-Score Distribution'  # title of bar chart
+    bar_chart.x_labels = ['R3','R4','R5','R6','R7','R8','R9']
+    value_list = []
+    for row in chart_data:
+        value_list.append(row['distribution'])
+    bar_chart.add('line', value_list, color="blue")
+    chart = bar_chart.render_data_uri()  # render bar chart
     return render_template("project_components.html",
                            data=data,
                            title="Project Components",
@@ -565,7 +623,8 @@ def project_components():
                            project_data=project_data,
                            construction_type=construction_type,
                            asset_type=asset_type,
-                           maintainance_type=maintainance_type)
+                           maintainance_type=maintainance_type
+                           , chart=chart)
 
 
 # Upload Data
@@ -601,9 +660,12 @@ def upload_data():
         assets_dataset = assets_dataset.reindex(columns=assets_dataset.columns.tolist() + ['alert'])
 
         assets_dataset['user_id'] = session['email']
+
+
         assets_dataset['alert'] = assets_dataset.apply(lambda row: label_alert(row), axis=1)
         if session['email'] != 'gemeente@almere.nl':
             assets_dataset['Assetnumber'] = [uuid.uuid1() for _ in range(len(assets_dataset.index))]
+
 
         assets_dataset.to_sql('asset_overview', engine, if_exists='append', index=False)
         return redirect(url_for('my_assets'))
@@ -639,18 +701,19 @@ def push_to_project():
     owner_email = request.args.get("owner_email")
     user_id = session['email']
     asset_id = request.args.get("asset_id")
+    Rvalue = request.form["dropdown"]
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)  # creating variable for connection
 
     sql = "INSERT INTO project_components (ProjectId, ProjectComponentId, component_id, category, material,	" \
           "weight,	component_condition, " \
           "availability, availability_date, component_owner, location, price, component_description, owner_email, " \
-          " user_id, asset_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, " \
-          " %s, %s, %s, %s, %s , %s)"
+          " user_id, asset_id, Rvalue) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, " \
+          " %s, %s, %s, %s, %s , %s, %s)"
     val = (ProjectId, ProjectComponentId, component_id, category, material,
-           weight, component_condition,
-           availability, availability_date, component_owner, location, price, component_description, owner_email,
-           user_id, asset_id)
+          weight, component_condition,
+          availability, availability_date, component_owner, location, price, component_description, owner_email,
+           user_id, asset_id, Rvalue)
 
     print(val)
     cursor.execute(sql, val)

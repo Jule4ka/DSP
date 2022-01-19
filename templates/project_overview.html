@@ -23,9 +23,11 @@
                 <div class="col-md-6">
                     <label for="AssetType">Choose an asset type:</label>
                     <select name="AssetType" id="AssetType" required>
-                        {% for type in asset_type %}
-                            <option value= "{{ type }}" > {{ type }} </option>
-                        {% endfor %}
+            <option value= "Verkeersbrug" >Verkeersbrug</option>
+            <option value= "Fiets-voetbrug" >Fiets-voetbrug</option>
+            <option value= "Beweegbare brug" >Beweegbare brug</option>
+            <option value= "Viaduct" >Viaduct</option>
+            <option value= "Duikersbrug" >Duikersbrug</option>
                     </select>
                 </div>
                 <div class="col-md-6">
@@ -59,9 +61,11 @@
                 <div class="col-md-12">
                     <label for="ConstructionType">Choose the main construction type:</label>
                     <select name="ConstructionType" id="ConstructionType" required>
-                          {% for type in construction_type %}
-                          <option value= "{{ type }}" > {{ type }} </option>
-                          {% endfor %}
+            <option value= "Concrete" >Concrete</option>
+            <option value= "Wood" >Wood</option>
+            <option value= "Underpass" >Underpass</option>
+            <option value= "Steel" >Steel</option>
+            <option value= "COMPOSIET" >COMPOSIET</option>
                     </select>
                 </div>
                 <div class="col-md-12">

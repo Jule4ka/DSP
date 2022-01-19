@@ -7,8 +7,8 @@
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='marketplace.css') }}">
 
 <div class="main-content">
-        <h1>Welcome to the Material Marketplace</h1>
-        <h5>Browse through the different materials to find the right material for your bridge.</h5>
+        <h1>Welcome to the Component Marketplace</h1>
+        <h5>Browse through the different components to find the right component for your project.</h5>
         {% if session.loggedin %}
         <div class="add_component">
             <a  href= "{{ url_for('add_component') }}">
@@ -72,6 +72,15 @@
                 {%  for project in project_names %}
                     <option value={{ project.project_id }}>{{ project.assetname }}</option>
                 {% endfor %}
+                </select>
+                <select name = "dropdown" class="form-control" required>
+                    <option value = "R3" >R3</option>
+                    <option value = "R4">R4</option>
+                    <option value = "R5" >R5</option>
+                    <option value = "R6" >R6</option>
+                    <option value = "R7">R7</option>
+                    <option value = "R8">R8</option>
+                    <option value = "R9">R9</option>
                 </select>
 
                 <span class="input-group bn632-hover bn26 less_width_button">
