@@ -109,7 +109,17 @@ function remove_clicked(e)
     }
 }
 
+$(document).ready(function(){
+    $(".edit_button").click(function(){
+        $(".edit_form").toggle();
+    });
+});
 
+$(document).ready(function(){
+    $(".edit_button_assets").click(function(){
+        $(".edit_form").toggle();
+    });
+});
 
 
 var check = function() {

@@ -21,20 +21,92 @@
             {% endfor %}
         </div>
         <div class="content-large2 shadow p-3 mb-5 bg-white rounded">
-            <h1>Asset details</h1>
-            <p>
+            <div class="details_text">
+                <h1>Asset details</h1>
+                <p>
                 {% for row in bridge_dataset %}
-                <b>Name:</b>  {{ row.AssetName }} <br>
-                <b>Type:</b>  {{ row.AssetType }} <br>
-                <b>Maintenance State:</b> {{ row.Maintainance_State }} <br>
-                <b>Build Year:</b> {{ row.buildyear }} <br>
-                <b>Maintainer:</b> {{ row.Maintainer }} <br>
-                <b>Owner:</b> {{ row.Owner }} <br>
-                <b>Status:</b> {{ row.Status }} <br>
-                <b>Location:</b> {{ row.Location }} <br>
+                    <b>Name:</b>  {{ row.AssetName }} <br>
+                    <b>Type:</b>  {{ row.AssetType }} <br>
+                    <b>Maintenance State:</b> {{ row.Maintainance_State }} <br>
+                    <b>Build Year:</b> {{ row.buildyear }} <br>
+                    <b>Maintainer:</b> {{ row.Maintainer }} <br>
+                    <b>Owner:</b> {{ row.Owner }} <br>
+                    <b>Status:</b> {{ row.Status }} <br>
+                    <b>Location:</b> {{ row.Location }}
 
-                {% endfor %}
-            </p>
+                </p>
+            </div>
+            {% if session.loggedin %}
+                {% if row.user_id == session.email %}
+                <div class="edit_button_assets">
+                    <button id="edit_button" class='fas fa-edit' style='font-size:36px'></button>
+                </div>
+                {% endif %}
+            {% endif %}
+            {% endfor %}
+            <div class="edit_form" id="edit_form">
+                <form class="row g-3" method="post">
+                    <div class="form-group col-md-6"
+                        <label for="title">Name of the project</label>
+                        <input class="form-control" type="text" name="AssetName" placeholder="Asset name" required></input>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="AssetType">Choose an asset type:</label>
+                        <select class="form-control" name="AssetType" id="AssetType" required>
+                            {% for type in asset_type %}
+                                <option value= "{{ type }}" > {{ type }} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="title">When was the asset built?</label>
+                        <input class="form-control" type="date" name="Builddate" placeholder="dd/mm/YYYY" min="da" required></input>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="title">When will the asset be replaced/destroyed?</label>
+                        <input class="form-control" type="date" name="Destructiondate" placeholder="dd/mm/YYYY" min="da" required></input>
+                    </div>
+                    <div class="form-group col-md-6">
+                    <label for="maintainancestate">How well is the bridge maintained?</label>
+                        <select class="form-control" name="maintainancestate" id="maintainancestate" required>
+                            {% for type in maintainance_type %}
+                                <option value= "{{ type }}" > {{ type }} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="title">Who maintains the asset?</label>
+                        <input class="form-control" type="text" name="Maintainer" placeholder="Maintainer" required></input>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="title">Width of the bridge (in meters)</label>
+                        <input class="form-control" type="text" name="Width" placeholder="Width in meters" required></input>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="title">Length of the bridge (in meters)</label>
+                        <input class="form-control" type="text" name="Length" placeholder="Length in meters" required></input>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="title">Address of the bridge</label>
+                        <input class="form-control" type="text" name="address" placeholder="e.g.) Street 45" required></input>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="title">City</label>
+                        <input class="form-control" type="text" name="city" placeholder="City" required></input>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label for="ConstructionType">Choose the main construction type</label>
+                        <select class="form-control" name="ConstructionType" id="ConstructionType" required>
+                              {% for type in construction_type %}
+                              <option value= "{{ type }}" > {{ type }} </option>
+                              {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-md-12">
+                    <button type="submit" class="btn btn-primary" name="action" value="submit">Save changes</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <div class="content-table-header">

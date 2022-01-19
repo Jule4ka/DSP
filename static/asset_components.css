@@ -18,7 +18,7 @@
     display: grid;
 
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 50px 1fr 50px 1fr 1fr;
+    grid-template-rows: 50px auto 50px 1fr 1fr;
 
     gap: 10px;
 
@@ -62,6 +62,9 @@
     padding: 10px;
 }
 
+.details_text {
+    max-width: 30%;
+}
 .content-table-header {
     grid-column-start: 1;
     grid-column-end: span 3;
@@ -95,3 +98,35 @@ table {
 input {
   width: auto;
 }
+
+
+
+.edit_button {
+    text-align: right;
+    margin-top: -220px;
+}
+.edit_button button{
+    outline: none;
+    border: none;
+    background: white;
+}
+
+.edit_button_assets{
+    text-align: right;
+    margin-top: -300px;
+}
+.edit_button_assets button{
+    outline: none;
+    border: none;
+    background: white;
+}
+
+
+
+.edit_form {
+    margin-left: 500px;
+    margin-right: 200px;
+    display: none;
+    font-size: 14px;
+}
+
