@@ -39,7 +39,7 @@
                         <input class="form-control" type="text" name="AssetName" placeholder="Project name" required></input>
                     </div>
                     <div class="form-group col-md-6">
-                        <label for="AssetType">Choose an asset type:</label>
+                        <label for="AssetType">Choose asset type:</label>
                         <select class="form-control" name="AssetType" id="AssetType" required>
                             {% for type in asset_type %}
                                 <option value= "{{ type }}" > {{ type }} </option>
