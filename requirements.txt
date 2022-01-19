@@ -10,3 +10,4 @@ flask-mysqldb
 mysql-connector
 sqlalchemy
 pymysql
+pygal
