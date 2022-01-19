@@ -208,10 +208,11 @@ def add_component():
     if request.method == 'POST':  # check to see if all data is filled in
         if request.form['asset_id'] == 'None':
             record_id = None
+            Status = 'Published'
         else:
             record_id = request.form['asset_id']
+            Status = 'Not Published'
 
-        Status = 'Not Published'
         ComponentID = uuid.uuid1()
         ComponentMaterial = request.form['ComponentMaterial']
         Category = request.form['Category']
