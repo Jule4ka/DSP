@@ -46,8 +46,8 @@
     grid-column-end: 1;
     grid-row-start: 2;
     grid-row-end: 2;
-    min-width: 700px;
-    min-height: 400px;
+    min-width: 500px;
+    min-height: 500px;
     display: flex;
     justify-content: center;
     flex-direction: column;

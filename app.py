@@ -27,7 +27,7 @@ app.config['MYSQL_HOST'] = 'localhost'
 # MySQL username
 app.config['MYSQL_USER'] = 'root'
 # MySQL password here in my case password is null so i left empty
-app.config['MYSQL_PASSWORD'] = 'root'
+app.config['MYSQL_PASSWORD'] = ''
 # Database name In my case database name is projectreporting
 app.config['MYSQL_DB'] = 'dummy_db'
 
@@ -168,7 +168,7 @@ def my_assets():
                       "NULL, %s, NULL, NULL, NULL, NULL, %s, NULL, NULL, NULL, NULL, NULL, %s, %s)"
                 val = (
                     AssetId, AssetName, AssetType, ConstructionType, Maintanencestate, BuildYear, Maintainer, Owner,
-                    Status, Width, Length, Location, DestructionYear, UserId)
+                    Status, Width, Length, Location, DestructionYear, UserId, Alert)
 
                 print(val)
                 cursor.execute(sql, val)
