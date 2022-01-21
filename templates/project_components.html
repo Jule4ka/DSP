@@ -1,7 +1,12 @@
 <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static', filename='project_components.css') }}">
+
 {% extends "layout.html" %}
 {% block head %}
   {{ super() }}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 {% endblock %}
 {% block content %}
 
@@ -34,7 +39,7 @@
             </div>
             <div class="edit_form" id="edit_form">
                 <form class="row g-3" method="post">
-                    <div class="form-group col-md-6"
+                    <div class="form-group col-md-6">
                         <label for="title">Name of the project</label>
                         <input class="form-control" type="text" name="AssetName" placeholder="Project name" required></input>
                     </div>
@@ -90,8 +95,22 @@
         </div>
 
         <div class="content-large3 shadow p-3 mb-5 bg-white rounded">
-            <h1>R-Score</h1>
-            <div><embed src={{ chart|safe }} /></div>
+            <div class="info_button">
+                <button style="text-align: left" type = "button"
+                        id="info_button" class="fas fa-info"
+                        data-toggle="tooltip"  data-placement="left" data-html="true"
+                        title = "
+                        R9-Recover;<br/> R8-Recycle; <br/>R7-Repurpose;<br/> R6-Remanufacture;
+                        <br/> R5-Refurbish; <br/> R4-Repair; <br/> R3-Reuse;" >
+                </button>
+                <script> $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip({ html:true });
+                });</script>
+
+            </div>
+            <h1>Sustainability Score</h1>
+            <div class = "score"><embed src={{ chart|safe }} /></div>
+
         </div>
 
         <div class="content-table-header">Planned components for project  {% for row in project_data %} {{ row.assetname }} {% endfor %}
@@ -109,17 +128,16 @@
             <table id="project_components" class="table table-striped">
                 <thead>
                     <tr>
-                    <th>category</th>
-                    <th>material</th>
-                    <th>weight</th>
-                    <th>component_condition</th>
-                    <th>availability</th>
-                    <th>availability_date</th>
-                    <th>component_owner</th>
-                    <th>location</th>
-                    <th>price</th>
-                    <th>owner_email</th>
-                    <th>R-score</th>
+                    <th>Category</th>
+                    <th>Material</th>
+                    <th>Weight</th>
+                    <th>Condition</th>
+                    <th>Availability</th>
+                    <th>Owner</th>
+                    <th>Location</th>
+                    <th>Price</th>
+                    <th>Owner Email</th>
+                    <th>Sustainability Score</th>
                     <th></th>
                     </tr>
                 </thead>
@@ -131,7 +149,6 @@
                         <td>{{ row.weight }}</td>
                         <td>{{ row.component_condition }}</td>
                         <td>{{ row.availability }}</td>
-                        <td>{{ row.availability_date }}</td>
                         <td>{{ row.component_owner }}</td>
                         <td>{{ row.location }}</td>
                         <td>{{ row.price }}</td>
